@@ -29,6 +29,16 @@ class ExceptionHandlerController {
         return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(resposta)
     }
 
+    @ExceptionHandler(NoSuchElementException)
+    ResponseEntity<ErroResponseDTO> handleNoSuchElementException(NoSuchElementException ex) {
+        ErroResponseDTO resposta = new ErroResponseDTO(
+                codigo: HttpStatus.NOT_FOUND.value(),
+                mensagem: ex.message,
+                tipo: "Recurso Não Encontrado"
+        )
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(resposta)
+    }
+
     @ExceptionHandler(IllegalArgumentException)
     ResponseEntity<ErroResponseDTO> handleIllegalArgumentException(IllegalArgumentException ex) {
         ErroResponseDTO resposta = new ErroResponseDTO(
