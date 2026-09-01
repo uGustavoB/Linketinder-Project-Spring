@@ -10,7 +10,7 @@ import java.time.LocalDate
 @Component
 class CandidatoMapper {
 
-    public static CandidatoResponseDTO toResponseDTO(Candidato candidato) {
+    static CandidatoResponseDTO toResponseDTO(Candidato candidato) {
         return new CandidatoResponseDTO(
                 candidato.id,
                 candidato.nome,
@@ -25,7 +25,7 @@ class CandidatoMapper {
         )
     }
 
-    public static Candidato fromResponseDTOToEntity(CandidatoResponseDTO dto) {
+    static Candidato fromResponseDTOToEntity(CandidatoResponseDTO dto) {
         Candidato candidato = new Candidato()
         candidato.id = dto.id()
         candidato.nome = dto.nome()
@@ -40,7 +40,7 @@ class CandidatoMapper {
         return candidato
     }
 
-    public static Candidato fromRequestDTOToEntity(CandidatoRequestDTO dto) {
+    static Candidato fromRequestDTOToEntity(CandidatoRequestDTO dto) {
         Candidato candidato = new Candidato()
         candidato.nome = dto.nome
         candidato.sobrenome = dto.sobrenome
