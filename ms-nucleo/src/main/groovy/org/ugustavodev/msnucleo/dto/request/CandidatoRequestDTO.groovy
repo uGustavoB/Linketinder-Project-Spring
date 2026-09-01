@@ -30,8 +30,10 @@ class CandidatoRequestDTO {
     @Size(min = 6, message = "A senha deve ter no mínimo 6 caracteres")
     String senha
 
-    String estado
+    @NotBlank(message = "O campo país é obrigatório")
     String pais
-    String descricao
+
+    String estado
     String cep
+    String descricao
 }

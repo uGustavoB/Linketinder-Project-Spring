@@ -18,10 +18,10 @@ class Pessoa {
     @Column(nullable = false)
     String pais
 
-    @Column(nullable = false)
+    @Column
     String estado
 
-    @Column(nullable = false)
+    @Column
     String cep
 
     @Column(columnDefinition = "TEXT")
