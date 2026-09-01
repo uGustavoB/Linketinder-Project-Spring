@@ -23,10 +23,12 @@ class CadastrarCandidatoUseCase implements ICadastrarCandidatoUseCase{
             throw new IllegalArgumentException("O objeto CandidatoRequestDTO não pode ser nulo.")
         }
 
-        Optional<Candidato> candidatoExistente = candidatoRepository.findByEmail(requestDTO.email)
-
-        if (candidatoExistente.isPresent()) {
+        if (candidatoRepository.findByEmail(requestDTO.email).isPresent()) {
             throw new IllegalArgumentException("Já existe um candidato cadastrado com o email informado")
+        }
+
+        if (candidatoRepository.findByCpf(requestDTO.cpf).isPresent()) {
+            throw new IllegalArgumentException("Já existe um candidato cadastrado com o CPF informado")
         }
 
         Candidato candidato = CandidatoMapper.fromRequestDTOToEntity(requestDTO)
