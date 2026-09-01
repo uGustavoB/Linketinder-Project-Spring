@@ -24,6 +24,7 @@ class CandidatoRequestDTO {
     String email
 
     @NotBlank(message = "O campo cpf é obrigatório")
+    @Size(min = 11, max = 11, message = "O CPF deve ter 11 dígitos")
     String cpf
 
     @NotBlank(message = "O campo da senha é obrigatório")

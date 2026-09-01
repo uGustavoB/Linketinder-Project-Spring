@@ -1,7 +1,5 @@
 package org.ugustavodev.msnucleo.dto.response
 
-import org.ugustavodev.msnucleo.model.Candidato
-
 import java.time.LocalDate
 
 record CandidatoResponseDTO(
