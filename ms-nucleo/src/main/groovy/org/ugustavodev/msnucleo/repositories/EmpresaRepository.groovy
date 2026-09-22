@@ -4,6 +4,6 @@ import org.springframework.data.jpa.repository.JpaRepository
 import org.ugustavodev.msnucleo.model.Empresa
 
 interface EmpresaRepository extends JpaRepository<Empresa, Long> {
-    Optional<Empresa> findByEmail(String email)
+    Optional<Empresa> findByUsuarioEmail(String email)
     Optional<Empresa> findByCnpj(String cnpj)
 }

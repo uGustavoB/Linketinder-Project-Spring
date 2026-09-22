@@ -28,8 +28,8 @@ class AtualizarEmpresaUseCase implements IAtualizarEmpresaUseCase {
         Empresa empresaExistente = empresaRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("Empresa não encontrada."))
 
-        if (empresaExistente.email != requestDTO.email) {
-            Optional<Empresa> comMesmoEmail = empresaRepository.findByEmail(requestDTO.email)
+        if (empresaExistente.usuario.email != requestDTO.email) {
+            Optional<Empresa> comMesmoEmail = empresaRepository.findByUsuarioEmail(requestDTO.email)
             if (comMesmoEmail.isPresent() && comMesmoEmail.get().id != id) {
                 throw new IllegalArgumentException("Já existe outra empresa cadastrada com o email informado")
             }
@@ -44,13 +44,13 @@ class AtualizarEmpresaUseCase implements IAtualizarEmpresaUseCase {
 
         empresaExistente.nome = requestDTO.nome
         empresaExistente.cnpj = requestDTO.cnpj
-        empresaExistente.email = requestDTO.email
+        empresaExistente.usuario.email = requestDTO.email
         empresaExistente.pais = requestDTO.pais
         empresaExistente.estado = requestDTO.estado
         empresaExistente.cep = requestDTO.cep
         empresaExistente.descricao = requestDTO.descricao
         if (requestDTO.senha) {
-            empresaExistente.senha = requestDTO.senha
+            empresaExistente.usuario.senha = requestDTO.senha
         }
 
         Empresa empresaAtualizada = empresaRepository.save(empresaExistente)

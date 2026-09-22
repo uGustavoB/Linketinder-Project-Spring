@@ -28,8 +28,8 @@ class AtualizarCandidatoUseCase implements IAtualizarCandidatoUseCase {
         Candidato candidatoExistente = candidatoRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("Candidato não encontrado."))
 
-        if (candidatoExistente.email != requestDTO.email) {
-            Optional<Candidato> comMesmoEmail = candidatoRepository.findByEmail(requestDTO.email)
+        if (candidatoExistente.usuario.email != requestDTO.email) {
+            Optional<Candidato> comMesmoEmail = candidatoRepository.findByUsuarioEmail(requestDTO.email)
             if (comMesmoEmail.isPresent() && comMesmoEmail.get().id != id) {
                 throw new IllegalArgumentException("Já existe outro candidato cadastrado com o email informado")
             }
@@ -45,14 +45,14 @@ class AtualizarCandidatoUseCase implements IAtualizarCandidatoUseCase {
         candidatoExistente.nome = requestDTO.nome
         candidatoExistente.sobrenome = requestDTO.sobrenome
         candidatoExistente.dataNascimento = requestDTO.dataNascimento?.toString()
-        candidatoExistente.email = requestDTO.email
+        candidatoExistente.usuario.email = requestDTO.email
         candidatoExistente.cpf = requestDTO.cpf
         candidatoExistente.pais = requestDTO.pais
         candidatoExistente.estado = requestDTO.estado
         candidatoExistente.cep = requestDTO.cep
         candidatoExistente.descricao = requestDTO.descricao
         if (requestDTO.senha) {
-            candidatoExistente.senha = requestDTO.senha
+            candidatoExistente.usuario.senha = requestDTO.senha
         }
 
         Candidato candidatoAtualizado = candidatoRepository.save(candidatoExistente)

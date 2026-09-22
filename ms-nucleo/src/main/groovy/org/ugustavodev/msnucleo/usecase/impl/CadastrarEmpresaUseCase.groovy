@@ -22,7 +22,7 @@ class CadastrarEmpresaUseCase implements ICadastrarEmpresaUseCase {
             throw new IllegalArgumentException("O objeto EmpresaRequestDTO não pode ser nulo.")
         }
 
-        if (empresaRepository.findByEmail(requestDTO.email).isPresent()) {
+        if (empresaRepository.findByUsuarioEmail(requestDTO.email).isPresent()) {
             throw new IllegalArgumentException("Já existe uma empresa cadastrada com o email informado")
         }
 
