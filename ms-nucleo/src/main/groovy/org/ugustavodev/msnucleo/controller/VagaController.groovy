@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import org.ugustavodev.msnucleo.dto.request.VagaRequestDTO
 import org.ugustavodev.msnucleo.dto.response.VagaResponseDTO
+import org.ugustavodev.msnucleo.dto.ApiResponseDTO
 import org.ugustavodev.msnucleo.usecase.interfaces.IAtualizarVagaUseCase
 import org.ugustavodev.msnucleo.usecase.interfaces.IBuscarVagaPorIdUseCase
 import org.ugustavodev.msnucleo.usecase.interfaces.ICadastrarVagaUseCase
@@ -36,35 +37,35 @@ class VagaController {
     }
 
     @PostMapping
-    ResponseEntity<VagaResponseDTO> cadastrarVaga(@Valid @RequestBody VagaRequestDTO requestDTO) {
+    ResponseEntity<ApiResponseDTO<VagaResponseDTO>> cadastrarVaga(@Valid @RequestBody VagaRequestDTO requestDTO) {
         VagaResponseDTO responseDTO = cadastrarVagaUseCase.executar(requestDTO)
-        return ResponseEntity.status(HttpStatus.CREATED).body(responseDTO)
+        return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponseDTO.sucesso(responseDTO, "Vaga cadastrada com sucesso", HttpStatus.CREATED.value()))
     }
 
     @GetMapping
-    ResponseEntity<List<VagaResponseDTO>> listarVagas(@RequestParam(name = "empresaId", required = false) Long empresaId) {
+    ResponseEntity<ApiResponseDTO<List<VagaResponseDTO>>> listarVagas(@RequestParam(name = "empresaId", required = false) Long empresaId) {
         List<VagaResponseDTO> lista = listarVagasUseCase.executar(empresaId)
-        return ResponseEntity.ok(lista)
+        return ResponseEntity.ok(ApiResponseDTO.sucesso(lista))
     }
 
     @GetMapping("/{id}")
-    ResponseEntity<VagaResponseDTO> buscarVagaPorId(@PathVariable("id") Long id) {
+    ResponseEntity<ApiResponseDTO<VagaResponseDTO>> buscarVagaPorId(@PathVariable("id") Long id) {
         VagaResponseDTO responseDTO = buscarVagaPorIdUseCase.executar(id)
-        return ResponseEntity.ok(responseDTO)
+        return ResponseEntity.ok(ApiResponseDTO.sucesso(responseDTO))
     }
 
     @PutMapping("/{id}")
-    ResponseEntity<VagaResponseDTO> atualizarVaga(
+    ResponseEntity<ApiResponseDTO<VagaResponseDTO>> atualizarVaga(
             @PathVariable("id") Long id,
             @Valid @RequestBody VagaRequestDTO requestDTO
     ) {
         VagaResponseDTO responseDTO = atualizarVagaUseCase.executar(id, requestDTO)
-        return ResponseEntity.ok(responseDTO)
+        return ResponseEntity.ok(ApiResponseDTO.sucesso(responseDTO, "Vaga atualizada com sucesso"))
     }
 
     @DeleteMapping("/{id}")
-    ResponseEntity<Void> deletarVaga(@PathVariable("id") Long id) {
+    ResponseEntity<ApiResponseDTO<Void>> deletarVaga(@PathVariable("id") Long id) {
         deletarVagaUseCase.executar(id)
-        return ResponseEntity.noContent().build()
+        return ResponseEntity.ok(ApiResponseDTO.sucesso("Vaga deletada com sucesso", HttpStatus.OK.value()))
     }
 }

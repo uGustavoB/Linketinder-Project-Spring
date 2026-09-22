@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import org.ugustavodev.msnucleo.dto.request.CandidatoRequestDTO
 import org.ugustavodev.msnucleo.dto.response.CandidatoResponseDTO
+import org.ugustavodev.msnucleo.dto.ApiResponseDTO
 import org.ugustavodev.msnucleo.usecase.interfaces.IAtualizarCandidatoUseCase
 import org.ugustavodev.msnucleo.usecase.interfaces.IBuscarCandidatoPorIdUseCase
 import org.ugustavodev.msnucleo.usecase.interfaces.ICadastrarCandidatoUseCase
@@ -36,35 +37,35 @@ class CandidatoController {
     }
 
     @PostMapping
-    ResponseEntity<CandidatoResponseDTO> cadastrarCandidato(@Valid @RequestBody CandidatoRequestDTO requestDTO) {
+    ResponseEntity<ApiResponseDTO<CandidatoResponseDTO>> cadastrarCandidato(@Valid @RequestBody CandidatoRequestDTO requestDTO) {
         CandidatoResponseDTO responseDTO = cadastrarCandidatoUseCase.executar(requestDTO)
-        return ResponseEntity.status(HttpStatus.CREATED).body(responseDTO)
+        return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponseDTO.sucesso(responseDTO, "Candidato cadastrado com sucesso", HttpStatus.CREATED.value()))
     }
 
     @GetMapping
-    ResponseEntity<List<CandidatoResponseDTO>> listarCandidatos() {
+    ResponseEntity<ApiResponseDTO<List<CandidatoResponseDTO>>> listarCandidatos() {
         List<CandidatoResponseDTO> lista = listarCandidatosUseCase.executar()
-        return ResponseEntity.ok(lista)
+        return ResponseEntity.ok(ApiResponseDTO.sucesso(lista))
     }
 
     @GetMapping("/{id}")
-    ResponseEntity<CandidatoResponseDTO> buscarCandidatoPorId(@PathVariable("id") Long id) {
+    ResponseEntity<ApiResponseDTO<CandidatoResponseDTO>> buscarCandidatoPorId(@PathVariable("id") Long id) {
         CandidatoResponseDTO responseDTO = buscarCandidatoPorIdUseCase.executar(id)
-        return ResponseEntity.ok(responseDTO)
+        return ResponseEntity.ok(ApiResponseDTO.sucesso(responseDTO))
     }
 
     @PutMapping("/{id}")
-    ResponseEntity<CandidatoResponseDTO> atualizarCandidato(
+    ResponseEntity<ApiResponseDTO<CandidatoResponseDTO>> atualizarCandidato(
             @PathVariable("id") Long id,
             @Valid @RequestBody CandidatoRequestDTO requestDTO
     ) {
         CandidatoResponseDTO responseDTO = atualizarCandidatoUseCase.executar(id, requestDTO)
-        return ResponseEntity.ok(responseDTO)
+        return ResponseEntity.ok(ApiResponseDTO.sucesso(responseDTO, "Candidato atualizado com sucesso"))
     }
 
     @DeleteMapping("/{id}")
-    ResponseEntity<Void> deletarCandidato(@PathVariable("id") Long id) {
+    ResponseEntity<ApiResponseDTO<Void>> deletarCandidato(@PathVariable("id") Long id) {
         deletarCandidatoUseCase.executar(id)
-        return ResponseEntity.noContent().build()
+        return ResponseEntity.ok(ApiResponseDTO.sucesso("Candidato deletado com sucesso", HttpStatus.OK.value()))
     }
 }
