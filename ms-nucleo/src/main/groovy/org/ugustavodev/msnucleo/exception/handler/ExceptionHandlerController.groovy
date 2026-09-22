@@ -5,21 +5,21 @@ import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.MethodArgumentNotValidException
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.RestControllerAdvice
-import org.ugustavodev.msnucleo.dto.ErroResponseDTO
+import org.ugustavodev.msnucleo.dto.ApiResponseDTO
 import org.ugustavodev.msnucleo.dto.exception.UnprocessableEntityExceptionDTO
 
 @RestControllerAdvice
 class ExceptionHandlerController {
 
     @ExceptionHandler(MethodArgumentNotValidException)
-    ResponseEntity<ErroResponseDTO> handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
+    ResponseEntity<ApiResponseDTO<Object>> handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
         List<Object> erros = new ArrayList<>()
 
         e.bindingResult.fieldErrors.each { error ->
             erros.add(new UnprocessableEntityExceptionDTO(error.field, error.defaultMessage))
         }
 
-        ErroResponseDTO resposta = new ErroResponseDTO(
+        ApiResponseDTO<Object> resposta = new ApiResponseDTO<>(
                 codigo: HttpStatus.UNPROCESSABLE_ENTITY.value(),
                 mensagem: "Verifique os campos e tente novamente.",
                 tipo: "Erro de Validação",
@@ -30,8 +30,8 @@ class ExceptionHandlerController {
     }
 
     @ExceptionHandler(NoSuchElementException)
-    ResponseEntity<ErroResponseDTO> handleNoSuchElementException(NoSuchElementException ex) {
-        ErroResponseDTO resposta = new ErroResponseDTO(
+    ResponseEntity<ApiResponseDTO<Object>> handleNoSuchElementException(NoSuchElementException ex) {
+        ApiResponseDTO<Object> resposta = new ApiResponseDTO<>(
                 codigo: HttpStatus.NOT_FOUND.value(),
                 mensagem: ex.message,
                 tipo: "Recurso Não Encontrado"
@@ -40,8 +40,8 @@ class ExceptionHandlerController {
     }
 
     @ExceptionHandler(IllegalArgumentException)
-    ResponseEntity<ErroResponseDTO> handleIllegalArgumentException(IllegalArgumentException ex) {
-        ErroResponseDTO resposta = new ErroResponseDTO(
+    ResponseEntity<ApiResponseDTO<Object>> handleIllegalArgumentException(IllegalArgumentException ex) {
+        ApiResponseDTO<Object> resposta = new ApiResponseDTO<>(
                 codigo: HttpStatus.BAD_REQUEST.value(),
                 mensagem: ex.message,
                 tipo: "Requisição Inválida"
@@ -50,8 +50,8 @@ class ExceptionHandlerController {
     }
 
     @ExceptionHandler(Exception)
-    ResponseEntity<ErroResponseDTO> handleException(Exception ex) {
-        ErroResponseDTO resposta = new ErroResponseDTO(
+    ResponseEntity<ApiResponseDTO<Object>> handleException(Exception ex) {
+        ApiResponseDTO<Object> resposta = new ApiResponseDTO<>(
                 codigo: HttpStatus.INTERNAL_SERVER_ERROR.value(),
                 mensagem: "Ocorreu um erro: ${ex.message}",
                 tipo: "Erro Interno"
