@@ -1,6 +1,7 @@
 package org.ugustavodev.msnucleo.model
 
 import jakarta.persistence.*
+import org.ugustavodev.msnucleo.domain.Usuario
 
 @MappedSuperclass
 class Pessoa {
@@ -11,9 +12,6 @@ class Pessoa {
 
     @Column(nullable = false)
     String nome
-
-    @Column(nullable = false, unique = true)
-    String email
 
     @Column(nullable = false)
     String pais
@@ -27,6 +25,7 @@ class Pessoa {
     @Column(columnDefinition = "TEXT")
     String descricao
 
-    @Column(nullable = false)
-    String senha
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "usuario_id", referencedColumnName = "id")
+    Usuario usuario
 }

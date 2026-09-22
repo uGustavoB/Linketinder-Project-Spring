@@ -1,6 +1,8 @@
 package org.ugustavodev.msnucleo.mapper
 
 import org.springframework.stereotype.Component
+import org.ugustavodev.msnucleo.domain.Usuario
+import org.ugustavodev.msnucleo.domain.enums.Role
 import org.ugustavodev.msnucleo.dto.request.CandidatoRequestDTO
 import org.ugustavodev.msnucleo.dto.response.CandidatoResponseDTO
 import org.ugustavodev.msnucleo.model.Candidato
@@ -16,7 +18,7 @@ class CandidatoMapper {
                 candidato.nome,
                 candidato.sobrenome,
                 LocalDate.parse(candidato.dataNascimento),
-                candidato.email,
+                candidato.usuario?.email,
                 candidato.cpf,
                 candidato.pais,
                 candidato.estado,
@@ -31,7 +33,7 @@ class CandidatoMapper {
         candidato.nome = dto.nome()
         candidato.sobrenome = dto.sobrenome()
         candidato.dataNascimento = dto.dataNascimento().toString()
-        candidato.email = dto.email()
+        candidato.usuario = new Usuario(email: dto.email())
         candidato.cpf = dto.cpf()
         candidato.pais = dto.pais()
         candidato.estado = dto.estado()
@@ -45,13 +47,12 @@ class CandidatoMapper {
         candidato.nome = dto.nome
         candidato.sobrenome = dto.sobrenome
         candidato.dataNascimento = dto.dataNascimento?.toString()
-        candidato.email = dto.email
+        candidato.usuario = new Usuario(email: dto.email, senha: dto.senha, role: Role.CANDIDATO)
         candidato.cpf = dto.cpf
         candidato.pais = dto.pais
         candidato.estado = dto.estado
         candidato.descricao = dto.descricao
         candidato.cep = dto.cep
-        candidato.senha = dto.senha
         return candidato
     }
 }

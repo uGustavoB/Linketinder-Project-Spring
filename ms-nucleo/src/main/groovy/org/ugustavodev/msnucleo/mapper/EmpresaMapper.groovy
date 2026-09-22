@@ -1,6 +1,8 @@
 package org.ugustavodev.msnucleo.mapper
 
 import org.springframework.stereotype.Component
+import org.ugustavodev.msnucleo.domain.Usuario
+import org.ugustavodev.msnucleo.domain.enums.Role
 import org.ugustavodev.msnucleo.dto.request.EmpresaRequestDTO
 import org.ugustavodev.msnucleo.dto.response.EmpresaResponseDTO
 import org.ugustavodev.msnucleo.model.Empresa
@@ -13,7 +15,7 @@ class EmpresaMapper {
                 empresa.id,
                 empresa.nome,
                 empresa.cnpj,
-                empresa.email,
+                empresa.usuario?.email,
                 empresa.pais,
                 empresa.estado,
                 empresa.cep,
@@ -26,7 +28,7 @@ class EmpresaMapper {
         empresa.id = dto.id()
         empresa.nome = dto.nome()
         empresa.cnpj = dto.cnpj()
-        empresa.email = dto.email()
+        empresa.usuario = new Usuario(email: dto.email())
         empresa.pais = dto.pais()
         empresa.estado = dto.estado()
         empresa.cep = dto.cep()
@@ -38,12 +40,11 @@ class EmpresaMapper {
         Empresa empresa = new Empresa()
         empresa.nome = dto.nome
         empresa.cnpj = dto.cnpj
-        empresa.email = dto.email
+        empresa.usuario = new Usuario(email: dto.email, senha: dto.senha, role: Role.EMPRESA)
         empresa.pais = dto.pais
         empresa.estado = dto.estado
         empresa.cep = dto.cep
         empresa.descricao = dto.descricao
-        empresa.senha = dto.senha
         return empresa
     }
 }
