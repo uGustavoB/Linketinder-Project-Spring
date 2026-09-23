@@ -40,6 +40,7 @@ class TokenService {
                     .verify(token)
                     .getSubject()
         } catch (JWTVerificationException excecao) {
+            System.err.println("Erro ao validar token: " + excecao.getMessage())
             return ""
         }
     }

@@ -18,9 +18,13 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 class SecurityConfigurations {
 
     private final SecurityFilter filtroSeguranca
+    private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint
+    private final CustomAccessDeniedHandler customAccessDeniedHandler
 
-    SecurityConfigurations(SecurityFilter filtroSeguranca) {
+    SecurityConfigurations(SecurityFilter filtroSeguranca, CustomAuthenticationEntryPoint customAuthenticationEntryPoint, CustomAccessDeniedHandler customAccessDeniedHandler) {
         this.filtroSeguranca = filtroSeguranca
+        this.customAuthenticationEntryPoint = customAuthenticationEntryPoint
+        this.customAccessDeniedHandler = customAccessDeniedHandler
     }
 
     @Bean
@@ -33,6 +37,10 @@ class SecurityConfigurations {
                         .requestMatchers(HttpMethod.POST, "/api/candidato").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/empresa").permitAll()
                         .anyRequest().authenticated()
+                )
+                .exceptionHandling(excecoes -> excecoes
+                        .authenticationEntryPoint(customAuthenticationEntryPoint)
+                        .accessDeniedHandler(customAccessDeniedHandler)
                 )
                 .addFilterBefore(filtroSeguranca, UsernamePasswordAuthenticationFilter.class)
                 .build()
