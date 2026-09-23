@@ -14,10 +14,12 @@ import org.springframework.security.crypto.password.PasswordEncoder
 class CadastrarEmpresaUseCase implements ICadastrarEmpresaUseCase {
     private final EmpresaRepository empresaRepository
     private final PasswordEncoder passwordEncoder
+    private final EmpresaMapper empresaMapper
 
-    CadastrarEmpresaUseCase(EmpresaRepository empresaRepository, PasswordEncoder passwordEncoder) {
+    CadastrarEmpresaUseCase(EmpresaRepository empresaRepository, PasswordEncoder passwordEncoder, EmpresaMapper empresaMapper) {
         this.empresaRepository = empresaRepository
         this.passwordEncoder = passwordEncoder
+        this.empresaMapper = empresaMapper
     }
 
     @Override
@@ -34,11 +36,12 @@ class CadastrarEmpresaUseCase implements ICadastrarEmpresaUseCase {
             throw new IllegalArgumentException("Já existe uma empresa cadastrada com o CNPJ informado")
         }
 
-        Empresa empresa = EmpresaMapper.fromRequestDTOToEntity(requestDTO)
+        Empresa empresa = empresaMapper.fromRequestDTOToEntity(requestDTO)
         empresa.usuario.senha = passwordEncoder.encode(empresa.usuario.senha)
 
         Empresa savedEmpresa = empresaRepository.save(empresa)
-        return EmpresaMapper.toResponseDTO(savedEmpresa)
+        return empresaMapper.toResponseDTO(savedEmpresa)
     }
 }
+
 

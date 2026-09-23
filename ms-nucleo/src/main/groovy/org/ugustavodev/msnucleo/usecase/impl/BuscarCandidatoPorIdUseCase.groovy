@@ -10,10 +10,13 @@ import org.ugustavodev.msnucleo.usecase.interfaces.IBuscarCandidatoPorIdUseCase
 @Service
 class BuscarCandidatoPorIdUseCase implements IBuscarCandidatoPorIdUseCase {
     private final CandidatoRepository candidatoRepository
+    private final CandidatoMapper candidatoMapper
 
-    BuscarCandidatoPorIdUseCase(CandidatoRepository candidatoRepository) {
+    BuscarCandidatoPorIdUseCase(CandidatoRepository candidatoRepository, CandidatoMapper candidatoMapper) {
         this.candidatoRepository = candidatoRepository
+        this.candidatoMapper = candidatoMapper
     }
+
 
     @Override
     CandidatoResponseDTO executar(Long id) {
@@ -24,6 +27,6 @@ class BuscarCandidatoPorIdUseCase implements IBuscarCandidatoPorIdUseCase {
         Candidato candidato = candidatoRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("Candidato não encontrado."))
 
-        return CandidatoMapper.toResponseDTO(candidato)
+        return candidatoMapper.toResponseDTO(candidato)
     }
 }

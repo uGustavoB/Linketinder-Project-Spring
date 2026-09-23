@@ -14,10 +14,12 @@ import org.springframework.security.crypto.password.PasswordEncoder
 class AtualizarEmpresaUseCase implements IAtualizarEmpresaUseCase {
     private final EmpresaRepository empresaRepository
     private final PasswordEncoder passwordEncoder
+    private final EmpresaMapper empresaMapper
 
-    AtualizarEmpresaUseCase(EmpresaRepository empresaRepository, PasswordEncoder passwordEncoder) {
+    AtualizarEmpresaUseCase(EmpresaRepository empresaRepository, PasswordEncoder passwordEncoder, EmpresaMapper empresaMapper) {
         this.empresaRepository = empresaRepository
         this.passwordEncoder = passwordEncoder
+        this.empresaMapper = empresaMapper
     }
 
     @Override
@@ -46,19 +48,21 @@ class AtualizarEmpresaUseCase implements IAtualizarEmpresaUseCase {
             }
         }
 
-        empresaExistente.nome = requestDTO.nome
-        empresaExistente.cnpj = requestDTO.cnpj
-        empresaExistente.usuario.email = requestDTO.email
-        empresaExistente.pais = requestDTO.pais
-        empresaExistente.estado = requestDTO.estado
-        empresaExistente.cep = requestDTO.cep
-        empresaExistente.descricao = requestDTO.descricao
-        if (requestDTO.senha) {
-            empresaExistente.usuario.senha = passwordEncoder.encode(requestDTO.senha)
-        }
+        String senhaCriptografada = requestDTO.senha ? passwordEncoder.encode(requestDTO.senha) : null
+
+        empresaExistente.atualizarDados(
+                requestDTO.nome,
+                requestDTO.cnpj,
+                requestDTO.email,
+                requestDTO.pais,
+                requestDTO.estado,
+                requestDTO.cep,
+                requestDTO.descricao,
+                senhaCriptografada
+        )
 
         Empresa empresaAtualizada = empresaRepository.save(empresaExistente)
-        return EmpresaMapper.toResponseDTO(empresaAtualizada)
+        return empresaMapper.toResponseDTO(empresaAtualizada)
     }
 }
 

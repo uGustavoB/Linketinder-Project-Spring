@@ -9,7 +9,7 @@ import org.ugustavodev.msnucleo.model.Vaga
 @Component
 class VagaMapper {
 
-    static VagaResponseDTO toResponseDTO(Vaga vaga) {
+    VagaResponseDTO toResponseDTO(Vaga vaga) {
         return new VagaResponseDTO(
                 vaga.id,
                 vaga.nome,
@@ -22,7 +22,7 @@ class VagaMapper {
         )
     }
 
-    static Vaga fromRequestDTOToEntity(VagaRequestDTO dto, Empresa empresa) {
+    Vaga fromRequestDTOToEntity(VagaRequestDTO dto, Empresa empresa) {
         Vaga vaga = new Vaga()
         vaga.nome = dto.nome
         vaga.descricao = dto.descricao

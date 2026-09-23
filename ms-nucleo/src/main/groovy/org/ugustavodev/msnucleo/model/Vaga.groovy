@@ -30,4 +30,17 @@ class Vaga {
     @CollectionTable(name = "vaga_competencias", joinColumns = @JoinColumn(name = "vaga_id"))
     @Column(name = "competencia_id")
     List<Long> competenciaIds = []
+
+    void atualizarDados(String nome, String descricao, String local, String nivel, List<Long> competenciaIds, Empresa empresa) {
+        this.nome = nome
+        this.descricao = descricao
+        this.local = local
+        this.nivel = nivel
+        if (empresa != null) {
+            this.empresa = empresa
+        }
+        if (competenciaIds != null) {
+            this.competenciaIds = new ArrayList<>(competenciaIds)
+        }
+    }
 }

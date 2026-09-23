@@ -14,10 +14,12 @@ import org.springframework.security.crypto.password.PasswordEncoder
 class AtualizarCandidatoUseCase implements IAtualizarCandidatoUseCase {
     private final CandidatoRepository candidatoRepository
     private final PasswordEncoder passwordEncoder
+    private final CandidatoMapper candidatoMapper
 
-    AtualizarCandidatoUseCase(CandidatoRepository candidatoRepository, PasswordEncoder passwordEncoder) {
+    AtualizarCandidatoUseCase(CandidatoRepository candidatoRepository, PasswordEncoder passwordEncoder, CandidatoMapper candidatoMapper) {
         this.candidatoRepository = candidatoRepository
         this.passwordEncoder = passwordEncoder
+        this.candidatoMapper = candidatoMapper
     }
 
     @Override
@@ -46,21 +48,23 @@ class AtualizarCandidatoUseCase implements IAtualizarCandidatoUseCase {
             }
         }
 
-        candidatoExistente.nome = requestDTO.nome
-        candidatoExistente.sobrenome = requestDTO.sobrenome
-        candidatoExistente.dataNascimento = requestDTO.dataNascimento?.toString()
-        candidatoExistente.usuario.email = requestDTO.email
-        candidatoExistente.cpf = requestDTO.cpf
-        candidatoExistente.pais = requestDTO.pais
-        candidatoExistente.estado = requestDTO.estado
-        candidatoExistente.cep = requestDTO.cep
-        candidatoExistente.descricao = requestDTO.descricao
-        if (requestDTO.senha) {
-            candidatoExistente.usuario.senha = passwordEncoder.encode(requestDTO.senha)
-        }
+        String senhaCriptografada = requestDTO.senha ? passwordEncoder.encode(requestDTO.senha) : null
+        
+        candidatoExistente.atualizarDados(
+                requestDTO.nome,
+                requestDTO.sobrenome,
+                requestDTO.dataNascimento?.toString(),
+                requestDTO.email,
+                requestDTO.cpf,
+                requestDTO.pais,
+                requestDTO.estado,
+                requestDTO.cep,
+                requestDTO.descricao,
+                senhaCriptografada
+        )
 
         Candidato candidatoAtualizado = candidatoRepository.save(candidatoExistente)
-        return CandidatoMapper.toResponseDTO(candidatoAtualizado)
+        return candidatoMapper.toResponseDTO(candidatoAtualizado)
     }
 }
 

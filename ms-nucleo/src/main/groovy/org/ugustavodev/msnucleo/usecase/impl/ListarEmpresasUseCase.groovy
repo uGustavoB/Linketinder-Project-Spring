@@ -9,14 +9,16 @@ import org.ugustavodev.msnucleo.usecase.interfaces.IListarEmpresasUseCase
 @Service
 class ListarEmpresasUseCase implements IListarEmpresasUseCase {
     private final EmpresaRepository empresaRepository
+    private final EmpresaMapper empresaMapper
 
-    ListarEmpresasUseCase(EmpresaRepository empresaRepository) {
+    ListarEmpresasUseCase(EmpresaRepository empresaRepository, EmpresaMapper empresaMapper) {
         this.empresaRepository = empresaRepository
+        this.empresaMapper = empresaMapper
     }
 
     @Override
     List<EmpresaResponseDTO> executar() {
         return empresaRepository.findAll()
-                .collect { EmpresaMapper.toResponseDTO(it) }
+                .collect { empresaMapper.toResponseDTO(it) }
     }
 }

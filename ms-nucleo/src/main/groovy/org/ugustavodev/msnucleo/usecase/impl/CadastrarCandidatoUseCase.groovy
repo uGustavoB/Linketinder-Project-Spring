@@ -14,11 +14,13 @@ import org.springframework.security.crypto.password.PasswordEncoder
 @Service
 class CadastrarCandidatoUseCase implements ICadastrarCandidatoUseCase{
     private final CandidatoRepository candidatoRepository
-    private final PasswordEncoder passwordEncoder
+    private final PasswordEncoder codificadorSenha
+    private final CandidatoMapper candidatoMapper
 
-    CadastrarCandidatoUseCase (CandidatoRepository candidatoRepository, PasswordEncoder passwordEncoder) {
+    CadastrarCandidatoUseCase (CandidatoRepository candidatoRepository, PasswordEncoder codificadorSenha, CandidatoMapper candidatoMapper) {
         this.candidatoRepository = candidatoRepository
-        this.passwordEncoder = passwordEncoder
+        this.codificadorSenha = codificadorSenha
+        this.candidatoMapper = candidatoMapper
     }
 
     @Override
@@ -35,11 +37,11 @@ class CadastrarCandidatoUseCase implements ICadastrarCandidatoUseCase{
             throw new IllegalArgumentException("Já existe um candidato cadastrado com o CPF informado")
         }
 
-        Candidato candidato = CandidatoMapper.fromRequestDTOToEntity(requestDTO)
-        candidato.usuario.senha = passwordEncoder.encode(candidato.usuario.senha)
+        Candidato candidato = candidatoMapper.fromRequestDTOToEntity(requestDTO)
+        candidato.usuario.senha = codificadorSenha.encode(candidato.usuario.senha)
         
         Candidato savedCandidato = candidatoRepository.save(candidato)
-        return CandidatoMapper.toResponseDTO(savedCandidato)
+        return candidatoMapper.toResponseDTO(savedCandidato)
     }
-}
 
+}

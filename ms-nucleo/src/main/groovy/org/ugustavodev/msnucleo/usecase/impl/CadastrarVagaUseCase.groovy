@@ -14,10 +14,12 @@ import org.ugustavodev.msnucleo.usecase.interfaces.ICadastrarVagaUseCase
 class CadastrarVagaUseCase implements ICadastrarVagaUseCase {
     private final VagaRepository vagaRepository
     private final EmpresaRepository empresaRepository
+    private final VagaMapper vagaMapper
 
-    CadastrarVagaUseCase(VagaRepository vagaRepository, EmpresaRepository empresaRepository) {
+    CadastrarVagaUseCase(VagaRepository vagaRepository, EmpresaRepository empresaRepository, VagaMapper vagaMapper) {
         this.vagaRepository = vagaRepository
         this.empresaRepository = empresaRepository
+        this.vagaMapper = vagaMapper
     }
 
     @Override
@@ -29,8 +31,8 @@ class CadastrarVagaUseCase implements ICadastrarVagaUseCase {
         Empresa empresa = empresaRepository.findById(requestDTO.empresaId)
                 .orElseThrow(() -> new NoSuchElementException("Empresa não encontrada para o ID: ${requestDTO.empresaId}"))
 
-        Vaga vaga = VagaMapper.fromRequestDTOToEntity(requestDTO, empresa)
+        Vaga vaga = vagaMapper.fromRequestDTOToEntity(requestDTO, empresa)
         Vaga savedVaga = vagaRepository.save(vaga)
-        return VagaMapper.toResponseDTO(savedVaga)
+        return vagaMapper.toResponseDTO(savedVaga)
     }
 }

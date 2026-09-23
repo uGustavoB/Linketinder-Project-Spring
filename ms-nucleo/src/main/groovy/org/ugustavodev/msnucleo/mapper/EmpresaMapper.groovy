@@ -10,7 +10,7 @@ import org.ugustavodev.msnucleo.model.Empresa
 @Component
 class EmpresaMapper {
 
-    static EmpresaResponseDTO toResponseDTO(Empresa empresa) {
+    EmpresaResponseDTO toResponseDTO(Empresa empresa) {
         return new EmpresaResponseDTO(
                 empresa.id,
                 empresa.nome,
@@ -23,7 +23,7 @@ class EmpresaMapper {
         )
     }
 
-    static Empresa fromResponseDTOToEntity(EmpresaResponseDTO dto) {
+    Empresa fromResponseDTOToEntity(EmpresaResponseDTO dto) {
         Empresa empresa = new Empresa()
         empresa.id = dto.id()
         empresa.nome = dto.nome()
@@ -36,7 +36,7 @@ class EmpresaMapper {
         return empresa
     }
 
-    static Empresa fromRequestDTOToEntity(EmpresaRequestDTO dto) {
+    Empresa fromRequestDTOToEntity(EmpresaRequestDTO dto) {
         Empresa empresa = new Empresa()
         empresa.nome = dto.nome
         empresa.cnpj = dto.cnpj

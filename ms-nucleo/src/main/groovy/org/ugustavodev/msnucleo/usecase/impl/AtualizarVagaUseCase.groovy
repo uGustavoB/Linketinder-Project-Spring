@@ -14,10 +14,12 @@ import org.ugustavodev.msnucleo.usecase.interfaces.IAtualizarVagaUseCase
 class AtualizarVagaUseCase implements IAtualizarVagaUseCase {
     private final VagaRepository vagaRepository
     private final EmpresaRepository empresaRepository
+    private final VagaMapper vagaMapper
 
-    AtualizarVagaUseCase(VagaRepository vagaRepository, EmpresaRepository empresaRepository) {
+    AtualizarVagaUseCase(VagaRepository vagaRepository, EmpresaRepository empresaRepository, VagaMapper vagaMapper) {
         this.vagaRepository = vagaRepository
         this.empresaRepository = empresaRepository
+        this.vagaMapper = vagaMapper
     }
 
     @Override
@@ -32,21 +34,22 @@ class AtualizarVagaUseCase implements IAtualizarVagaUseCase {
         Vaga vagaExistente = vagaRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("Vaga não encontrada para o ID: ${id}"))
 
+        Empresa novaEmpresa = null
         if (requestDTO.empresaId != null && (vagaExistente.empresa == null || vagaExistente.empresa.id != requestDTO.empresaId)) {
-            Empresa empresa = empresaRepository.findById(requestDTO.empresaId)
+            novaEmpresa = empresaRepository.findById(requestDTO.empresaId)
                     .orElseThrow(() -> new NoSuchElementException("Empresa não encontrada para o ID: ${requestDTO.empresaId}"))
-            vagaExistente.empresa = empresa
         }
 
-        vagaExistente.nome = requestDTO.nome
-        vagaExistente.descricao = requestDTO.descricao
-        vagaExistente.local = requestDTO.local
-        vagaExistente.nivel = requestDTO.nivel
-        if (requestDTO.competenciaIds != null) {
-            vagaExistente.competenciaIds = new ArrayList<>(requestDTO.competenciaIds)
-        }
+        vagaExistente.atualizarDados(
+                requestDTO.nome,
+                requestDTO.descricao,
+                requestDTO.local,
+                requestDTO.nivel,
+                requestDTO.competenciaIds,
+                novaEmpresa
+        )
 
         Vaga vagaAtualizada = vagaRepository.save(vagaExistente)
-        return VagaMapper.toResponseDTO(vagaAtualizada)
+        return vagaMapper.toResponseDTO(vagaAtualizada)
     }
 }

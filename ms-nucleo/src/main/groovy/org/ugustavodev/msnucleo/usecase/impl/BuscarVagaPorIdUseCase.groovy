@@ -10,9 +10,11 @@ import org.ugustavodev.msnucleo.usecase.interfaces.IBuscarVagaPorIdUseCase
 @Service
 class BuscarVagaPorIdUseCase implements IBuscarVagaPorIdUseCase {
     private final VagaRepository vagaRepository
+    private final VagaMapper vagaMapper
 
-    BuscarVagaPorIdUseCase(VagaRepository vagaRepository) {
+    BuscarVagaPorIdUseCase(VagaRepository vagaRepository, VagaMapper vagaMapper) {
         this.vagaRepository = vagaRepository
+        this.vagaMapper = vagaMapper
     }
 
     @Override
@@ -24,6 +26,6 @@ class BuscarVagaPorIdUseCase implements IBuscarVagaPorIdUseCase {
         Vaga vaga = vagaRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("Vaga não encontrada para o ID: ${id}"))
 
-        return VagaMapper.toResponseDTO(vaga)
+        return vagaMapper.toResponseDTO(vaga)
     }
 }

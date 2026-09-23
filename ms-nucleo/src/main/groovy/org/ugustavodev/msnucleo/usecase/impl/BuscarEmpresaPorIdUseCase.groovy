@@ -10,9 +10,11 @@ import org.ugustavodev.msnucleo.usecase.interfaces.IBuscarEmpresaPorIdUseCase
 @Service
 class BuscarEmpresaPorIdUseCase implements IBuscarEmpresaPorIdUseCase {
     private final EmpresaRepository empresaRepository
+    private final EmpresaMapper empresaMapper
 
-    BuscarEmpresaPorIdUseCase(EmpresaRepository empresaRepository) {
+    BuscarEmpresaPorIdUseCase(EmpresaRepository empresaRepository, EmpresaMapper empresaMapper) {
         this.empresaRepository = empresaRepository
+        this.empresaMapper = empresaMapper
     }
 
     @Override
@@ -24,6 +26,6 @@ class BuscarEmpresaPorIdUseCase implements IBuscarEmpresaPorIdUseCase {
         Empresa empresa = empresaRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("Empresa não encontrada."))
 
-        return EmpresaMapper.toResponseDTO(empresa)
+        return empresaMapper.toResponseDTO(empresa)
     }
 }

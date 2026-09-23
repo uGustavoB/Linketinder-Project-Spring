@@ -9,14 +9,17 @@ import org.ugustavodev.msnucleo.usecase.interfaces.IListarCandidatosUseCase
 @Service
 class ListarCandidatosUseCase implements IListarCandidatosUseCase {
     private final CandidatoRepository candidatoRepository
+    private final CandidatoMapper candidatoMapper
 
-    ListarCandidatosUseCase(CandidatoRepository candidatoRepository) {
+    ListarCandidatosUseCase(CandidatoRepository candidatoRepository, CandidatoMapper candidatoMapper) {
         this.candidatoRepository = candidatoRepository
+        this.candidatoMapper = candidatoMapper
     }
+
 
     @Override
     List<CandidatoResponseDTO> executar() {
         return candidatoRepository.findAll()
-                .collect { CandidatoMapper.toResponseDTO(it) }
+                .collect { candidatoMapper.toResponseDTO(it) }
     }
 }
