@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import org.ugustavodev.msnucleo.dto.request.EmpresaRequestDTO
 import org.ugustavodev.msnucleo.dto.response.EmpresaResponseDTO
+import org.ugustavodev.msnucleo.dto.response.EmpresaPublicoResponseDTO
 import org.ugustavodev.msnucleo.dto.ApiResponseDTO
 import org.ugustavodev.msnucleo.usecase.interfaces.IAtualizarEmpresaUseCase
 import org.ugustavodev.msnucleo.usecase.interfaces.IBuscarEmpresaPorIdUseCase
@@ -43,8 +44,8 @@ class EmpresaController {
     }
 
     @GetMapping
-    ResponseEntity<ApiResponseDTO<List<EmpresaResponseDTO>>> listarEmpresas() {
-        List<EmpresaResponseDTO> lista = listarEmpresasUseCase.executar()
+    ResponseEntity<ApiResponseDTO<List<EmpresaPublicoResponseDTO>>> listarEmpresas() {
+        List<EmpresaPublicoResponseDTO> lista = listarEmpresasUseCase.executar()
         return ResponseEntity.ok(ApiResponseDTO.sucesso(lista))
     }
 

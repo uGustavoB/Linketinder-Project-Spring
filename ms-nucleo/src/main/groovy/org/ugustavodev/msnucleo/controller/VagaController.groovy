@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import org.ugustavodev.msnucleo.dto.request.VagaRequestDTO
 import org.ugustavodev.msnucleo.dto.response.VagaResponseDTO
+import org.ugustavodev.msnucleo.dto.response.VagaPublicoResponseDTO
 import org.ugustavodev.msnucleo.dto.ApiResponseDTO
 import org.ugustavodev.msnucleo.usecase.interfaces.IAtualizarVagaUseCase
 import org.ugustavodev.msnucleo.usecase.interfaces.IBuscarVagaPorIdUseCase
@@ -43,8 +44,8 @@ class VagaController {
     }
 
     @GetMapping
-    ResponseEntity<ApiResponseDTO<List<VagaResponseDTO>>> listarVagas(@RequestParam(name = "empresaId", required = false) Long empresaId) {
-        List<VagaResponseDTO> lista = listarVagasUseCase.executar(empresaId)
+    ResponseEntity<ApiResponseDTO<List<VagaPublicoResponseDTO>>> listarVagas(@RequestParam(name = "empresaId", required = false) Long empresaId) {
+        List<VagaPublicoResponseDTO> lista = listarVagasUseCase.executar(empresaId)
         return ResponseEntity.ok(ApiResponseDTO.sucesso(lista))
     }
 

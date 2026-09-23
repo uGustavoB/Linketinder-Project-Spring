@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import org.ugustavodev.msnucleo.dto.request.CandidatoRequestDTO
 import org.ugustavodev.msnucleo.dto.response.CandidatoResponseDTO
+import org.ugustavodev.msnucleo.dto.response.CandidatoPublicoResponseDTO
 import org.ugustavodev.msnucleo.dto.ApiResponseDTO
 import org.ugustavodev.msnucleo.usecase.interfaces.IAtualizarCandidatoUseCase
 import org.ugustavodev.msnucleo.usecase.interfaces.IBuscarCandidatoPorIdUseCase
@@ -43,8 +44,8 @@ class CandidatoController {
     }
 
     @GetMapping
-    ResponseEntity<ApiResponseDTO<List<CandidatoResponseDTO>>> listarCandidatos() {
-        List<CandidatoResponseDTO> lista = listarCandidatosUseCase.executar()
+    ResponseEntity<ApiResponseDTO<List<CandidatoPublicoResponseDTO>>> listarCandidatos() {
+        List<CandidatoPublicoResponseDTO> lista = listarCandidatosUseCase.executar()
         return ResponseEntity.ok(ApiResponseDTO.sucesso(lista))
     }
 

@@ -2,6 +2,7 @@ package org.ugustavodev.msnucleo.usecase.impl
 
 import org.springframework.stereotype.Service
 import org.ugustavodev.msnucleo.dto.response.EmpresaResponseDTO
+import org.ugustavodev.msnucleo.dto.response.EmpresaPublicoResponseDTO
 import org.ugustavodev.msnucleo.mapper.EmpresaMapper
 import org.ugustavodev.msnucleo.repositories.EmpresaRepository
 import org.ugustavodev.msnucleo.usecase.interfaces.IListarEmpresasUseCase
@@ -17,8 +18,8 @@ class ListarEmpresasUseCase implements IListarEmpresasUseCase {
     }
 
     @Override
-    List<EmpresaResponseDTO> executar() {
+    List<EmpresaPublicoResponseDTO> executar() {
         return empresaRepository.findAll()
-                .collect { empresaMapper.toResponseDTO(it) }
+                .collect { empresaMapper.toPublicoResponseDTO(it) }
     }
 }

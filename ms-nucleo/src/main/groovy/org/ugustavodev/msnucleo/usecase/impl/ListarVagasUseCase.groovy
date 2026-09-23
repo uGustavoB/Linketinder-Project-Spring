@@ -2,6 +2,7 @@ package org.ugustavodev.msnucleo.usecase.impl
 
 import org.springframework.stereotype.Service
 import org.ugustavodev.msnucleo.dto.response.VagaResponseDTO
+import org.ugustavodev.msnucleo.dto.response.VagaPublicoResponseDTO
 import org.ugustavodev.msnucleo.mapper.VagaMapper
 import org.ugustavodev.msnucleo.repositories.VagaRepository
 import org.ugustavodev.msnucleo.usecase.interfaces.IListarVagasUseCase
@@ -17,12 +18,12 @@ class ListarVagasUseCase implements IListarVagasUseCase {
     }
 
     @Override
-    List<VagaResponseDTO> executar(Long empresaId) {
+    List<VagaPublicoResponseDTO> executar(Long empresaId) {
         if (empresaId != null) {
             return vagaRepository.findByEmpresaId(empresaId)
-                    .collect { vagaMapper.toResponseDTO(it) }
+                    .collect { vagaMapper.toPublicoResponseDTO(it) }
         }
         return vagaRepository.findAll()
-                .collect { vagaMapper.toResponseDTO(it) }
+                .collect { vagaMapper.toPublicoResponseDTO(it) }
     }
 }

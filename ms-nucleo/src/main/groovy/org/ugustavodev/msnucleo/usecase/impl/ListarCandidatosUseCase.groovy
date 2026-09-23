@@ -1,7 +1,7 @@
 package org.ugustavodev.msnucleo.usecase.impl
 
 import org.springframework.stereotype.Service
-import org.ugustavodev.msnucleo.dto.response.CandidatoResponseDTO
+import org.ugustavodev.msnucleo.dto.response.CandidatoPublicoResponseDTO
 import org.ugustavodev.msnucleo.mapper.CandidatoMapper
 import org.ugustavodev.msnucleo.repositories.CandidatoRepository
 import org.ugustavodev.msnucleo.usecase.interfaces.IListarCandidatosUseCase
@@ -16,10 +16,9 @@ class ListarCandidatosUseCase implements IListarCandidatosUseCase {
         this.candidatoMapper = candidatoMapper
     }
 
-
     @Override
-    List<CandidatoResponseDTO> executar() {
+    List<CandidatoPublicoResponseDTO> executar() {
         return candidatoRepository.findAll()
-                .collect { candidatoMapper.toResponseDTO(it) }
+                .collect { candidatoMapper.toPublicoResponseDTO(it) }
     }
 }
