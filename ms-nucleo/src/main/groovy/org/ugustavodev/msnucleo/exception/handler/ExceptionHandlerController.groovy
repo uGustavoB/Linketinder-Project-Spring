@@ -49,6 +49,26 @@ class ExceptionHandlerController {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(resposta)
     }
 
+    @ExceptionHandler(org.springframework.security.core.AuthenticationException.class)
+    ResponseEntity<ApiResponseDTO<Object>> handleAuthenticationException(org.springframework.security.core.AuthenticationException ex) {
+        ApiResponseDTO<Object> resposta = new ApiResponseDTO<>(
+                codigo: HttpStatus.UNAUTHORIZED.value(),
+                mensagem: "Credenciais inválidas ou usuário não encontrado.",
+                tipo: "Não Autorizado"
+        )
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(resposta)
+    }
+
+    @ExceptionHandler(org.springframework.security.access.AccessDeniedException.class)
+    ResponseEntity<ApiResponseDTO<Object>> handleAccessDeniedException(org.springframework.security.access.AccessDeniedException ex) {
+        ApiResponseDTO<Object> resposta = new ApiResponseDTO<>(
+                codigo: HttpStatus.FORBIDDEN.value(),
+                mensagem: "Você não tem permissão para acessar este recurso.",
+                tipo: "Acesso Negado"
+        )
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(resposta)
+    }
+
     @ExceptionHandler(Exception)
     ResponseEntity<ApiResponseDTO<Object>> handleException(Exception ex) {
         ApiResponseDTO<Object> resposta = new ApiResponseDTO<>(
