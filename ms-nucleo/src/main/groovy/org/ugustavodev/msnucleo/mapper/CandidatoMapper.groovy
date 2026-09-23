@@ -5,6 +5,7 @@ import org.ugustavodev.msnucleo.domain.Usuario
 import org.ugustavodev.msnucleo.domain.enums.Role
 import org.ugustavodev.msnucleo.dto.request.CandidatoRequestDTO
 import org.ugustavodev.msnucleo.dto.response.CandidatoResponseDTO
+import org.ugustavodev.msnucleo.dto.response.CandidatoPublicoResponseDTO
 import org.ugustavodev.msnucleo.model.Candidato
 
 import java.time.LocalDate
@@ -23,6 +24,15 @@ class CandidatoMapper {
                 candidato.pais,
                 candidato.estado,
                 candidato.cep,
+                candidato.descricao
+        )
+    }
+
+    CandidatoPublicoResponseDTO toPublicoResponseDTO(Candidato candidato) {
+        return new CandidatoPublicoResponseDTO(
+                candidato.id,
+                candidato.pais,
+                candidato.estado,
                 candidato.descricao
         )
     }

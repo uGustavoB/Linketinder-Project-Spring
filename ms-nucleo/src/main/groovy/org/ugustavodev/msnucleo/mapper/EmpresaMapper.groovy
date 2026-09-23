@@ -5,6 +5,7 @@ import org.ugustavodev.msnucleo.domain.Usuario
 import org.ugustavodev.msnucleo.domain.enums.Role
 import org.ugustavodev.msnucleo.dto.request.EmpresaRequestDTO
 import org.ugustavodev.msnucleo.dto.response.EmpresaResponseDTO
+import org.ugustavodev.msnucleo.dto.response.EmpresaPublicoResponseDTO
 import org.ugustavodev.msnucleo.model.Empresa
 
 @Component
@@ -19,6 +20,15 @@ class EmpresaMapper {
                 empresa.pais,
                 empresa.estado,
                 empresa.cep,
+                empresa.descricao
+        )
+    }
+
+    EmpresaPublicoResponseDTO toPublicoResponseDTO(Empresa empresa) {
+        return new EmpresaPublicoResponseDTO(
+                empresa.id,
+                empresa.pais,
+                empresa.estado,
                 empresa.descricao
         )
     }

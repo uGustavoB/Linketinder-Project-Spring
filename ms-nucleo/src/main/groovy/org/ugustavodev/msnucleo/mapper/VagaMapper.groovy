@@ -3,6 +3,7 @@ package org.ugustavodev.msnucleo.mapper
 import org.springframework.stereotype.Component
 import org.ugustavodev.msnucleo.dto.request.VagaRequestDTO
 import org.ugustavodev.msnucleo.dto.response.VagaResponseDTO
+import org.ugustavodev.msnucleo.dto.response.VagaPublicoResponseDTO
 import org.ugustavodev.msnucleo.model.Empresa
 import org.ugustavodev.msnucleo.model.Vaga
 
@@ -18,6 +19,18 @@ class VagaMapper {
                 vaga.nivel,
                 vaga.empresa?.id,
                 vaga.empresa?.nome,
+                vaga.competenciaIds != null ? new ArrayList<>(vaga.competenciaIds) : []
+        )
+    }
+
+    VagaPublicoResponseDTO toPublicoResponseDTO(Vaga vaga) {
+        return new VagaPublicoResponseDTO(
+                vaga.id,
+                vaga.nome,
+                vaga.descricao,
+                vaga.local,
+                vaga.nivel,
+                vaga.empresa?.id,
                 vaga.competenciaIds != null ? new ArrayList<>(vaga.competenciaIds) : []
         )
     }
