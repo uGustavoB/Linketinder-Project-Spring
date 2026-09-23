@@ -10,6 +10,12 @@ import org.ugustavodev.msnucleo.usecase.interfaces.IAtualizarCandidatoUseCase
 
 import org.springframework.security.crypto.password.PasswordEncoder
 
+import org.springframework.security.access.AccessDeniedException
+import org.springframework.security.core.Authentication
+import org.springframework.security.core.context.SecurityContextHolder
+import org.ugustavodev.msnucleo.domain.Usuario
+import org.ugustavodev.msnucleo.domain.enums.Role
+
 @Service
 class AtualizarCandidatoUseCase implements IAtualizarCandidatoUseCase {
     private final CandidatoRepository candidatoRepository
@@ -33,6 +39,17 @@ class AtualizarCandidatoUseCase implements IAtualizarCandidatoUseCase {
 
         Candidato candidatoExistente = candidatoRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("Candidato não encontrado."))
+
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication()
+        if (auth != null && auth.getPrincipal() instanceof Usuario) {
+            Usuario usuarioLogado = (Usuario) auth.getPrincipal()
+            if (usuarioLogado.role == Role.EMPRESA) {
+                throw new AccessDeniedException("Empresas não têm permissão para atualizar o perfil de candidatos.")
+            }
+            if (usuarioLogado.role == Role.CANDIDATO && candidatoExistente.usuario.email != usuarioLogado.email) {
+                throw new AccessDeniedException("Você não tem permissão para modificar o perfil de outro candidato.")
+            }
+        }
 
         if (candidatoExistente.usuario.email != requestDTO.email) {
             Optional<Candidato> comMesmoEmail = candidatoRepository.findByUsuarioEmail(requestDTO.email)

@@ -7,6 +7,11 @@ import org.ugustavodev.msnucleo.mapper.EmpresaMapper
 import org.ugustavodev.msnucleo.repositories.EmpresaRepository
 import org.ugustavodev.msnucleo.usecase.interfaces.IListarEmpresasUseCase
 
+import org.springframework.security.core.Authentication
+import org.springframework.security.core.context.SecurityContextHolder
+import org.ugustavodev.msnucleo.domain.Usuario
+import org.ugustavodev.msnucleo.domain.enums.Role
+
 @Service
 class ListarEmpresasUseCase implements IListarEmpresasUseCase {
     private final EmpresaRepository empresaRepository
@@ -19,6 +24,16 @@ class ListarEmpresasUseCase implements IListarEmpresasUseCase {
 
     @Override
     List<EmpresaPublicoResponseDTO> executar() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication()
+        if (auth != null && auth.getPrincipal() instanceof Usuario) {
+            Usuario usuarioLogado = (Usuario) auth.getPrincipal()
+            if (usuarioLogado.role == Role.EMPRESA) {
+                return empresaRepository.findByUsuarioEmail(usuarioLogado.email)
+                        .map(e -> List.of(empresaMapper.toPublicoResponseDTO(e)))
+                        .orElse(Collections.emptyList())
+            }
+        }
+
         return empresaRepository.findAll()
                 .collect { empresaMapper.toPublicoResponseDTO(it) }
     }

@@ -4,6 +4,13 @@ import org.springframework.stereotype.Service
 import org.ugustavodev.msnucleo.repositories.CandidatoRepository
 import org.ugustavodev.msnucleo.usecase.interfaces.IDeletarCandidatoUseCase
 
+import org.springframework.security.access.AccessDeniedException
+import org.springframework.security.core.Authentication
+import org.springframework.security.core.context.SecurityContextHolder
+import org.ugustavodev.msnucleo.domain.Usuario
+import org.ugustavodev.msnucleo.domain.enums.Role
+import org.ugustavodev.msnucleo.model.Candidato
+
 @Service
 class DeletarCandidatoUseCase implements IDeletarCandidatoUseCase {
     private final CandidatoRepository candidatoRepository
@@ -18,10 +25,20 @@ class DeletarCandidatoUseCase implements IDeletarCandidatoUseCase {
             throw new IllegalArgumentException("O ID do candidato não pode ser nulo.")
         }
 
-        if (!candidatoRepository.existsById(id)) {
-            throw new NoSuchElementException("Candidato não encontrado.")
+        Candidato candidato = candidatoRepository.findById(id)
+            .orElseThrow(() -> new NoSuchElementException("Candidato não encontrado."))
+
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication()
+        if (auth != null && auth.getPrincipal() instanceof Usuario) {
+            Usuario usuarioLogado = (Usuario) auth.getPrincipal()
+            if (usuarioLogado.role == Role.EMPRESA) {
+                throw new AccessDeniedException("Empresas não têm permissão para deletar candidatos.")
+            }
+            if (usuarioLogado.role == Role.CANDIDATO && candidato.usuario.email != usuarioLogado.email) {
+                throw new AccessDeniedException("Você não tem permissão para deletar a conta de outro candidato.")
+            }
         }
 
-        candidatoRepository.deleteById(id)
+        candidatoRepository.delete(candidato)
     }
 }
