@@ -9,12 +9,16 @@ import org.ugustavodev.msnucleo.model.Candidato
 import org.ugustavodev.msnucleo.repositories.CandidatoRepository
 import org.ugustavodev.msnucleo.usecase.interfaces.ICadastrarCandidatoUseCase
 
+import org.springframework.security.crypto.password.PasswordEncoder
+
 @Service
 class CadastrarCandidatoUseCase implements ICadastrarCandidatoUseCase{
     private final CandidatoRepository candidatoRepository
+    private final PasswordEncoder passwordEncoder
 
-    CadastrarCandidatoUseCase (CandidatoRepository candidatoRepository) {
+    CadastrarCandidatoUseCase (CandidatoRepository candidatoRepository, PasswordEncoder passwordEncoder) {
         this.candidatoRepository = candidatoRepository
+        this.passwordEncoder = passwordEncoder
     }
 
     @Override
@@ -32,7 +36,10 @@ class CadastrarCandidatoUseCase implements ICadastrarCandidatoUseCase{
         }
 
         Candidato candidato = CandidatoMapper.fromRequestDTOToEntity(requestDTO)
+        candidato.usuario.senha = passwordEncoder.encode(candidato.usuario.senha)
+        
         Candidato savedCandidato = candidatoRepository.save(candidato)
         return CandidatoMapper.toResponseDTO(savedCandidato)
     }
 }
+

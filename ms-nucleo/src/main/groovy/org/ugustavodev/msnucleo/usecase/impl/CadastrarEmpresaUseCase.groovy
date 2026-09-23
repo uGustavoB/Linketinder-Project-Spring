@@ -8,12 +8,16 @@ import org.ugustavodev.msnucleo.model.Empresa
 import org.ugustavodev.msnucleo.repositories.EmpresaRepository
 import org.ugustavodev.msnucleo.usecase.interfaces.ICadastrarEmpresaUseCase
 
+import org.springframework.security.crypto.password.PasswordEncoder
+
 @Service
 class CadastrarEmpresaUseCase implements ICadastrarEmpresaUseCase {
     private final EmpresaRepository empresaRepository
+    private final PasswordEncoder passwordEncoder
 
-    CadastrarEmpresaUseCase(EmpresaRepository empresaRepository) {
+    CadastrarEmpresaUseCase(EmpresaRepository empresaRepository, PasswordEncoder passwordEncoder) {
         this.empresaRepository = empresaRepository
+        this.passwordEncoder = passwordEncoder
     }
 
     @Override
@@ -31,7 +35,10 @@ class CadastrarEmpresaUseCase implements ICadastrarEmpresaUseCase {
         }
 
         Empresa empresa = EmpresaMapper.fromRequestDTOToEntity(requestDTO)
+        empresa.usuario.senha = passwordEncoder.encode(empresa.usuario.senha)
+
         Empresa savedEmpresa = empresaRepository.save(empresa)
         return EmpresaMapper.toResponseDTO(savedEmpresa)
     }
 }
+

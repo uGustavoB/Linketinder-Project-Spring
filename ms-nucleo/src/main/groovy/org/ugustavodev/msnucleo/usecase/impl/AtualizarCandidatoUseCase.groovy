@@ -8,12 +8,16 @@ import org.ugustavodev.msnucleo.model.Candidato
 import org.ugustavodev.msnucleo.repositories.CandidatoRepository
 import org.ugustavodev.msnucleo.usecase.interfaces.IAtualizarCandidatoUseCase
 
+import org.springframework.security.crypto.password.PasswordEncoder
+
 @Service
 class AtualizarCandidatoUseCase implements IAtualizarCandidatoUseCase {
     private final CandidatoRepository candidatoRepository
+    private final PasswordEncoder passwordEncoder
 
-    AtualizarCandidatoUseCase(CandidatoRepository candidatoRepository) {
+    AtualizarCandidatoUseCase(CandidatoRepository candidatoRepository, PasswordEncoder passwordEncoder) {
         this.candidatoRepository = candidatoRepository
+        this.passwordEncoder = passwordEncoder
     }
 
     @Override
@@ -52,10 +56,11 @@ class AtualizarCandidatoUseCase implements IAtualizarCandidatoUseCase {
         candidatoExistente.cep = requestDTO.cep
         candidatoExistente.descricao = requestDTO.descricao
         if (requestDTO.senha) {
-            candidatoExistente.usuario.senha = requestDTO.senha
+            candidatoExistente.usuario.senha = passwordEncoder.encode(requestDTO.senha)
         }
 
         Candidato candidatoAtualizado = candidatoRepository.save(candidatoExistente)
         return CandidatoMapper.toResponseDTO(candidatoAtualizado)
     }
 }
+

@@ -8,12 +8,16 @@ import org.ugustavodev.msnucleo.model.Empresa
 import org.ugustavodev.msnucleo.repositories.EmpresaRepository
 import org.ugustavodev.msnucleo.usecase.interfaces.IAtualizarEmpresaUseCase
 
+import org.springframework.security.crypto.password.PasswordEncoder
+
 @Service
 class AtualizarEmpresaUseCase implements IAtualizarEmpresaUseCase {
     private final EmpresaRepository empresaRepository
+    private final PasswordEncoder passwordEncoder
 
-    AtualizarEmpresaUseCase(EmpresaRepository empresaRepository) {
+    AtualizarEmpresaUseCase(EmpresaRepository empresaRepository, PasswordEncoder passwordEncoder) {
         this.empresaRepository = empresaRepository
+        this.passwordEncoder = passwordEncoder
     }
 
     @Override
@@ -50,10 +54,11 @@ class AtualizarEmpresaUseCase implements IAtualizarEmpresaUseCase {
         empresaExistente.cep = requestDTO.cep
         empresaExistente.descricao = requestDTO.descricao
         if (requestDTO.senha) {
-            empresaExistente.usuario.senha = requestDTO.senha
+            empresaExistente.usuario.senha = passwordEncoder.encode(requestDTO.senha)
         }
 
         Empresa empresaAtualizada = empresaRepository.save(empresaExistente)
         return EmpresaMapper.toResponseDTO(empresaAtualizada)
     }
 }
+
