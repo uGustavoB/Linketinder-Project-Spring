@@ -3,15 +3,21 @@ package org.ugustavodev.msnucleo.controller
 import jakarta.validation.Valid
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import org.springframework.security.access.prepost.PreAuthorize
+import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.web.bind.annotation.*
+import org.ugustavodev.msnucleo.domain.Usuario
 import org.ugustavodev.msnucleo.dto.request.VagaRequestDTO
+import org.ugustavodev.msnucleo.dto.response.CurtidaResponseDTO
 import org.ugustavodev.msnucleo.dto.response.VagaResponseDTO
 import org.ugustavodev.msnucleo.dto.response.VagaPublicoResponseDTO
 import org.ugustavodev.msnucleo.dto.ApiResponseDTO
 import org.ugustavodev.msnucleo.usecase.interfaces.IAtualizarVagaUseCase
 import org.ugustavodev.msnucleo.usecase.interfaces.IBuscarVagaPorIdUseCase
 import org.ugustavodev.msnucleo.usecase.interfaces.ICadastrarVagaUseCase
+import org.ugustavodev.msnucleo.usecase.interfaces.ICandidatoCurteVagaUseCase
 import org.ugustavodev.msnucleo.usecase.interfaces.IDeletarVagaUseCase
+import org.ugustavodev.msnucleo.usecase.interfaces.IEmpresaCurteCandidatoUseCase
 import org.ugustavodev.msnucleo.usecase.interfaces.IListarVagasUseCase
 
 @RestController
@@ -22,19 +28,25 @@ class VagaController {
     private final IListarVagasUseCase listarVagasUseCase
     private final IAtualizarVagaUseCase atualizarVagaUseCase
     private final IDeletarVagaUseCase deletarVagaUseCase
+    private final ICandidatoCurteVagaUseCase candidatoCurteVagaUseCase
+    private final IEmpresaCurteCandidatoUseCase empresaCurteCandidatoUseCase
 
     VagaController(
             ICadastrarVagaUseCase cadastrarVagaUseCase,
             IBuscarVagaPorIdUseCase buscarVagaPorIdUseCase,
             IListarVagasUseCase listarVagasUseCase,
             IAtualizarVagaUseCase atualizarVagaUseCase,
-            IDeletarVagaUseCase deletarVagaUseCase
+            IDeletarVagaUseCase deletarVagaUseCase,
+            ICandidatoCurteVagaUseCase candidatoCurteVagaUseCase,
+            IEmpresaCurteCandidatoUseCase empresaCurteCandidatoUseCase
     ) {
         this.cadastrarVagaUseCase = cadastrarVagaUseCase
         this.buscarVagaPorIdUseCase = buscarVagaPorIdUseCase
         this.listarVagasUseCase = listarVagasUseCase
         this.atualizarVagaUseCase = atualizarVagaUseCase
         this.deletarVagaUseCase = deletarVagaUseCase
+        this.candidatoCurteVagaUseCase = candidatoCurteVagaUseCase
+        this.empresaCurteCandidatoUseCase = empresaCurteCandidatoUseCase
     }
 
     @PostMapping
@@ -68,5 +80,30 @@ class VagaController {
     ResponseEntity<ApiResponseDTO<Void>> deletarVaga(@PathVariable("id") Long id) {
         deletarVagaUseCase.executar(id)
         return ResponseEntity.ok(ApiResponseDTO.sucesso("Vaga deletada com sucesso", HttpStatus.OK.value()))
+    }
+
+    @PreAuthorize("hasRole('CANDIDATO')")
+    @PostMapping("/{idVaga}/curtir")
+    ResponseEntity<ApiResponseDTO<CurtidaResponseDTO>> curtirVaga(
+            @PathVariable("idVaga") Long idVaga,
+            @AuthenticationPrincipal Usuario usuarioAutenticado
+    ) {
+        Long idCandidato = usuarioAutenticado.getCandidato().getId()
+
+        CurtidaResponseDTO curtidaResponse = candidatoCurteVagaUseCase.executar(idCandidato, idVaga)
+        return ResponseEntity.ok(ApiResponseDTO.sucesso(curtidaResponse, "Vaga curtida com sucesso"))
+    }
+
+    @PreAuthorize("hasRole('EMPRESA')")
+    @PostMapping("/{idVaga}/candidato/{idCandidato}/curtir")
+    ResponseEntity<ApiResponseDTO<CurtidaResponseDTO>> curtirCandidato(
+            @PathVariable("idVaga") Long idVaga,
+            @PathVariable("idCandidato") Long idCandidato,
+            @AuthenticationPrincipal Usuario usuarioAutenticado
+    ) {
+        Long idEmpresa = usuarioAutenticado.getEmpresa().getId()
+
+        CurtidaResponseDTO curtidaResponse = empresaCurteCandidatoUseCase.executar(idEmpresa, idCandidato, idVaga)
+        return ResponseEntity.ok(ApiResponseDTO.sucesso(curtidaResponse, "Candidato curtido com sucesso"))
     }
 }
