@@ -1,0 +1,4 @@
+package org.ugustavodev.mscompetencia.usecase.interfaces
+import org.ugustavodev.mscompetencia.dto.request.VincularCompetenciaRequestDTO
+import org.ugustavodev.mscompetencia.dto.response.CompetenciaVinculoResponseDTO
+interface IVincularCompetenciaCandidatoUseCase { CompetenciaVinculoResponseDTO executar(Long candidatoId, VincularCompetenciaRequestDTO requestDTO) }

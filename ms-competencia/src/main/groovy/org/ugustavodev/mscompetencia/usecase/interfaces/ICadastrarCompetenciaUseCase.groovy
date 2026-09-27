@@ -1,0 +1,4 @@
+package org.ugustavodev.mscompetencia.usecase.interfaces
+import org.ugustavodev.mscompetencia.dto.request.CompetenciaRequestDTO
+import org.ugustavodev.mscompetencia.dto.response.CompetenciaResponseDTO
+interface ICadastrarCompetenciaUseCase { CompetenciaResponseDTO executar(CompetenciaRequestDTO requestDTO) }
