@@ -11,7 +11,6 @@ class CurtidaMapper {
         if (curtida == null) return null
 
         return new CurtidaResponseDTO(
-                id: curtida.id,
                 candidatoId: curtida.candidato?.id,
                 vagaId: curtida.vaga?.id,
                 candidatoCurtiuEm: curtida.candidatoCurtiuEm,
