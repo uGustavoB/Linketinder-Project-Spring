@@ -13,6 +13,10 @@ import org.ugustavodev.msnucleo.dto.response.MatchVagaResponseDTO
 import org.ugustavodev.msnucleo.dto.response.VagaResponseDTO
 import org.ugustavodev.msnucleo.dto.response.VagaPublicoResponseDTO
 import org.ugustavodev.msnucleo.dto.ApiResponseDTO
+import org.ugustavodev.msnucleo.model.Candidato
+import org.ugustavodev.msnucleo.model.Empresa
+import org.ugustavodev.msnucleo.repositories.CandidatoRepository
+import org.ugustavodev.msnucleo.repositories.EmpresaRepository
 import org.ugustavodev.msnucleo.usecase.interfaces.IAtualizarVagaUseCase
 import org.ugustavodev.msnucleo.usecase.interfaces.IBuscarVagaPorIdUseCase
 import org.ugustavodev.msnucleo.usecase.interfaces.ICadastrarVagaUseCase
@@ -37,6 +41,8 @@ class VagaController {
     private final ICandidatoDescurteVagaUseCase candidatoDescurteVagaUseCase
     private final IEmpresaDescurteCandidatoUseCase empresaDescurteCandidatoUseCase
     private final IListarMatchesVagaUseCase listarMatchesVagaUseCase
+    private final CandidatoRepository candidatoRepository
+    private final EmpresaRepository empresaRepository
 
     VagaController(
             ICadastrarVagaUseCase cadastrarVagaUseCase,
@@ -48,7 +54,9 @@ class VagaController {
             IEmpresaCurteCandidatoUseCase empresaCurteCandidatoUseCase,
             ICandidatoDescurteVagaUseCase candidatoDescurteVagaUseCase,
             IEmpresaDescurteCandidatoUseCase empresaDescurteCandidatoUseCase,
-            IListarMatchesVagaUseCase listarMatchesVagaUseCase
+            IListarMatchesVagaUseCase listarMatchesVagaUseCase,
+            CandidatoRepository candidatoRepository,
+            EmpresaRepository empresaRepository
     ) {
         this.cadastrarVagaUseCase = cadastrarVagaUseCase
         this.buscarVagaPorIdUseCase = buscarVagaPorIdUseCase
@@ -60,6 +68,8 @@ class VagaController {
         this.candidatoDescurteVagaUseCase = candidatoDescurteVagaUseCase
         this.empresaDescurteCandidatoUseCase = empresaDescurteCandidatoUseCase
         this.listarMatchesVagaUseCase = listarMatchesVagaUseCase
+        this.candidatoRepository = candidatoRepository
+        this.empresaRepository = empresaRepository
     }
 
     @PostMapping
@@ -101,7 +111,9 @@ class VagaController {
             @PathVariable("idVaga") Long idVaga,
             @AuthenticationPrincipal Usuario usuarioAutenticado
     ) {
-        Long idCandidato = usuarioAutenticado.getCandidato().getId()
+        Candidato candidato = candidatoRepository.findByUsuarioEmail(usuarioAutenticado.getUsername())
+                .orElseThrow(() -> new RuntimeException("Candidato não encontrado"))
+        Long idCandidato = candidato.getId()
 
         CurtidaResponseDTO curtidaResponse = candidatoCurteVagaUseCase.executar(idCandidato, idVaga)
         return ResponseEntity.ok(ApiResponseDTO.sucesso(curtidaResponse, "Vaga curtida com sucesso"))
@@ -113,7 +125,9 @@ class VagaController {
             @PathVariable("idVaga") Long idVaga,
             @AuthenticationPrincipal Usuario usuarioAutenticado
     ) {
-        Long idCandidato = usuarioAutenticado.getCandidato().getId()
+        Candidato candidato = candidatoRepository.findByUsuarioEmail(usuarioAutenticado.getUsername())
+                .orElseThrow(() -> new RuntimeException("Candidato não encontrado"))
+        Long idCandidato = candidato.getId()
 
         candidatoDescurteVagaUseCase.executar(idCandidato, idVaga)
         return ResponseEntity.ok(ApiResponseDTO.sucesso("Curtida removida com sucesso", HttpStatus.OK.value()))
@@ -126,7 +140,9 @@ class VagaController {
             @PathVariable("idCandidato") Long idCandidato,
             @AuthenticationPrincipal Usuario usuarioAutenticado
     ) {
-        Long idEmpresa = usuarioAutenticado.getEmpresa().getId()
+        Empresa empresa = empresaRepository.findByUsuarioEmail(usuarioAutenticado.getUsername())
+                .orElseThrow(() -> new RuntimeException("Empresa não encontrada"))
+        Long idEmpresa = empresa.getId()
 
         CurtidaResponseDTO curtidaResponse = empresaCurteCandidatoUseCase.executar(idEmpresa, idCandidato, idVaga)
         return ResponseEntity.ok(ApiResponseDTO.sucesso(curtidaResponse, "Candidato curtido com sucesso"))
@@ -139,7 +155,9 @@ class VagaController {
             @PathVariable("idCandidato") Long idCandidato,
             @AuthenticationPrincipal Usuario usuarioAutenticado
     ) {
-        Long idEmpresa = usuarioAutenticado.getEmpresa().getId()
+        Empresa empresa = empresaRepository.findByUsuarioEmail(usuarioAutenticado.getUsername())
+                .orElseThrow(() -> new RuntimeException("Empresa não encontrada"))
+        Long idEmpresa = empresa.getId()
 
         empresaDescurteCandidatoUseCase.executar(idEmpresa, idCandidato, idVaga)
         return ResponseEntity.ok(ApiResponseDTO.sucesso("Curtida removida com sucesso", HttpStatus.OK.value()))
@@ -151,7 +169,10 @@ class VagaController {
             @PathVariable("idVaga") Long idVaga,
             @AuthenticationPrincipal Usuario usuarioAutenticado
     ) {
-        Long idEmpresa = usuarioAutenticado.getEmpresa().getId()
+        Empresa empresa = empresaRepository.findByUsuarioEmail(usuarioAutenticado.getUsername())
+                .orElseThrow(() -> new RuntimeException("Empresa não encontrada"))
+        Long idEmpresa = empresa.getId()
+        
         List<MatchVagaResponseDTO> matches = listarMatchesVagaUseCase.executar(idVaga, idEmpresa)
         return ResponseEntity.ok(ApiResponseDTO.sucesso(matches))
     }

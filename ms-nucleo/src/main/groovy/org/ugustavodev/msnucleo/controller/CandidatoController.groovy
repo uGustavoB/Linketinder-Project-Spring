@@ -12,6 +12,8 @@ import org.ugustavodev.msnucleo.dto.response.CandidatoResponseDTO
 import org.ugustavodev.msnucleo.dto.response.CandidatoPublicoResponseDTO
 import org.ugustavodev.msnucleo.dto.response.MatchCandidatoResponseDTO
 import org.ugustavodev.msnucleo.dto.ApiResponseDTO
+import org.ugustavodev.msnucleo.model.Candidato
+import org.ugustavodev.msnucleo.repositories.CandidatoRepository
 import org.ugustavodev.msnucleo.usecase.interfaces.IAtualizarCandidatoUseCase
 import org.ugustavodev.msnucleo.usecase.interfaces.IBuscarCandidatoPorIdUseCase
 import org.ugustavodev.msnucleo.usecase.interfaces.ICadastrarCandidatoUseCase
@@ -28,6 +30,7 @@ class CandidatoController {
     private final IAtualizarCandidatoUseCase atualizarCandidatoUseCase
     private final IDeletarCandidatoUseCase deletarCandidatoUseCase
     private final IListarMatchesCandidatoUseCase listarMatchesCandidatoUseCase
+    private final CandidatoRepository candidatoRepository
 
     CandidatoController(
             ICadastrarCandidatoUseCase cadastrarCandidatoUseCase,
@@ -35,7 +38,8 @@ class CandidatoController {
             IListarCandidatosUseCase listarCandidatosUseCase,
             IAtualizarCandidatoUseCase atualizarCandidatoUseCase,
             IDeletarCandidatoUseCase deletarCandidatoUseCase,
-            IListarMatchesCandidatoUseCase listarMatchesCandidatoUseCase
+            IListarMatchesCandidatoUseCase listarMatchesCandidatoUseCase,
+            CandidatoRepository candidatoRepository
     ) {
         this.cadastrarCandidatoUseCase = cadastrarCandidatoUseCase
         this.buscarCandidatoPorIdUseCase = buscarCandidatoPorIdUseCase
@@ -43,6 +47,7 @@ class CandidatoController {
         this.atualizarCandidatoUseCase = atualizarCandidatoUseCase
         this.deletarCandidatoUseCase = deletarCandidatoUseCase
         this.listarMatchesCandidatoUseCase = listarMatchesCandidatoUseCase
+        this.candidatoRepository = candidatoRepository
     }
 
     @PostMapping
@@ -81,7 +86,10 @@ class CandidatoController {
     @PreAuthorize("hasRole('CANDIDATO')")
     @GetMapping("/matches")
     ResponseEntity<ApiResponseDTO<List<MatchCandidatoResponseDTO>>> listarMatches(@AuthenticationPrincipal Usuario usuarioAutenticado) {
-        Long idCandidato = usuarioAutenticado.getCandidato().getId()
+        Candidato candidato = candidatoRepository.findByUsuarioEmail(usuarioAutenticado.getUsername())
+                .orElseThrow(() -> new RuntimeException("Candidato não encontrado"))
+        Long idCandidato = candidato.getId()
+        
         List<MatchCandidatoResponseDTO> matches = listarMatchesCandidatoUseCase.executar(idCandidato)
         return ResponseEntity.ok(ApiResponseDTO.sucesso(matches))
     }
