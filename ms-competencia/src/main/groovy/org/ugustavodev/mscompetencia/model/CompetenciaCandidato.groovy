@@ -1,6 +1,7 @@
 package org.ugustavodev.mscompetencia.model
 
 import jakarta.persistence.*
+import org.ugustavodev.mscompetencia.model.enums.NivelCompetencia
 
 @Entity
 @Table(name = "competencias_candidatos")
@@ -16,6 +17,7 @@ class CompetenciaCandidato {
     @JoinColumn(name = "competencia_id", nullable = false)
     Competencia competencia
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    String nivel
+    NivelCompetencia nivel
 }
