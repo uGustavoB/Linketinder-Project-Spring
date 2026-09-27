@@ -16,8 +16,10 @@ import org.ugustavodev.msnucleo.usecase.interfaces.IAtualizarVagaUseCase
 import org.ugustavodev.msnucleo.usecase.interfaces.IBuscarVagaPorIdUseCase
 import org.ugustavodev.msnucleo.usecase.interfaces.ICadastrarVagaUseCase
 import org.ugustavodev.msnucleo.usecase.interfaces.ICandidatoCurteVagaUseCase
+import org.ugustavodev.msnucleo.usecase.interfaces.ICandidatoDescurteVagaUseCase
 import org.ugustavodev.msnucleo.usecase.interfaces.IDeletarVagaUseCase
 import org.ugustavodev.msnucleo.usecase.interfaces.IEmpresaCurteCandidatoUseCase
+import org.ugustavodev.msnucleo.usecase.interfaces.IEmpresaDescurteCandidatoUseCase
 import org.ugustavodev.msnucleo.usecase.interfaces.IListarVagasUseCase
 
 @RestController
@@ -30,6 +32,8 @@ class VagaController {
     private final IDeletarVagaUseCase deletarVagaUseCase
     private final ICandidatoCurteVagaUseCase candidatoCurteVagaUseCase
     private final IEmpresaCurteCandidatoUseCase empresaCurteCandidatoUseCase
+    private final ICandidatoDescurteVagaUseCase candidatoDescurteVagaUseCase
+    private final IEmpresaDescurteCandidatoUseCase empresaDescurteCandidatoUseCase
 
     VagaController(
             ICadastrarVagaUseCase cadastrarVagaUseCase,
@@ -38,7 +42,9 @@ class VagaController {
             IAtualizarVagaUseCase atualizarVagaUseCase,
             IDeletarVagaUseCase deletarVagaUseCase,
             ICandidatoCurteVagaUseCase candidatoCurteVagaUseCase,
-            IEmpresaCurteCandidatoUseCase empresaCurteCandidatoUseCase
+            IEmpresaCurteCandidatoUseCase empresaCurteCandidatoUseCase,
+            ICandidatoDescurteVagaUseCase candidatoDescurteVagaUseCase,
+            IEmpresaDescurteCandidatoUseCase empresaDescurteCandidatoUseCase
     ) {
         this.cadastrarVagaUseCase = cadastrarVagaUseCase
         this.buscarVagaPorIdUseCase = buscarVagaPorIdUseCase
@@ -47,6 +53,8 @@ class VagaController {
         this.deletarVagaUseCase = deletarVagaUseCase
         this.candidatoCurteVagaUseCase = candidatoCurteVagaUseCase
         this.empresaCurteCandidatoUseCase = empresaCurteCandidatoUseCase
+        this.candidatoDescurteVagaUseCase = candidatoDescurteVagaUseCase
+        this.empresaDescurteCandidatoUseCase = empresaDescurteCandidatoUseCase
     }
 
     @PostMapping
@@ -94,6 +102,18 @@ class VagaController {
         return ResponseEntity.ok(ApiResponseDTO.sucesso(curtidaResponse, "Vaga curtida com sucesso"))
     }
 
+    @PreAuthorize("hasRole('CANDIDATO')")
+    @DeleteMapping("/{idVaga}/curtir")
+    ResponseEntity<ApiResponseDTO<Void>> descurtirVaga(
+            @PathVariable("idVaga") Long idVaga,
+            @AuthenticationPrincipal Usuario usuarioAutenticado
+    ) {
+        Long idCandidato = usuarioAutenticado.getCandidato().getId()
+
+        candidatoDescurteVagaUseCase.executar(idCandidato, idVaga)
+        return ResponseEntity.ok(ApiResponseDTO.sucesso("Curtida removida com sucesso", HttpStatus.OK.value()))
+    }
+
     @PreAuthorize("hasRole('EMPRESA')")
     @PostMapping("/{idVaga}/candidato/{idCandidato}/curtir")
     ResponseEntity<ApiResponseDTO<CurtidaResponseDTO>> curtirCandidato(
@@ -105,5 +125,18 @@ class VagaController {
 
         CurtidaResponseDTO curtidaResponse = empresaCurteCandidatoUseCase.executar(idEmpresa, idCandidato, idVaga)
         return ResponseEntity.ok(ApiResponseDTO.sucesso(curtidaResponse, "Candidato curtido com sucesso"))
+    }
+
+    @PreAuthorize("hasRole('EMPRESA')")
+    @DeleteMapping("/{idVaga}/candidato/{idCandidato}/curtir")
+    ResponseEntity<ApiResponseDTO<Void>> descurtirCandidato(
+            @PathVariable("idVaga") Long idVaga,
+            @PathVariable("idCandidato") Long idCandidato,
+            @AuthenticationPrincipal Usuario usuarioAutenticado
+    ) {
+        Long idEmpresa = usuarioAutenticado.getEmpresa().getId()
+
+        empresaDescurteCandidatoUseCase.executar(idEmpresa, idCandidato, idVaga)
+        return ResponseEntity.ok(ApiResponseDTO.sucesso("Curtida removida com sucesso", HttpStatus.OK.value()))
     }
 }
