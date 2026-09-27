@@ -2,6 +2,8 @@ package org.ugustavodev.msnucleo.exception.handler
 
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import org.springframework.security.access.AccessDeniedException
+import org.springframework.security.core.AuthenticationException
 import org.springframework.web.bind.MethodArgumentNotValidException
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.RestControllerAdvice
@@ -49,8 +51,8 @@ class ExceptionHandlerController {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(resposta)
     }
 
-    @ExceptionHandler(org.springframework.security.core.AuthenticationException.class)
-    ResponseEntity<ApiResponseDTO<Object>> handleAuthenticationException(org.springframework.security.core.AuthenticationException ex) {
+    @ExceptionHandler(AuthenticationException.class)
+    ResponseEntity<ApiResponseDTO<Object>> handleAuthenticationException(AuthenticationException ex) {
         ApiResponseDTO<Object> resposta = new ApiResponseDTO<>(
                 codigo: HttpStatus.UNAUTHORIZED.value(),
                 mensagem: "Credenciais inválidas ou usuário não encontrado.",
@@ -59,8 +61,8 @@ class ExceptionHandlerController {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(resposta)
     }
 
-    @ExceptionHandler(org.springframework.security.access.AccessDeniedException.class)
-    ResponseEntity<ApiResponseDTO<Object>> handleAccessDeniedException(org.springframework.security.access.AccessDeniedException ex) {
+    @ExceptionHandler(AccessDeniedException.class)
+    ResponseEntity<ApiResponseDTO<Object>> handleAccessDeniedException(AccessDeniedException ex) {
         ApiResponseDTO<Object> resposta = new ApiResponseDTO<>(
                 codigo: HttpStatus.FORBIDDEN.value(),
                 mensagem: "Você não tem permissão para acessar este recurso.",
