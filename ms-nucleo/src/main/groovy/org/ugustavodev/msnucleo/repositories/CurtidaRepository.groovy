@@ -15,4 +15,7 @@ interface CurtidaRepository extends JpaRepository<Curtida, Long> {
 
     @Query("SELECT c FROM Curtida c WHERE c.vaga.empresa.id = :empresaId AND c.candidatoCurtiuEm IS NOT NULL AND c.empresaCurtiuEm IS NOT NULL")
     List<Curtida> findMatchesByEmpresaId(@Param("empresaId") Long empresaId)
+
+    @Query("SELECT c FROM Curtida c WHERE c.vaga.id = :vagaId AND c.vaga.empresa.id = :empresaId AND c.candidatoCurtiuEm IS NOT NULL AND c.empresaCurtiuEm IS NOT NULL")
+    List<Curtida> findMatchesByVagaIdAndEmpresaId(@Param("vagaId") Long vagaId, @Param("empresaId") Long empresaId)
 }

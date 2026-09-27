@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*
 import org.ugustavodev.msnucleo.domain.Usuario
 import org.ugustavodev.msnucleo.dto.request.VagaRequestDTO
 import org.ugustavodev.msnucleo.dto.response.CurtidaResponseDTO
+import org.ugustavodev.msnucleo.dto.response.MatchVagaResponseDTO
 import org.ugustavodev.msnucleo.dto.response.VagaResponseDTO
 import org.ugustavodev.msnucleo.dto.response.VagaPublicoResponseDTO
 import org.ugustavodev.msnucleo.dto.ApiResponseDTO
@@ -20,6 +21,7 @@ import org.ugustavodev.msnucleo.usecase.interfaces.ICandidatoDescurteVagaUseCase
 import org.ugustavodev.msnucleo.usecase.interfaces.IDeletarVagaUseCase
 import org.ugustavodev.msnucleo.usecase.interfaces.IEmpresaCurteCandidatoUseCase
 import org.ugustavodev.msnucleo.usecase.interfaces.IEmpresaDescurteCandidatoUseCase
+import org.ugustavodev.msnucleo.usecase.interfaces.IListarMatchesVagaUseCase
 import org.ugustavodev.msnucleo.usecase.interfaces.IListarVagasUseCase
 
 @RestController
@@ -34,6 +36,7 @@ class VagaController {
     private final IEmpresaCurteCandidatoUseCase empresaCurteCandidatoUseCase
     private final ICandidatoDescurteVagaUseCase candidatoDescurteVagaUseCase
     private final IEmpresaDescurteCandidatoUseCase empresaDescurteCandidatoUseCase
+    private final IListarMatchesVagaUseCase listarMatchesVagaUseCase
 
     VagaController(
             ICadastrarVagaUseCase cadastrarVagaUseCase,
@@ -44,7 +47,8 @@ class VagaController {
             ICandidatoCurteVagaUseCase candidatoCurteVagaUseCase,
             IEmpresaCurteCandidatoUseCase empresaCurteCandidatoUseCase,
             ICandidatoDescurteVagaUseCase candidatoDescurteVagaUseCase,
-            IEmpresaDescurteCandidatoUseCase empresaDescurteCandidatoUseCase
+            IEmpresaDescurteCandidatoUseCase empresaDescurteCandidatoUseCase,
+            IListarMatchesVagaUseCase listarMatchesVagaUseCase
     ) {
         this.cadastrarVagaUseCase = cadastrarVagaUseCase
         this.buscarVagaPorIdUseCase = buscarVagaPorIdUseCase
@@ -55,6 +59,7 @@ class VagaController {
         this.empresaCurteCandidatoUseCase = empresaCurteCandidatoUseCase
         this.candidatoDescurteVagaUseCase = candidatoDescurteVagaUseCase
         this.empresaDescurteCandidatoUseCase = empresaDescurteCandidatoUseCase
+        this.listarMatchesVagaUseCase = listarMatchesVagaUseCase
     }
 
     @PostMapping
@@ -138,5 +143,16 @@ class VagaController {
 
         empresaDescurteCandidatoUseCase.executar(idEmpresa, idCandidato, idVaga)
         return ResponseEntity.ok(ApiResponseDTO.sucesso("Curtida removida com sucesso", HttpStatus.OK.value()))
+    }
+
+    @PreAuthorize("hasRole('EMPRESA')")
+    @GetMapping("/{idVaga}/matches")
+    ResponseEntity<ApiResponseDTO<List<MatchVagaResponseDTO>>> listarMatches(
+            @PathVariable("idVaga") Long idVaga,
+            @AuthenticationPrincipal Usuario usuarioAutenticado
+    ) {
+        Long idEmpresa = usuarioAutenticado.getEmpresa().getId()
+        List<MatchVagaResponseDTO> matches = listarMatchesVagaUseCase.executar(idVaga, idEmpresa)
+        return ResponseEntity.ok(ApiResponseDTO.sucesso(matches))
     }
 }
