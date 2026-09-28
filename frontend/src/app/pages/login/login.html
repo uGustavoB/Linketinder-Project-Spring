@@ -1,0 +1,49 @@
+<div class="flex min-h-screen items-center justify-center">
+  <z-card class="w-full md:w-94">
+    <div z-card-header>
+      <z-card-title zTitle="Entre na sua conta" />
+      <z-card-description zDescription="Digite seu email e senha para acessar sua conta" />
+      <z-card-action>
+        <button z-button type="button" zType="link" (click)="onSignUp()">Registrar-se</button>
+      </z-card-action>
+    </div>
+    <div z-card-content>
+      <div class="space-y-4">
+        <div class="space-y-2" zardId="email" #e="zardId">
+          <label
+            [for]="e.id()"
+            class="text-sm leading-none font-medium peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+          >
+            Email
+          </label>
+          <input
+            [id]="e.id()"
+            type="email"
+            placeholder="jessepinkman@example.com"
+            class="border-input bg-background ring-offset-background placeholder:text-muted-foreground focus-visible:ring-ring flex h-10 w-full rounded-md border px-3 py-2 text-sm file:border-0 file:bg-transparent file:text-sm file:font-medium focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
+            required
+          />
+        </div>
+        <div class="space-y-2">
+          <div class="flex items-center" zardId="password" #p="zardId">
+            <label
+              [for]="p.id()"
+              class="text-sm leading-none font-medium peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+            >
+              Senha
+            </label>
+          </div>
+          <input
+            [id]="p.id()"
+            type="password"
+            class="border-input bg-background ring-offset-background placeholder:text-muted-foreground focus-visible:ring-ring flex h-10 w-full rounded-md border px-3 py-2 text-sm file:border-0 file:bg-transparent file:text-sm file:font-medium focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
+            required
+          />
+        </div>
+      </div>
+    </div>
+    <div z-card-footer class="flex-col gap-2">
+      <z-button zType="outline" class="w-full">Entrar</z-button>
+    </div>
+  </z-card>
+</div>
