@@ -36,7 +36,7 @@ export class Login {
     this.authService.login(this.loginForm.getRawValue()).subscribe({
       next: (res) => {
         toast.success(res.mensagem || 'Login realizado com sucesso!');
-        this.router.navigate(['/']);
+        this.router.navigate(['/dashboard']);
       },
       error: (err) => {
         this.isLoading.set(false);

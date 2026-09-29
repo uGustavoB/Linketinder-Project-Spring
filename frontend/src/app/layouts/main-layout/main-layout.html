@@ -1,0 +1,92 @@
+<z-sidebar-provider
+  zDefaultOpen="true"
+  class="relative h-screen w-full min-h-0 transform-gpu overflow-hidden border-none"
+>
+  <z-sidebar zCollapsible="icon" class="h-full">
+    <div z-sidebar-header>
+      <ul z-sidebar-menu>
+        <li z-sidebar-menu-item>
+          <div class="flex items-center gap-2 p-2">
+            <div
+              class="bg-sidebar-primary text-sidebar-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg"
+            >
+              <ng-icon name="lucideBuilding2" class="size-4" />
+            </div>
+            <div
+              class="grid flex-1 text-left text-sm/tight truncate group-data-[collapsible=icon]:hidden"
+            >
+              <span class="truncate font-medium">Linketinder</span>
+              <span class="text-muted-foreground truncate text-xs">Vagas & Candidatos</span>
+            </div>
+          </div>
+        </li>
+      </ul>
+    </div>
+
+    <z-sidebar-content>
+      <div z-sidebar-group>
+        <div z-sidebar-group-label>Plataforma</div>
+
+        <div z-sidebar-group-content>
+          <ul z-sidebar-menu>
+            @for (item of navItems; track item.title) {
+              <li z-sidebar-menu-item>
+                <button
+                  z-sidebar-menu-button
+                  [zActive]="item.title === activeTitle()"
+                  [zTooltip]="item.title"
+                  [routerLink]="item.path"
+                >
+                  <ng-icon [name]="item.icon" />
+                  <span>{{ item.title }}</span>
+                </button>
+              </li>
+            }
+          </ul>
+        </div>
+      </div>
+    </z-sidebar-content>
+
+    <div z-sidebar-footer>
+      <ul z-sidebar-menu>
+        <li z-sidebar-menu-item>
+          <div class="flex items-center gap-2 p-2">
+            <div class="bg-muted flex aspect-square size-8 items-center justify-center rounded-lg">
+              <ng-icon name="lucideUser" class="size-4" />
+            </div>
+            <div
+              class="grid flex-1 text-left text-sm/tight truncate group-data-[collapsible=icon]:hidden"
+            >
+              <span class="truncate font-medium">Meu Perfil</span>
+              <span class="text-muted-foreground truncate text-xs">Acessar perfil</span>
+            </div>
+            <button
+              class="ml-auto p-1 hover:bg-muted rounded-md group-data-[collapsible=icon]:hidden"
+              aria-label="Sair"
+              (click)="logout()"
+            >
+              <ng-icon name="lucideLogOut" class="size-4" />
+            </button>
+          </div>
+        </li>
+      </ul>
+    </div>
+
+    <button z-sidebar-rail aria-label="Toggle Sidebar"></button>
+  </z-sidebar>
+
+  <main z-sidebar-inset class="overflow-auto bg-background flex flex-col flex-1 h-screen w-full">
+    <header class="sticky top-0 flex h-16 shrink-0 items-center gap-2 border-b bg-background px-4">
+      <button z-sidebar-trigger class="-ml-1" aria-label="Toggle Sidebar"></button>
+      <z-separator
+        zOrientation="vertical"
+        class="mr-2 data-[orientation=vertical]:h-4 data-[orientation=vertical]:self-center"
+      />
+      <h1 class="text-lg font-semibold">{{ activeTitle() }}</h1>
+    </header>
+
+    <div class="flex flex-1 flex-col gap-4 p-4">
+      <router-outlet></router-outlet>
+    </div>
+  </main>
+</z-sidebar-provider>
