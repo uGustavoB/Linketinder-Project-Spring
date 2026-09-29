@@ -43,10 +43,9 @@ class AuthenticationController {
                 .maxAge(3600)
                 .build()
 
-        LoginResponseDTO resposta = new LoginResponseDTO(tokenJWT)
         return ResponseEntity.ok()
                 .header(HttpHeaders.SET_COOKIE, cookie.toString())
-                .body(ApiResponseDTO.sucesso(resposta, "Login realizado com sucesso"))
+                .body(ApiResponseDTO.sucesso( "Login realizado com sucesso"))
     }
 }
 
