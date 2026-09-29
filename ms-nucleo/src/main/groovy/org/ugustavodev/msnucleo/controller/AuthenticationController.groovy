@@ -2,6 +2,8 @@ package org.ugustavodev.msnucleo.controller
 
 import jakarta.validation.Valid
 import org.springframework.http.ResponseEntity
+import org.springframework.http.HttpHeaders
+import org.springframework.http.ResponseCookie
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.Authentication
@@ -13,7 +15,6 @@ import org.ugustavodev.msnucleo.domain.Usuario
 import org.ugustavodev.msnucleo.dto.request.AuthenticationDTO
 import org.ugustavodev.msnucleo.dto.response.LoginResponseDTO
 import org.ugustavodev.msnucleo.security.TokenService
-
 import org.ugustavodev.msnucleo.dto.ApiResponseDTO
 
 @RestController
@@ -35,8 +36,17 @@ class AuthenticationController {
 
         String tokenJWT = servicoToken.gerarToken((Usuario) autenticacao.getPrincipal())
 
+        ResponseCookie cookie = ResponseCookie.from("auth_token", tokenJWT)
+                .httpOnly(true)
+                .secure(false)
+                .path("/")
+                .maxAge(3600)
+                .build()
+
         LoginResponseDTO resposta = new LoginResponseDTO(tokenJWT)
-        return ResponseEntity.ok(ApiResponseDTO.sucesso(resposta, "Login realizado com sucesso"))
+        return ResponseEntity.ok()
+                .header(HttpHeaders.SET_COOKIE, cookie.toString())
+                .body(ApiResponseDTO.sucesso(resposta, "Login realizado com sucesso"))
     }
 }
 

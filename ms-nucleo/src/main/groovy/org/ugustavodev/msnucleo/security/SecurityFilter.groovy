@@ -39,6 +39,14 @@ class SecurityFilter extends OncePerRequestFilter {
     }
 
     private String recuperarToken(HttpServletRequest requisicao) {
+        if (requisicao.getCookies() != null) {
+            for (var cookie in requisicao.getCookies()) {
+                if (cookie.getName() == "auth_token") {
+                    return cookie.getValue()
+                }
+            }
+        }
+
         String cabecalhoAutenticacao = requisicao.getHeader("Authorization")
         if (cabecalhoAutenticacao == null || !cabecalhoAutenticacao.startsWith("Bearer ")) {
             return null
