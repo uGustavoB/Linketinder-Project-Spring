@@ -10,11 +10,6 @@
     <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
       <div z-card-content>
         <div class="space-y-4">
-          @if (errorMessage()) {
-            <div class="text-sm text-destructive font-medium">
-              {{ errorMessage() }}
-            </div>
-          }
           <div class="space-y-2" zardId="email" #e="zardId">
             <label
               [for]="e.id()"
