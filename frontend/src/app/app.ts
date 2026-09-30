@@ -9,5 +9,5 @@ import { NgxSonnerToaster } from 'ngx-sonner';
   templateUrl: './app.html',
 })
 export class App {
-  protected readonly title = signal('frontend');
+  protected readonly title = signal('Linketinder');
 }

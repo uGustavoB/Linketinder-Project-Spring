@@ -50,7 +50,7 @@ export class MainLayout {
 
   readonly navItems: readonly NavItem[] = [
     { title: 'Home', path: '/dashboard', icon: 'lucideHouse' },
-    { title: 'Vagas', path: '/dashboard', icon: 'lucideCalendar' },
+    { title: 'Vagas', path: '/vagas', icon: 'lucideCalendar' },
   ];
 
   constructor() {

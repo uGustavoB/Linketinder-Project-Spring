@@ -1,0 +1,39 @@
+<div class="rounded-xl border bg-card text-card-foreground shadow">
+  <div class="p-6">
+    <h3 class="font-semibold leading-none tracking-tight mb-4">Listagem de Vagas</h3>
+    <table z-table>
+      <thead z-table-header>
+        <tr z-table-row>
+          <th z-table-head>Vaga</th>
+          <th z-table-head>Descrição</th>
+          <th z-table-head>Local</th>
+          <th z-table-head>Nível</th>
+        </tr>
+      </thead>
+      <tbody z-table-body>
+        @if (isLoading()) {
+          <tr z-table-row>
+            <td z-table-cell colspan="4" class="text-center py-4">Carregando vagas...</td>
+          </tr>
+        } @else if (vagas().length === 0) {
+          <tr z-table-row>
+            <td z-table-cell colspan="4" class="text-center py-4">Nenhuma vaga encontrada.</td>
+          </tr>
+        } @else {
+          @for (vaga of vagas(); track vaga.id) {
+            <tr z-table-row>
+              <td z-table-cell class="font-medium">{{ vaga.nome }}</td>
+              <td z-table-cell class="max-w-xs truncate" [title]="vaga.descricao">{{ vaga.descricao }}</td>
+              <td z-table-cell>{{ vaga.local }}</td>
+              <td z-table-cell>
+                <span class="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2">
+                  {{ vaga.nivel }}
+                </span>
+              </td>
+            </tr>
+          }
+        }
+      </tbody>
+    </table>
+  </div>
+</div>
