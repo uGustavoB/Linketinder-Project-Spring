@@ -1,0 +1,35 @@
+<div class="rounded-xl border bg-card text-card-foreground shadow">
+  <div class="p-6">
+    <h3 class="font-semibold leading-none tracking-tight mb-4">Candidatos Disponíveis</h3>
+    <table z-table>
+      <thead z-table-header>
+        <tr z-table-row>
+          <th z-table-head class="w-[80px]">ID</th>
+          <th z-table-head class="w-[200px]">Local</th>
+          <th z-table-head>Descrição</th>
+        </tr>
+      </thead>
+      <tbody z-table-body>
+        @if (isLoading()) {
+          <tr z-table-row>
+            <td z-table-cell colspan="3" class="text-center py-4">Carregando candidatos...</td>
+          </tr>
+        } @else if (candidatos().length === 0) {
+          <tr z-table-row>
+            <td z-table-cell colspan="3" class="text-center py-4">Nenhum candidato encontrado.</td>
+          </tr>
+        } @else {
+          @for (candidato of candidatos(); track candidato.id) {
+            <tr z-table-row>
+              <td z-table-cell class="font-medium">#{{ candidato.id }}</td>
+              <td z-table-cell>{{ candidato.estado }}, {{ candidato.pais }}</td>
+              <td z-table-cell class="max-w-md truncate" [title]="candidato.descricao">
+                {{ candidato.descricao }}
+              </td>
+            </tr>
+          }
+        }
+      </tbody>
+    </table>
+  </div>
+</div>

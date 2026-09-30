@@ -62,7 +62,7 @@ export class MainLayout {
   private readonly companyItems: NavItem[] = [
     { title: 'Painel', path: '/dashboard', icon: 'lucideHouse' },
     { title: 'Vagas Publicadas', path: '/vagas', icon: 'lucideBriefcase' },
-    { title: 'Candidatos', path: '/buscar', icon: 'lucideSearch' },
+    { title: 'Candidatos', path: '/candidatos', icon: 'lucideSearch' },
   ];
 
   readonly currentNavItems = computed(() => {

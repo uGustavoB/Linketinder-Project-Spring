@@ -28,6 +28,10 @@ export const routes: Routes = [
         path: 'vagas',
         loadComponent: () => import('./pages/vagas/vagas').then((m) => m.Vagas),
       },
+      {
+        path: 'candidatos',
+        loadComponent: () => import('./pages/candidatos/candidatos').then((m) => m.Candidatos),
+      },
     ],
   },
   {
