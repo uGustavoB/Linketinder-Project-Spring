@@ -1,0 +1,225 @@
+<div class="flex min-h-screen items-center justify-center py-10">
+  <z-card class="w-full max-w-md">
+    <div z-card-header>
+      <z-card-title zTitle="Crie sua conta" />
+      <z-card-description zDescription="Selecione seu perfil e preencha os dados" />
+      <z-card-action>
+        <button z-button type="button" zType="link" (click)="onLogin()">Já tenho conta</button>
+      </z-card-action>
+    </div>
+
+    <div z-card-content>
+      <!-- Toggle buttons -->
+      <div class="flex bg-muted p-1 rounded-md mb-6">
+        <button
+          type="button"
+          class="flex-1 py-1.5 text-sm font-medium rounded-sm transition-colors"
+          [class.bg-background]="userType() === 'CANDIDATO'"
+          [class.shadow]="userType() === 'CANDIDATO'"
+          (click)="setType('CANDIDATO')"
+        >
+          Sou Candidato
+        </button>
+        <button
+          type="button"
+          class="flex-1 py-1.5 text-sm font-medium rounded-sm transition-colors"
+          [class.bg-background]="userType() === 'EMPRESA'"
+          [class.shadow]="userType() === 'EMPRESA'"
+          (click)="setType('EMPRESA')"
+        >
+          Sou Empresa
+        </button>
+      </div>
+
+      <!-- CANDIDATO FORM -->
+      <form
+        *ngIf="userType() === 'CANDIDATO'"
+        [formGroup]="candidatoForm"
+        (ngSubmit)="onSubmit()"
+        class="space-y-4"
+      >
+        <div class="grid grid-cols-2 gap-4">
+          <div class="space-y-2">
+            <label class="text-sm font-medium">Nome</label>
+            <input
+              formControlName="nome"
+              class="border-input bg-background flex h-10 w-full rounded-md border px-3 py-2 text-sm focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+            />
+          </div>
+          <div class="space-y-2">
+            <label class="text-sm font-medium">Sobrenome</label>
+            <input
+              formControlName="sobrenome"
+              class="border-input bg-background flex h-10 w-full rounded-md border px-3 py-2 text-sm focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+            />
+          </div>
+        </div>
+
+        <div class="space-y-2">
+          <label class="text-sm font-medium">Email</label>
+          <input
+            type="email"
+            formControlName="email"
+            class="border-input bg-background flex h-10 w-full rounded-md border px-3 py-2 text-sm focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+          />
+        </div>
+
+        <div class="grid grid-cols-2 gap-4">
+          <div class="space-y-2">
+            <label class="text-sm font-medium">CPF</label>
+            <input
+              formControlName="cpf"
+              class="border-input bg-background flex h-10 w-full rounded-md border px-3 py-2 text-sm focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+            />
+          </div>
+          <div class="space-y-2">
+            <label class="text-sm font-medium">Nascimento</label>
+            <input
+              type="date"
+              formControlName="dataNascimento"
+              class="border-input bg-background flex h-10 w-full rounded-md border px-3 py-2 text-sm focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+            />
+          </div>
+        </div>
+
+        <div class="space-y-2">
+          <label class="text-sm font-medium">Senha</label>
+          <input
+            type="password"
+            formControlName="senha"
+            class="border-input bg-background flex h-10 w-full rounded-md border px-3 py-2 text-sm focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+          />
+        </div>
+
+        <div class="grid grid-cols-3 gap-4">
+          <div class="space-y-2 col-span-1">
+            <label class="text-sm font-medium">País</label>
+            <input
+              formControlName="pais"
+              class="border-input bg-background flex h-10 w-full rounded-md border px-3 py-2 text-sm focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+            />
+          </div>
+          <div class="space-y-2 col-span-1">
+            <label class="text-sm font-medium">Estado</label>
+            <input
+              formControlName="estado"
+              class="border-input bg-background flex h-10 w-full rounded-md border px-3 py-2 text-sm focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+            />
+          </div>
+          <div class="space-y-2 col-span-1">
+            <label class="text-sm font-medium">CEP</label>
+            <input
+              formControlName="cep"
+              class="border-input bg-background flex h-10 w-full rounded-md border px-3 py-2 text-sm focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+            />
+          </div>
+        </div>
+
+        <div class="space-y-2">
+          <label class="text-sm font-medium">Descrição (Opcional)</label>
+          <textarea
+            formControlName="descricao"
+            rows="2"
+            class="border-input bg-background flex w-full rounded-md border px-3 py-2 text-sm focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+          ></textarea>
+        </div>
+
+        <button
+          z-button
+          type="submit"
+          class="w-full mt-4"
+          [zDisabled]="isLoading()"
+          [zLoading]="isLoading()"
+        >
+          {{ isLoading() ? 'Cadastrando...' : 'Cadastrar Candidato' }}
+        </button>
+      </form>
+
+      <!-- EMPRESA FORM -->
+      <form
+        *ngIf="userType() === 'EMPRESA'"
+        [formGroup]="empresaForm"
+        (ngSubmit)="onSubmit()"
+        class="space-y-4"
+      >
+        <div class="space-y-2">
+          <label class="text-sm font-medium">Razão Social / Nome</label>
+          <input
+            formControlName="nome"
+            class="border-input bg-background flex h-10 w-full rounded-md border px-3 py-2 text-sm focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+          />
+        </div>
+
+        <div class="grid grid-cols-2 gap-4">
+          <div class="space-y-2">
+            <label class="text-sm font-medium">CNPJ</label>
+            <input
+              formControlName="cnpj"
+              class="border-input bg-background flex h-10 w-full rounded-md border px-3 py-2 text-sm focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+            />
+          </div>
+          <div class="space-y-2">
+            <label class="text-sm font-medium">Email</label>
+            <input
+              type="email"
+              formControlName="email"
+              class="border-input bg-background flex h-10 w-full rounded-md border px-3 py-2 text-sm focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+            />
+          </div>
+        </div>
+
+        <div class="space-y-2">
+          <label class="text-sm font-medium">Senha</label>
+          <input
+            type="password"
+            formControlName="senha"
+            class="border-input bg-background flex h-10 w-full rounded-md border px-3 py-2 text-sm focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+          />
+        </div>
+
+        <div class="grid grid-cols-3 gap-4">
+          <div class="space-y-2 col-span-1">
+            <label class="text-sm font-medium">País</label>
+            <input
+              formControlName="pais"
+              class="border-input bg-background flex h-10 w-full rounded-md border px-3 py-2 text-sm focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+            />
+          </div>
+          <div class="space-y-2 col-span-1">
+            <label class="text-sm font-medium">Estado</label>
+            <input
+              formControlName="estado"
+              class="border-input bg-background flex h-10 w-full rounded-md border px-3 py-2 text-sm focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+            />
+          </div>
+          <div class="space-y-2 col-span-1">
+            <label class="text-sm font-medium">CEP</label>
+            <input
+              formControlName="cep"
+              class="border-input bg-background flex h-10 w-full rounded-md border px-3 py-2 text-sm focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+            />
+          </div>
+        </div>
+
+        <div class="space-y-2">
+          <label class="text-sm font-medium">Descrição (Opcional)</label>
+          <textarea
+            formControlName="descricao"
+            rows="2"
+            class="border-input bg-background flex w-full rounded-md border px-3 py-2 text-sm focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+          ></textarea>
+        </div>
+
+        <button
+          z-button
+          type="submit"
+          class="w-full mt-4"
+          [zDisabled]="isLoading()"
+          [zLoading]="isLoading()"
+        >
+          {{ isLoading() ? 'Cadastrando...' : 'Cadastrar Empresa' }}
+        </button>
+      </form>
+    </div>
+  </z-card>
+</div>

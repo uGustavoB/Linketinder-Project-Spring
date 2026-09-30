@@ -23,7 +23,7 @@ export class Login {
 
   public loginForm = this.fb.nonNullable.group({
     email: ['', [Validators.required, Validators.email]],
-    senha: ['', [Validators.required, Validators.minLength(6)]]
+    senha: ['', [Validators.required, Validators.minLength(6)]],
   });
 
   protected onSubmit(): void {
@@ -46,11 +46,11 @@ export class Login {
         const erroMsg = err.error?.mensagem || 'Erro ao fazer login. Tente novamente.';
         toast.error(erroMsg);
         console.error('Login error:', err);
-      }
+      },
     });
   }
 
   protected onSignUp(): void {
-    alert('Redirect to Sign Up');
+    this.router.navigate(['/register']);
   }
 }
