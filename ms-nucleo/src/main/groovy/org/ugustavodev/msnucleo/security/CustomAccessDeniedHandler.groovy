@@ -18,13 +18,11 @@ class CustomAccessDeniedHandler implements AccessDeniedHandler {
         response.setContentType("application/json;charset=UTF-8")
         response.setStatus(HttpStatus.FORBIDDEN.value())
 
-        String json = """
-        {
-          "codigo": ${HttpStatus.FORBIDDEN.value()},
-          "mensagem": "Você não tem permissão para acessar este recurso.",
-          "tipo": "Acesso Negado"
-        }
-        """
+        String json = """{
+  "codigo": ${HttpStatus.FORBIDDEN.value()},
+  "mensagem": "Você não tem permissão para acessar este recurso.",
+  "tipo": "Acesso Negado"
+}"""
 
         response.getWriter().write(json)
     }

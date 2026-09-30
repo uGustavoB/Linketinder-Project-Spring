@@ -18,13 +18,11 @@ class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint {
         response.setContentType("application/json;charset=UTF-8")
         response.setStatus(HttpStatus.UNAUTHORIZED.value())
 
-        String json = """
-        {
-          "codigo": ${HttpStatus.UNAUTHORIZED.value()},
-          "mensagem": "Você não está autenticado. Informe um token JWT válido.",
-          "tipo": "Não Autorizado"
-        }
-        """
+        String json = """{
+  "codigo": ${HttpStatus.UNAUTHORIZED.value()},
+  "mensagem": "Você não está autenticado. Informe um token JWT válido.",
+  "tipo": "Não Autorizado"
+}"""
 
         response.getWriter().write(json)
     }

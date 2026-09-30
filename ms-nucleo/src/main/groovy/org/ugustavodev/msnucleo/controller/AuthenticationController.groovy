@@ -54,5 +54,19 @@ class AuthenticationController {
                 .header(HttpHeaders.SET_COOKIE, cookie.toString())
                 .body(ApiResponseDTO.sucesso(loginResponseDTO, "Login realizado com sucesso"))
     }
+
+    @PostMapping("/logout")
+    ResponseEntity<ApiResponseDTO<String>> logout() {
+        ResponseCookie cookie = ResponseCookie.from("auth_token", "")
+                .httpOnly(true)
+                .secure(false)
+                .path("/")
+                .maxAge(0)
+                .build()
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.SET_COOKIE, cookie.toString())
+                .body(ApiResponseDTO.sucesso("Logout realizado com sucesso"))
+    }
 }
 
