@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, signal, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal, computed, inject } from '@angular/core';
 import { RouterOutlet, Router, NavigationEnd, RouterLink } from '@angular/router';
 import { filter } from 'rxjs/operators';
 import { NgIcon, provideIcons } from '@ng-icons/core';
@@ -11,11 +11,14 @@ import {
   lucideSettings,
   lucideUser,
   lucideBuilding2,
+  lucideBriefcase,
+  lucideFileText,
 } from '@ng-icons/lucide';
 
 import { ZardSeparatorComponent } from '@/shared/components/separator/separator.component';
 import { ZardSidebarImports } from '@/shared/components/sidebar/sidebar.imports';
 import { AuthService } from '@/core/services/auth.service';
+import { toast } from 'ngx-sonner';
 
 interface NavItem {
   readonly title: string;
@@ -39,32 +42,58 @@ interface NavItem {
       lucideSettings,
       lucideUser,
       lucideBuilding2,
+      lucideBriefcase,
+      lucideFileText,
     }),
   ],
 })
 export class MainLayout {
   private router = inject(Router);
-  private authService = inject(AuthService);
+  public authService = inject(AuthService);
 
   readonly activeTitle = signal('Home');
 
-  readonly navItems: readonly NavItem[] = [
-    { title: 'Home', path: '/dashboard', icon: 'lucideHouse' },
-    { title: 'Vagas', path: '/vagas', icon: 'lucideCalendar' },
+  private readonly candidateItems: NavItem[] = [
+    { title: 'Painel', path: '/dashboard', icon: 'lucideHouse' },
+    { title: 'Explorar Vagas', path: '/vagas', icon: 'lucideSearch' },
+    { title: 'Meu Currículo', path: '/curriculo', icon: 'lucideFileText' },
   ];
+
+  private readonly companyItems: NavItem[] = [
+    { title: 'Painel', path: '/dashboard', icon: 'lucideHouse' },
+    { title: 'Vagas Publicadas', path: '/vagas', icon: 'lucideBriefcase' },
+    { title: 'Candidatos', path: '/buscar', icon: 'lucideSearch' },
+  ];
+
+  readonly currentNavItems = computed(() => {
+    const user = this.authService.currentUser();
+    return user?.tipoUsuario === 'EMPRESA' ? this.companyItems : this.candidateItems;
+  });
 
   constructor() {
     this.router.events
       .pipe(filter((event) => event instanceof NavigationEnd))
       .subscribe((event: any) => {
         const currentRoute = event.urlAfterRedirects;
-        const activeItem =
-          this.navItems.find((item) => currentRoute.startsWith(item.path)) || this.navItems[0];
-        this.activeTitle.set(activeItem.title);
+        const navs = this.currentNavItems();
+        const activeItem = navs.find((item) => currentRoute.startsWith(item.path)) || navs[0];
+        if (activeItem) {
+          this.activeTitle.set(activeItem.title);
+        }
       });
   }
 
   logout() {
-    this.router.navigate(['/login']);
+    this.authService.logout().subscribe({
+      next: (res) => {
+        toast.success(res.mensagem || 'Logout realizado com sucesso');
+        this.router.navigate(['/login']);
+      },
+      error: () => {
+        this.authService.isAuthenticated.set(false);
+        this.authService.currentUser.set(null);
+        this.router.navigate(['/login']);
+      },
+    });
   }
 }

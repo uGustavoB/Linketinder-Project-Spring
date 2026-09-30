@@ -29,7 +29,7 @@
 
         <div z-sidebar-group-content>
           <ul z-sidebar-menu>
-            @for (item of navItems; track item.title) {
+            @for (item of currentNavItems(); track item.title) {
               <li z-sidebar-menu-item>
                 <button
                   z-sidebar-menu-button
@@ -57,8 +57,8 @@
             <div
               class="grid flex-1 text-left text-sm/tight truncate group-data-[collapsible=icon]:hidden"
             >
-              <span class="truncate font-medium">Meu Perfil</span>
-              <span class="text-muted-foreground truncate text-xs">Acessar perfil</span>
+              <span class="truncate font-medium">{{ authService.currentUser()?.nome || 'Meu Perfil' }}</span>
+              <span class="text-muted-foreground truncate text-xs">{{ authService.currentUser()?.email || 'Acessar perfil' }}</span>
             </div>
             <button
               class="ml-auto p-1 hover:bg-muted rounded-md group-data-[collapsible=icon]:hidden"

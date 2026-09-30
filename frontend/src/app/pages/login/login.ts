@@ -1,6 +1,6 @@
 import { Component, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { ZardCardImports } from '@/shared/components/card/card.imports';
 import { ZardButtonComponent } from '@/shared/components/button/button.component';
 import { ZardIdDirective } from '@/shared/core';
@@ -17,6 +17,7 @@ export class Login {
   private fb = inject(FormBuilder);
   private authService = inject(AuthService);
   private router = inject(Router);
+  private route = inject(ActivatedRoute);
 
   public isLoading = signal(false);
 
@@ -36,7 +37,9 @@ export class Login {
     this.authService.login(this.loginForm.getRawValue()).subscribe({
       next: (res) => {
         toast.success(res.mensagem || 'Login realizado com sucesso!');
-        this.router.navigate(['/dashboard']);
+
+        const returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/dashboard';
+        this.router.navigateByUrl(returnUrl);
       },
       error: (err) => {
         this.isLoading.set(false);
