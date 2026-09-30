@@ -30,12 +30,14 @@ class ObterDadosLoginUseCase implements IObterDadosLoginUseCase {
         if (usuario.role == Role.CANDIDATO) {
             Optional<Candidato> candidato = candidatoRepository.findByUsuarioEmail(usuario.email)
             if (candidato.isPresent()) {
+                loginResponseDTO.id = candidato.get().id
                 loginResponseDTO.nome = candidato.get().nome
                 loginResponseDTO.sobrenome = candidato.get().sobrenome
             }
         } else if (usuario.role == Role.EMPRESA) {
             Optional<Empresa> empresa = empresaRepository.findByUsuarioEmail(usuario.email)
             if (empresa.isPresent()) {
+                loginResponseDTO.id = empresa.get().id
                 loginResponseDTO.nome = empresa.get().nome
             }
         }
