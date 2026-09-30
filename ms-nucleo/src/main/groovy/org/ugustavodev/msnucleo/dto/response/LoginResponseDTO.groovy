@@ -4,5 +4,8 @@ import groovy.transform.Canonical
 
 @Canonical
 class LoginResponseDTO {
-    String token
+    String tipoUsuario
+    String nome
+    String sobrenome
+    String email
 }
