@@ -20,6 +20,7 @@ export class AuthService {
   login(credentials: LoginRequest): Observable<LoginResponse> {
     return this.http.post<LoginResponse>(`${this.apiUrl}/login`, credentials).pipe(
       tap((response) => {
+        console.log('Login Response do Backend:', response);
         if (response && response.dados) {
           this.isAuthenticated.set(true);
           this.currentUser.set(response.dados);

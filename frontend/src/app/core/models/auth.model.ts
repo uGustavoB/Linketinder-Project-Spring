@@ -4,6 +4,7 @@ export interface LoginRequest {
 }
 
 export interface UserData {
+  id: number;
   token?: string;
   email: string;
   nome: string;
