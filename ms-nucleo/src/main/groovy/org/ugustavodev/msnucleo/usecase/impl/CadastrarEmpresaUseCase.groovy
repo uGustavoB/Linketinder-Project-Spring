@@ -6,6 +6,7 @@ import org.ugustavodev.msnucleo.dto.response.EmpresaResponseDTO
 import org.ugustavodev.msnucleo.mapper.EmpresaMapper
 import org.ugustavodev.msnucleo.model.Empresa
 import org.ugustavodev.msnucleo.repositories.EmpresaRepository
+import org.ugustavodev.msnucleo.repositories.UsuarioRepository
 import org.ugustavodev.msnucleo.usecase.interfaces.ICadastrarEmpresaUseCase
 
 import org.springframework.security.crypto.password.PasswordEncoder
@@ -15,11 +16,13 @@ class CadastrarEmpresaUseCase implements ICadastrarEmpresaUseCase {
     private final EmpresaRepository empresaRepository
     private final PasswordEncoder passwordEncoder
     private final EmpresaMapper empresaMapper
+    private final UsuarioRepository usuarioRepository
 
-    CadastrarEmpresaUseCase(EmpresaRepository empresaRepository, PasswordEncoder passwordEncoder, EmpresaMapper empresaMapper) {
+    CadastrarEmpresaUseCase(EmpresaRepository empresaRepository, PasswordEncoder passwordEncoder, EmpresaMapper empresaMapper, UsuarioRepository usuarioRepository) {
         this.empresaRepository = empresaRepository
         this.passwordEncoder = passwordEncoder
         this.empresaMapper = empresaMapper
+        this.usuarioRepository = usuarioRepository
     }
 
     @Override
@@ -28,8 +31,8 @@ class CadastrarEmpresaUseCase implements ICadastrarEmpresaUseCase {
             throw new IllegalArgumentException("O objeto EmpresaRequestDTO não pode ser nulo.")
         }
 
-        if (empresaRepository.findByUsuarioEmail(requestDTO.email).isPresent()) {
-            throw new IllegalArgumentException("Já existe uma empresa cadastrada com o email informado")
+        if (usuarioRepository.findByEmail(requestDTO.email).isPresent()) {
+            throw new IllegalArgumentException("Já existe um usuário cadastrado com o email informado")
         }
 
         if (empresaRepository.findByCnpj(requestDTO.cnpj).isPresent()) {

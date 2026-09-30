@@ -5,5 +5,5 @@ import org.springframework.security.core.userdetails.UserDetails
 import org.ugustavodev.msnucleo.domain.Usuario
 
 interface UsuarioRepository extends JpaRepository<Usuario, Long> {
-    UserDetails findByEmail(String email)
+    Optional<Usuario> findByEmail(String email)
 }
