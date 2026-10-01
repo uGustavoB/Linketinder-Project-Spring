@@ -72,9 +72,16 @@ class VagaController {
         this.empresaRepository = empresaRepository
     }
 
+    @PreAuthorize("hasRole('EMPRESA')")
     @PostMapping
-    ResponseEntity<ApiResponseDTO<VagaResponseDTO>> cadastrarVaga(@Valid @RequestBody VagaRequestDTO requestDTO) {
-        VagaResponseDTO responseDTO = cadastrarVagaUseCase.executar(requestDTO)
+    ResponseEntity<ApiResponseDTO<VagaResponseDTO>> cadastrarVaga(
+            @Valid @RequestBody VagaRequestDTO requestDTO,
+            @AuthenticationPrincipal Usuario usuarioAutenticado
+    ) {
+        Empresa empresa = empresaRepository.findByUsuarioEmail(usuarioAutenticado.getUsername())
+                .orElseThrow(() -> new RuntimeException("Empresa não encontrada"))
+        
+        VagaResponseDTO responseDTO = cadastrarVagaUseCase.executar(requestDTO, empresa.getId())
         return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponseDTO.sucesso(responseDTO, "Vaga cadastrada com sucesso", HttpStatus.CREATED.value()))
     }
 
@@ -90,12 +97,17 @@ class VagaController {
         return ResponseEntity.ok(ApiResponseDTO.sucesso(responseDTO))
     }
 
+    @PreAuthorize("hasRole('EMPRESA')")
     @PutMapping("/{id}")
     ResponseEntity<ApiResponseDTO<VagaResponseDTO>> atualizarVaga(
             @PathVariable("id") Long id,
-            @Valid @RequestBody VagaRequestDTO requestDTO
+            @Valid @RequestBody VagaRequestDTO requestDTO,
+            @AuthenticationPrincipal Usuario usuarioAutenticado
     ) {
-        VagaResponseDTO responseDTO = atualizarVagaUseCase.executar(id, requestDTO)
+        Empresa empresa = empresaRepository.findByUsuarioEmail(usuarioAutenticado.getUsername())
+                .orElseThrow(() -> new RuntimeException("Empresa não encontrada"))
+                
+        VagaResponseDTO responseDTO = atualizarVagaUseCase.executar(id, requestDTO, empresa.getId())
         return ResponseEntity.ok(ApiResponseDTO.sucesso(responseDTO, "Vaga atualizada com sucesso"))
     }
 

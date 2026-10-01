@@ -23,21 +23,22 @@ class AtualizarVagaUseCase implements IAtualizarVagaUseCase {
     }
 
     @Override
-    VagaResponseDTO executar(Long id, VagaRequestDTO requestDTO) {
+    VagaResponseDTO executar(Long id, VagaRequestDTO requestDTO, Long empresaId) {
         if (id == null) {
             throw new IllegalArgumentException("O ID da vaga não pode ser nulo.")
         }
         if (requestDTO == null) {
             throw new IllegalArgumentException("O objeto VagaRequestDTO não pode ser nulo.")
         }
+        if (empresaId == null) {
+            throw new IllegalArgumentException("O ID da empresa não pode ser nulo.")
+        }
 
         Vaga vagaExistente = vagaRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("Vaga não encontrada para o ID: ${id}"))
 
-        Empresa novaEmpresa = null
-        if (requestDTO.empresaId != null && (vagaExistente.empresa == null || vagaExistente.empresa.id != requestDTO.empresaId)) {
-            novaEmpresa = empresaRepository.findById(requestDTO.empresaId)
-                    .orElseThrow(() -> new NoSuchElementException("Empresa não encontrada para o ID: ${requestDTO.empresaId}"))
+        if (vagaExistente.empresa == null || vagaExistente.empresa.id != empresaId) {
+            throw new IllegalArgumentException("Você não tem permissão para editar esta vaga.")
         }
 
         vagaExistente.atualizarDados(
@@ -45,7 +46,7 @@ class AtualizarVagaUseCase implements IAtualizarVagaUseCase {
                 requestDTO.descricao,
                 requestDTO.local,
                 requestDTO.nivel,
-                novaEmpresa
+                vagaExistente.empresa
         )
 
         Vaga vagaAtualizada = vagaRepository.save(vagaExistente)

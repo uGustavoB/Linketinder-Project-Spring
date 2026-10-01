@@ -2,7 +2,6 @@ package org.ugustavodev.msnucleo.dto.request
 
 import groovy.transform.Canonical
 import jakarta.validation.constraints.NotBlank
-import jakarta.validation.constraints.NotNull
 
 @Canonical
 class VagaRequestDTO {
@@ -14,9 +13,6 @@ class VagaRequestDTO {
 
     String local
     String nivel
-
-    @NotNull(message = "O campo empresaId é obrigatório")
-    Long empresaId
 
     void setNome(String nome) {
         this.nome = nome?.trim()

@@ -23,13 +23,16 @@ class CadastrarVagaUseCase implements ICadastrarVagaUseCase {
     }
 
     @Override
-    VagaResponseDTO executar(VagaRequestDTO requestDTO) {
+    VagaResponseDTO executar(VagaRequestDTO requestDTO, Long empresaId) {
         if (requestDTO == null) {
             throw new IllegalArgumentException("O objeto VagaRequestDTO não pode ser nulo.")
         }
+        if (empresaId == null) {
+            throw new IllegalArgumentException("O ID da empresa não pode ser nulo.")
+        }
 
-        Empresa empresa = empresaRepository.findById(requestDTO.empresaId)
-                .orElseThrow(() -> new NoSuchElementException("Empresa não encontrada para o ID: ${requestDTO.empresaId}"))
+        Empresa empresa = empresaRepository.findById(empresaId)
+                .orElseThrow(() -> new NoSuchElementException("Empresa não encontrada para o ID: ${empresaId}"))
 
         Vaga vaga = vagaMapper.fromRequestDTOToEntity(requestDTO, empresa)
         Vaga savedVaga = vagaRepository.save(vaga)
