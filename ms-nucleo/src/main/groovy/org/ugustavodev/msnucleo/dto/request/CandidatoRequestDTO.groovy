@@ -37,4 +37,36 @@ class CandidatoRequestDTO {
     String estado
     String cep
     String descricao
+
+    void setNome(String nome) {
+        this.nome = nome?.trim()
+    }
+
+    void setSobrenome(String sobrenome) {
+        this.sobrenome = sobrenome?.trim()
+    }
+
+    void setEmail(String email) {
+        this.email = email?.trim()?.toLowerCase()
+    }
+
+    void setCpf(String cpf) {
+        this.cpf = cpf?.replaceAll("[^0-9]", "")
+    }
+
+    void setPais(String pais) {
+        this.pais = pais?.trim()
+    }
+
+    void setEstado(String estado) {
+        this.estado = estado?.trim()
+    }
+
+    void setCep(String cep) {
+        this.cep = cep?.replaceAll("[^0-9]", "")
+    }
+
+    void setDescricao(String descricao) {
+        this.descricao = descricao?.trim()
+    }
 }

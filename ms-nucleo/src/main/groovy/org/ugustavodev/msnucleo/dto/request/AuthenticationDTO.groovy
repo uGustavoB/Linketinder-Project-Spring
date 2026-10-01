@@ -12,4 +12,8 @@ class AuthenticationDTO {
 
     @NotBlank(message = "O campo senha é obrigatório")
     String senha
+
+    void setEmail(String email) {
+        this.email = email?.trim()?.toLowerCase()
+    }
 }

@@ -19,4 +19,20 @@ class VagaRequestDTO {
     Long empresaId
 
     List<Long> competenciaIds = []
+
+    void setNome(String nome) {
+        this.nome = nome?.trim()
+    }
+
+    void setDescricao(String descricao) {
+        this.descricao = descricao?.trim()
+    }
+
+    void setLocal(String local) {
+        this.local = local?.trim()
+    }
+
+    void setNivel(String nivel) {
+        this.nivel = nivel?.trim()
+    }
 }
