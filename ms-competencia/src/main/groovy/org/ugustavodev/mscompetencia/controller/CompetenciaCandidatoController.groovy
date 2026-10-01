@@ -24,12 +24,12 @@ class CompetenciaCandidatoController {
     }
 
     @PostMapping("/{candidatoId}")
-    ResponseEntity<ApiResponseDTO<CompetenciaVinculoResponseDTO>> vincularCompetencia(
+    ResponseEntity<ApiResponseDTO<List<CompetenciaVinculoResponseDTO>>> vincularCompetencia(
             @PathVariable("candidatoId") Long candidatoId,
-            @Valid @RequestBody VincularCompetenciaRequestDTO requestDTO
+            @Valid @RequestBody List<VincularCompetenciaRequestDTO> requestDTOs
     ) {
-        CompetenciaVinculoResponseDTO responseDTO = vincularUseCase.executar(candidatoId, requestDTO)
-        return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponseDTO.sucesso(responseDTO, "Competência vinculada ao candidato com sucesso", HttpStatus.CREATED.value()))
+        List<CompetenciaVinculoResponseDTO> responseDTOs = vincularUseCase.executar(candidatoId, requestDTOs)
+        return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponseDTO.sucesso(responseDTOs, "Competências vinculadas ao candidato com sucesso", HttpStatus.CREATED.value()))
     }
 
     @GetMapping("/{candidatoId}")
