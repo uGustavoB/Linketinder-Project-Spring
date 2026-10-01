@@ -18,8 +18,7 @@ class VagaMapper {
                 vaga.local,
                 vaga.nivel,
                 vaga.empresa?.id,
-                vaga.empresa?.nome,
-                vaga.competenciaIds != null ? new ArrayList<>(vaga.competenciaIds) : []
+                vaga.empresa?.nome
         )
     }
 
@@ -30,8 +29,7 @@ class VagaMapper {
                 vaga.descricao,
                 vaga.local,
                 vaga.nivel,
-                vaga.empresa?.id,
-                vaga.competenciaIds != null ? new ArrayList<>(vaga.competenciaIds) : []
+                vaga.empresa?.id
         )
     }
 
@@ -42,7 +40,6 @@ class VagaMapper {
         vaga.local = dto.local
         vaga.nivel = dto.nivel
         vaga.empresa = empresa
-        vaga.competenciaIds = dto.competenciaIds != null ? new ArrayList<>(dto.competenciaIds) : []
         return vaga
     }
 }

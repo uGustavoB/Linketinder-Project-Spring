@@ -6,6 +6,5 @@ record VagaPublicoResponseDTO(
     String descricao,
     String local,
     String nivel,
-    Long empresaId,
-    List<Long> competenciaIds
+    Long empresaId
 ) {}

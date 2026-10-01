@@ -7,7 +7,6 @@ record VagaResponseDTO(
         String local,
         String nivel,
         Long empresaId,
-        String empresaNome,
-        List<Long> competenciaIds
+        String empresaNome
 ) {
 }

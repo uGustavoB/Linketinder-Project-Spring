@@ -45,7 +45,6 @@ class AtualizarVagaUseCase implements IAtualizarVagaUseCase {
                 requestDTO.descricao,
                 requestDTO.local,
                 requestDTO.nivel,
-                requestDTO.competenciaIds,
                 novaEmpresa
         )
 

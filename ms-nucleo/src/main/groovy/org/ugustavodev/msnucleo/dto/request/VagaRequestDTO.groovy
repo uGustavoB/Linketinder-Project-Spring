@@ -18,8 +18,6 @@ class VagaRequestDTO {
     @NotNull(message = "O campo empresaId é obrigatório")
     Long empresaId
 
-    List<Long> competenciaIds = []
-
     void setNome(String nome) {
         this.nome = nome?.trim()
     }

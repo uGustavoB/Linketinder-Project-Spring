@@ -26,21 +26,13 @@ class Vaga {
     @JoinColumn(name = "empresa_id", nullable = false)
     Empresa empresa
 
-    @ElementCollection(fetch = FetchType.EAGER)
-    @CollectionTable(name = "vaga_competencias", joinColumns = @JoinColumn(name = "vaga_id"))
-    @Column(name = "competencia_id")
-    List<Long> competenciaIds = []
-
-    void atualizarDados(String nome, String descricao, String local, String nivel, List<Long> competenciaIds, Empresa empresa) {
+    void atualizarDados(String nome, String descricao, String local, String nivel, Empresa empresa) {
         this.nome = nome
         this.descricao = descricao
         this.local = local
         this.nivel = nivel
         if (empresa != null) {
             this.empresa = empresa
-        }
-        if (competenciaIds != null) {
-            this.competenciaIds = new ArrayList<>(competenciaIds)
         }
     }
 }
