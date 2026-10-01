@@ -7,13 +7,15 @@ import { ZardTableImports } from '@/shared/components/table/table.imports';
 import { ZardButtonComponent } from '@/shared/components/button/button.component';
 import { ZardSelectImports } from '@/shared/components/select/select.imports';
 import { ZardCardImports } from '@/shared/components/card/card.imports';
+import { ZardAlertDialogService } from '@/shared/components/alert-dialog/alert-dialog.service';
 import { toast } from 'ngx-sonner';
+import { forkJoin, of, switchMap } from 'rxjs';
 
 import { VagaService } from '@/core/services/vaga.service';
 import { AuthService } from '@/core/services/auth.service';
 import { CompetenciaService } from '@/core/services/competencia.service';
 import { Vaga } from '@/core/models/vaga.model';
-import { Competencia, VinculoRequest } from '@/core/models/competencia.model';
+import { Competencia, VinculoRequest, VinculoCompetencia } from '@/core/models/competencia.model';
 import { handleServerErrors, getFormValidationErrors } from '@/shared/utils/form-utils';
 
 @Component({
@@ -32,12 +34,18 @@ export class Vagas implements OnInit {
   public authService = inject(AuthService);
   private competenciaService = inject(CompetenciaService);
   private router = inject(Router);
+  private alertDialog = inject(ZardAlertDialogService);
 
+  // Listagem
   readonly vagas = signal<Vaga[]>([]);
   readonly isLoadingVagas = signal<boolean>(true);
 
-  readonly isCreatingVaga = signal<boolean>(false);
+  // Formulário
+  readonly isFormOpen = signal<boolean>(false);
   readonly isSaving = signal<boolean>(false);
+  readonly selectedVagaId = signal<number | null>(null);
+  private existingVinculos = signal<VinculoCompetencia[]>([]);
+
   readonly globalCompetencias = signal<Competencia[]>([]);
   readonly selectedCompetencias = signal<string[]>([]);
   readonly novaCompetenciaNome = signal<string>('');
@@ -58,7 +66,7 @@ export class Vagas implements OnInit {
     this.isLoadingVagas.set(true);
     const user = this.authService.currentUser();
     const empresaId = user?.tipoUsuario === 'EMPRESA' ? user.id : undefined;
-
+    
     this.vagaService.getVagas(empresaId).subscribe({
       next: (res: any) => {
         if (res.dados) {
@@ -84,22 +92,70 @@ export class Vagas implements OnInit {
       },
       error: (err: any) => {
         console.error('Erro ao buscar competências:', err);
-        toast.error('Não foi possível carregar as competências disponíveis.');
       }
     });
   }
 
   protected onNewVaga(): void {
-    this.isCreatingVaga.set(true);
+    this.selectedVagaId.set(null);
+    this.existingVinculos.set([]);
+    this.isFormOpen.set(true);
     if (this.globalCompetencias().length === 0) {
       this.loadCompetencias();
     }
   }
 
+  protected onEditVaga(vaga: Vaga): void {
+    this.selectedVagaId.set(vaga.id);
+    this.vagaForm.patchValue({
+      nome: vaga.nome,
+      descricao: vaga.descricao,
+      local: vaga.local,
+      nivel: vaga.nivel
+    });
+    
+    this.isFormOpen.set(true);
+    if (this.globalCompetencias().length === 0) {
+      this.loadCompetencias();
+    }
+
+    // Carregar competências existentes
+    this.competenciaService.getCompetenciasVaga(vaga.id).subscribe({
+      next: (res: any) => {
+        const vinculos = res.data || res.dados || [];
+        this.existingVinculos.set(vinculos);
+        const idsSelecionados = vinculos.map((v: VinculoCompetencia) => v.competencia.id.toString());
+        this.selectedCompetencias.set(idsSelecionados);
+      },
+      error: () => toast.error('Falha ao carregar as competências desta vaga.')
+    });
+  }
+
+  protected onDeleteVaga(vaga: Vaga): void {
+    this.alertDialog.confirm({
+      zTitle: 'Deletar Vaga',
+      zDescription: `Tem certeza que deseja deletar a vaga "${vaga.nome}"? Esta ação não pode ser desfeita.`,
+      zOkText: 'Sim, Deletar',
+      zCancelText: 'Cancelar',
+      zOkDestructive: true,
+      zOnOk: () => {
+        this.vagaService.deleteVaga(vaga.id).subscribe({
+          next: () => {
+            toast.success('Vaga deletada com sucesso.');
+            this.fetchVagas();
+          },
+          error: () => toast.error('Falha ao deletar a vaga.')
+        });
+      }
+    });
+  }
+
   protected onCancelForm(): void {
-    this.isCreatingVaga.set(false);
+    this.isFormOpen.set(false);
+    this.selectedVagaId.set(null);
     this.vagaForm.reset();
     this.selectedCompetencias.set([]);
+    this.existingVinculos.set([]);
   }
 
   protected onAddCompetencia(): void {
@@ -119,7 +175,6 @@ export class Vagas implements OnInit {
         this.isCreatingCompetencia.set(false);
       },
       error: (err: any) => {
-        console.error('Erro ao criar competência:', err);
         toast.error('Falha ao adicionar nova competência.');
         this.isCreatingCompetencia.set(false);
       }
@@ -136,44 +191,60 @@ export class Vagas implements OnInit {
 
     this.isSaving.set(true);
     const vagaDados = this.vagaForm.getRawValue();
+    const isEdit = !!this.selectedVagaId();
+    const request$ = isEdit 
+      ? this.vagaService.updateVaga(this.selectedVagaId()!, vagaDados) 
+      : this.vagaService.createVaga(vagaDados);
 
-    this.vagaService.createVaga(vagaDados).subscribe({
+    request$.subscribe({
       next: (res: any) => {
-        const vagaCriadaId = res.dados?.id || res.data?.id;
-        const selecionadas = this.selectedCompetencias();
-
-        if (selecionadas.length > 0 && vagaCriadaId) {
-          const vinculos: VinculoRequest[] = selecionadas.map(id => ({
-            competenciaId: parseInt(id),
-            nivel: 'MEDIO'
-          }));
-
-          this.competenciaService.vincularVaga(vagaCriadaId, vinculos).subscribe({
-            next: () => {
-              toast.success('Vaga criada e competências vinculadas com sucesso!');
-              this.isSaving.set(false);
-              this.onCancelForm();
-              this.fetchVagas(); // Atualiza a lista
-            },
-            error: (err: any) => {
-              toast.error('Vaga criada, mas falhou ao vincular competências.');
-              this.isSaving.set(false);
-              this.onCancelForm();
-              this.fetchVagas();
-            }
-          });
-        } else {
-          toast.success(res.mensagem || 'Vaga criada com sucesso!');
-          this.isSaving.set(false);
-          this.onCancelForm();
-          this.fetchVagas();
-        }
+        const vagaCriadaId = res.dados?.id || res.data?.id || this.selectedVagaId();
+        this.syncCompetencias(vagaCriadaId);
       },
       error: (err: any) => {
         this.isSaving.set(false);
         const mensagens = handleServerErrors(this.vagaForm, err);
         mensagens.forEach((msg) => toast.error(msg));
       },
+    });
+  }
+
+  private syncCompetencias(vagaId: number): void {
+    const desiredIds = this.selectedCompetencias().map(id => parseInt(id));
+    const existing = this.existingVinculos();
+    
+    // Identifica vínculos para remover
+    const toRemove = existing.filter(v => !desiredIds.includes(v.competencia.id));
+    
+    // Identifica novas competências para vincular
+    const existingIds = existing.map(v => v.competencia.id);
+    const toAddIds = desiredIds.filter(id => !existingIds.includes(id));
+
+    const removeObs$ = toRemove.length > 0 
+      ? forkJoin(toRemove.map(v => this.competenciaService.removerVinculoVaga(v.idVinculo)))
+      : of([]);
+
+    removeObs$.pipe(
+      switchMap(() => {
+        if (toAddIds.length > 0) {
+          const vinculos: VinculoRequest[] = toAddIds.map(id => ({ competenciaId: id, nivel: 'MEDIO' }));
+          return this.competenciaService.vincularVaga(vagaId, vinculos);
+        }
+        return of([]);
+      })
+    ).subscribe({
+      next: () => {
+        toast.success(this.selectedVagaId() ? 'Vaga atualizada com sucesso!' : 'Vaga criada com sucesso!');
+        this.isSaving.set(false);
+        this.onCancelForm();
+        this.fetchVagas();
+      },
+      error: () => {
+        toast.error('Vaga salva, mas falhou ao sincronizar algumas competências.');
+        this.isSaving.set(false);
+        this.onCancelForm();
+        this.fetchVagas();
+      }
     });
   }
 }

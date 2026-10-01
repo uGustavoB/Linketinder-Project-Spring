@@ -23,4 +23,12 @@ export class VagaService {
   createVaga(vaga: any): Observable<ApiResponse<Vaga>> {
     return this.http.post<ApiResponse<Vaga>>(this.apiUrl, vaga);
   }
+
+  updateVaga(id: number, vaga: any): Observable<ApiResponse<Vaga>> {
+    return this.http.put<ApiResponse<Vaga>>(`${this.apiUrl}/${id}`, vaga);
+  }
+
+  deleteVaga(id: number): Observable<ApiResponse<void>> {
+    return this.http.delete<ApiResponse<void>>(`${this.apiUrl}/${id}`);
+  }
 }

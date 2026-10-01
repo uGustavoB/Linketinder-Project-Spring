@@ -2,14 +2,14 @@
   <div class="p-6">
     <div class="flex justify-between items-center mb-4">
       <h3 class="font-semibold leading-none tracking-tight">
-        {{ isCreatingVaga() ? 'Criar Nova Vaga' : 'Listagem de Vagas' }}
+        {{ isFormOpen() ? (selectedVagaId() ? 'Editar Vaga' : 'Criar Nova Vaga') : 'Listagem de Vagas' }}
       </h3>
-      @if (authService.currentUser()?.tipoUsuario === 'EMPRESA' && !isCreatingVaga()) {
+      @if (authService.currentUser()?.tipoUsuario === 'EMPRESA' && !isFormOpen()) {
         <button z-button (click)="onNewVaga()">Nova Vaga</button>
       }
     </div>
 
-    @if (isCreatingVaga()) {
+    @if (isFormOpen()) {
       <div class="max-w-2xl mx-auto pt-4 pb-8">
         <form [formGroup]="vagaForm" (ngSubmit)="onSubmit()" class="space-y-4">
           <div class="space-y-2">
@@ -64,7 +64,7 @@
           <div class="flex justify-between pt-4 border-t mt-4">
             <button z-button type="button" zType="outline" (click)="onCancelForm()">Cancelar</button>
             <button z-button type="submit" [zDisabled]="isSaving()" [zLoading]="isSaving()">
-              {{ isSaving() ? 'Publicando...' : 'Publicar Vaga' }}
+              {{ isSaving() ? 'Salvando...' : 'Salvar Vaga' }}
             </button>
           </div>
         </form>
@@ -77,16 +77,19 @@
             <th z-table-head>Descrição</th>
             <th z-table-head>Local</th>
             <th z-table-head>Nível</th>
+            @if (authService.currentUser()?.tipoUsuario === 'EMPRESA') {
+              <th z-table-head class="text-right">Ações</th>
+            }
           </tr>
         </thead>
         <tbody z-table-body>
           @if (isLoadingVagas()) {
             <tr z-table-row>
-              <td z-table-cell colspan="4" class="text-center py-4">Carregando vagas...</td>
+              <td z-table-cell [colSpan]="authService.currentUser()?.tipoUsuario === 'EMPRESA' ? 5 : 4" class="text-center py-4">Carregando vagas...</td>
             </tr>
           } @else if (vagas().length === 0) {
             <tr z-table-row>
-              <td z-table-cell colspan="4" class="text-center py-4">Nenhuma vaga encontrada.</td>
+              <td z-table-cell [colSpan]="authService.currentUser()?.tipoUsuario === 'EMPRESA' ? 5 : 4" class="text-center py-4">Nenhuma vaga encontrada.</td>
             </tr>
           } @else {
             @for (vaga of vagas(); track vaga.id) {
@@ -101,6 +104,16 @@
                     {{ vaga.nivel }}
                   </span>
                 </td>
+                @if (authService.currentUser()?.tipoUsuario === 'EMPRESA') {
+                  <td z-table-cell class="text-right space-x-2">
+                    <button z-button zType="outline" zSize="sm" (click)="onEditVaga(vaga)" title="Editar Vaga">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></svg>
+                    </button>
+                    <button z-button zType="destructive" zSize="sm" (click)="onDeleteVaga(vaga)" title="Excluir Vaga">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
+                    </button>
+                  </td>
+                }
               </tr>
             }
           }
