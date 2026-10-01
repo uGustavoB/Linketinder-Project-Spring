@@ -27,6 +27,7 @@ import org.ugustavodev.msnucleo.usecase.interfaces.IEmpresaCurteCandidatoUseCase
 import org.ugustavodev.msnucleo.usecase.interfaces.IEmpresaDescurteCandidatoUseCase
 import org.ugustavodev.msnucleo.usecase.interfaces.IListarMatchesVagaUseCase
 import org.ugustavodev.msnucleo.usecase.interfaces.IListarVagasUseCase
+import org.ugustavodev.msnucleo.usecase.interfaces.IListarVagasSugeridasUseCase
 
 @RestController
 @RequestMapping("/api/vaga")
@@ -34,6 +35,7 @@ class VagaController {
     private final ICadastrarVagaUseCase cadastrarVagaUseCase
     private final IBuscarVagaPorIdUseCase buscarVagaPorIdUseCase
     private final IListarVagasUseCase listarVagasUseCase
+    private final IListarVagasSugeridasUseCase listarVagasSugeridasUseCase
     private final IAtualizarVagaUseCase atualizarVagaUseCase
     private final IDeletarVagaUseCase deletarVagaUseCase
     private final ICandidatoCurteVagaUseCase candidatoCurteVagaUseCase
@@ -48,6 +50,7 @@ class VagaController {
             ICadastrarVagaUseCase cadastrarVagaUseCase,
             IBuscarVagaPorIdUseCase buscarVagaPorIdUseCase,
             IListarVagasUseCase listarVagasUseCase,
+            IListarVagasSugeridasUseCase listarVagasSugeridasUseCase,
             IAtualizarVagaUseCase atualizarVagaUseCase,
             IDeletarVagaUseCase deletarVagaUseCase,
             ICandidatoCurteVagaUseCase candidatoCurteVagaUseCase,
@@ -61,6 +64,7 @@ class VagaController {
         this.cadastrarVagaUseCase = cadastrarVagaUseCase
         this.buscarVagaPorIdUseCase = buscarVagaPorIdUseCase
         this.listarVagasUseCase = listarVagasUseCase
+        this.listarVagasSugeridasUseCase = listarVagasSugeridasUseCase
         this.atualizarVagaUseCase = atualizarVagaUseCase
         this.deletarVagaUseCase = deletarVagaUseCase
         this.candidatoCurteVagaUseCase = candidatoCurteVagaUseCase
@@ -187,5 +191,15 @@ class VagaController {
         
         List<MatchVagaResponseDTO> matches = listarMatchesVagaUseCase.executar(idVaga, idEmpresa)
         return ResponseEntity.ok(ApiResponseDTO.sucesso(matches))
+    }
+
+    @PreAuthorize("hasRole('CANDIDATO')")
+    @GetMapping("/sugeridas")
+    ResponseEntity<ApiResponseDTO<List<VagaPublicoResponseDTO>>> listarVagasSugeridas(@AuthenticationPrincipal Usuario usuarioAutenticado) {
+        Candidato candidato = candidatoRepository.findByUsuarioEmail(usuarioAutenticado.getUsername())
+                .orElseThrow(() -> new RuntimeException("Candidato não encontrado"))
+        
+        List<VagaPublicoResponseDTO> vagas = listarVagasSugeridasUseCase.executar(candidato.getId())
+        return ResponseEntity.ok(ApiResponseDTO.sucesso(vagas))
     }
 }
