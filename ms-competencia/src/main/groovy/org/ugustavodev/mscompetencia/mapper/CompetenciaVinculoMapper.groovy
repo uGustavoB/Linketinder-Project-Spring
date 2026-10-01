@@ -4,6 +4,7 @@ import org.springframework.stereotype.Component
 import org.ugustavodev.mscompetencia.dto.response.CompetenciaVinculoResponseDTO
 import org.ugustavodev.mscompetencia.model.CompetenciaCandidato
 import org.ugustavodev.mscompetencia.model.CompetenciaEmpresa
+import org.ugustavodev.mscompetencia.model.CompetenciaVaga
 
 @Component
 class CompetenciaVinculoMapper {
@@ -22,6 +23,14 @@ class CompetenciaVinculoMapper {
     }
 
     CompetenciaVinculoResponseDTO toResponseDTO(CompetenciaEmpresa vinculo) {
+        return new CompetenciaVinculoResponseDTO(
+                vinculo.id,
+                competenciaMapper.toResponseDTO(vinculo.competencia),
+                vinculo.nivel
+        )
+    }
+
+    CompetenciaVinculoResponseDTO toResponseDTO(CompetenciaVaga vinculo) {
         return new CompetenciaVinculoResponseDTO(
                 vinculo.id,
                 competenciaMapper.toResponseDTO(vinculo.competencia),
