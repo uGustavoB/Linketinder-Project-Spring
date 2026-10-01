@@ -19,4 +19,8 @@ export class VagaService {
     }
     return this.http.get<ApiResponse<Vaga[]>>(this.apiUrl, { params });
   }
+
+  createVaga(vaga: any): Observable<ApiResponse<Vaga>> {
+    return this.http.post<ApiResponse<Vaga>>(this.apiUrl, vaga);
+  }
 }

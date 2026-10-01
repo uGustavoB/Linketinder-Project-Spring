@@ -1,39 +1,111 @@
 <div class="rounded-xl border bg-card text-card-foreground shadow">
   <div class="p-6">
-    <h3 class="font-semibold leading-none tracking-tight mb-4">Listagem de Vagas</h3>
-    <table z-table>
-      <thead z-table-header>
-        <tr z-table-row>
-          <th z-table-head>Vaga</th>
-          <th z-table-head>Descrição</th>
-          <th z-table-head>Local</th>
-          <th z-table-head>Nível</th>
-        </tr>
-      </thead>
-      <tbody z-table-body>
-        @if (isLoading()) {
+    <div class="flex justify-between items-center mb-4">
+      <h3 class="font-semibold leading-none tracking-tight">
+        {{ isCreatingVaga() ? 'Criar Nova Vaga' : 'Listagem de Vagas' }}
+      </h3>
+      @if (authService.currentUser()?.tipoUsuario === 'EMPRESA' && !isCreatingVaga()) {
+        <button z-button (click)="onNewVaga()">Nova Vaga</button>
+      }
+    </div>
+
+    @if (isCreatingVaga()) {
+      <div class="max-w-2xl mx-auto pt-4 pb-8">
+        <form [formGroup]="vagaForm" (ngSubmit)="onSubmit()" class="space-y-4">
+          <div class="space-y-2">
+            <label class="text-sm font-medium">Título da Vaga</label>
+            <input formControlName="nome" placeholder="Ex: Desenvolvedor Fullstack Sênior" class="border-input bg-background flex h-10 w-full rounded-md border px-3 py-2 text-sm focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none" />
+          </div>
+
+          <div class="grid grid-cols-2 gap-4">
+            <div class="space-y-2">
+              <label class="text-sm font-medium">Localização</label>
+              <input formControlName="local" placeholder="Ex: São Paulo - SP (Híbrido)" class="border-input bg-background flex h-10 w-full rounded-md border px-3 py-2 text-sm focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none" />
+            </div>
+            <div class="space-y-2">
+              <label class="text-sm font-medium">Nível de Experiência</label>
+              <select formControlName="nivel" class="border-input bg-background flex h-10 w-full rounded-md border px-3 py-2 text-sm focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none">
+                <option value="">Selecione...</option>
+                <option value="Júnior">Júnior</option>
+                <option value="Pleno">Pleno</option>
+                <option value="Sênior">Sênior</option>
+                <option value="Especialista">Especialista</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="space-y-2">
+            <label class="text-sm font-medium">Competências Exigidas</label>
+            <z-select
+              zPlaceholder="Selecione as tecnologias necessárias"
+              [zMultiple]="true"
+              [zMaxLabelCount]="5"
+              [(zValue)]="selectedCompetencias"
+            >
+              @for (comp of globalCompetencias(); track comp.id) {
+                <z-select-item [zValue]="comp.id.toString()">{{ comp.nome }}</z-select-item>
+              }
+            </z-select>
+            
+            <div class="flex gap-2 mt-3 items-center">
+              <input [(ngModel)]="novaCompetenciaNome" (ngModelChange)="novaCompetenciaNome.set($event)" [ngModelOptions]="{standalone: true}" placeholder="Ou cadastre uma nova..." class="border-input bg-background flex h-9 w-full rounded-md border px-3 py-1 text-sm focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none" />
+              <button z-button type="button" zSize="sm" zType="outline" [zDisabled]="isCreatingCompetencia() || !novaCompetenciaNome().trim()" [zLoading]="isCreatingCompetencia()" (click)="onAddCompetencia()">
+                Adicionar
+              </button>
+            </div>
+            <p class="text-xs text-muted-foreground mt-1">Selecione as tecnologias acima ou cadastre uma nova globalmente.</p>
+          </div>
+
+          <div class="space-y-2">
+            <label class="text-sm font-medium">Descrição Detalhada</label>
+            <textarea formControlName="descricao" rows="5" placeholder="Descreva as responsabilidades, requisitos adicionais e benefícios..." class="border-input bg-background flex w-full rounded-md border px-3 py-2 text-sm focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"></textarea>
+          </div>
+
+          <div class="flex justify-between pt-4 border-t mt-4">
+            <button z-button type="button" zType="outline" (click)="onCancelForm()">Cancelar</button>
+            <button z-button type="submit" [zDisabled]="isSaving()" [zLoading]="isSaving()">
+              {{ isSaving() ? 'Publicando...' : 'Publicar Vaga' }}
+            </button>
+          </div>
+        </form>
+      </div>
+    } @else {
+      <table z-table>
+        <thead z-table-header>
           <tr z-table-row>
-            <td z-table-cell colspan="4" class="text-center py-4">Carregando vagas...</td>
+            <th z-table-head>Vaga</th>
+            <th z-table-head>Descrição</th>
+            <th z-table-head>Local</th>
+            <th z-table-head>Nível</th>
           </tr>
-        } @else if (vagas().length === 0) {
-          <tr z-table-row>
-            <td z-table-cell colspan="4" class="text-center py-4">Nenhuma vaga encontrada.</td>
-          </tr>
-        } @else {
-          @for (vaga of vagas(); track vaga.id) {
+        </thead>
+        <tbody z-table-body>
+          @if (isLoadingVagas()) {
             <tr z-table-row>
-              <td z-table-cell class="font-medium">{{ vaga.nome }}</td>
-              <td z-table-cell class="max-w-xs truncate" [title]="vaga.descricao">{{ vaga.descricao }}</td>
-              <td z-table-cell>{{ vaga.local }}</td>
-              <td z-table-cell>
-                <span class="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2">
-                  {{ vaga.nivel }}
-                </span>
-              </td>
+              <td z-table-cell colspan="4" class="text-center py-4">Carregando vagas...</td>
             </tr>
+          } @else if (vagas().length === 0) {
+            <tr z-table-row>
+              <td z-table-cell colspan="4" class="text-center py-4">Nenhuma vaga encontrada.</td>
+            </tr>
+          } @else {
+            @for (vaga of vagas(); track vaga.id) {
+              <tr z-table-row>
+                <td z-table-cell class="font-medium">{{ vaga.nome }}</td>
+                <td z-table-cell class="max-w-xs truncate" [title]="vaga.descricao">
+                  {{ vaga.descricao }}
+                </td>
+                <td z-table-cell>{{ vaga.local }}</td>
+                <td z-table-cell>
+                  <span class="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2">
+                    {{ vaga.nivel }}
+                  </span>
+                </td>
+              </tr>
+            }
           }
-        }
-      </tbody>
-    </table>
+        </tbody>
+      </table>
+    }
   </div>
 </div>
