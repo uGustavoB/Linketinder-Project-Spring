@@ -21,19 +21,26 @@ class VincularCompetenciaVagaUseCase implements IVincularCompetenciaVagaUseCase 
     }
 
     @Override
-    CompetenciaVinculoResponseDTO executar(Long vagaId, VincularCompetenciaRequestDTO requestDTO) {
-        if (repository.existsByVagaIdAndCompetenciaId(vagaId, requestDTO.competenciaId)) {
-            throw new IllegalArgumentException("A vaga já possui esta competência vinculada.")
+    List<CompetenciaVinculoResponseDTO> executar(Long vagaId, List<VincularCompetenciaRequestDTO> requestDTOs) {
+        List<CompetenciaVinculoResponseDTO> result = new ArrayList<>()
+
+        for (VincularCompetenciaRequestDTO requestDTO : requestDTOs) {
+            if (repository.existsByVagaIdAndCompetenciaId(vagaId, requestDTO.competenciaId)) {
+                continue // Pula caso a vaga já possua esta competência vinculada
+            }
+            
+            Competencia competencia = competenciaRepository.findById(requestDTO.competenciaId)
+                    .orElseThrow(() -> new NoSuchElementException("Competência genérica com ID " + requestDTO.competenciaId + " não encontrada."))
+
+            CompetenciaVaga vinculo = new CompetenciaVaga()
+            vinculo.vagaId = vagaId
+            vinculo.competencia = competencia
+            vinculo.nivel = requestDTO.nivel
+
+            vinculo = repository.save(vinculo)
+            result.add(mapper.toResponseDTO(vinculo))
         }
-        Competencia competencia = competenciaRepository.findById(requestDTO.competenciaId)
-                .orElseThrow(() -> new NoSuchElementException("Competência genérica não encontrada."))
 
-        CompetenciaVaga vinculo = new CompetenciaVaga()
-        vinculo.vagaId = vagaId
-        vinculo.competencia = competencia
-        vinculo.nivel = requestDTO.nivel
-
-        vinculo = repository.save(vinculo)
-        return mapper.toResponseDTO(vinculo)
+        return result
     }
 }
