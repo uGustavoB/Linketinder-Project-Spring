@@ -26,13 +26,13 @@ export class Vagas implements OnInit {
     const empresaId = user?.tipoUsuario === 'EMPRESA' ? user.id : undefined;
     console.log('Fetching vagas for empresaId:', user);
     this.vagaService.getVagas(empresaId).subscribe({
-      next: (res) => {
+      next: (res: any) => {
         if (res.dados) {
           this.vagas.set(res.dados);
         }
         this.isLoading.set(false);
       },
-      error: (err) => {
+      error: (err: any) => {
         console.error('Erro ao buscar vagas', err);
         this.isLoading.set(false);
       },

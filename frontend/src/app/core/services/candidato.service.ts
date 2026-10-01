@@ -15,4 +15,8 @@ export class CandidatoService {
   getCandidatos(): Observable<ApiResponse<CandidatoProfile[]>> {
     return this.http.get<ApiResponse<CandidatoProfile[]>>(this.apiUrl);
   }
+
+  updateCandidato(id: number, dados: any): Observable<ApiResponse<any>> {
+    return this.http.put<ApiResponse<any>>(`${this.apiUrl}/candidato/${id}`, dados);
+  }
 }

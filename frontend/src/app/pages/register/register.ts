@@ -74,11 +74,11 @@ export class Register {
       : this.registerService.registerEmpresa(dados);
 
     request$.subscribe({
-      next: (res) => {
+      next: (res: any) => {
         toast.success(res.mensagem || 'Cadastro realizado com sucesso!');
         this.router.navigate(['/login']);
       },
-      error: (err) => {
+      error: (err: any) => {
         this.isLoading.set(false);
         const erroMsg = err.error?.mensagem || 'Erro ao fazer cadastro. Tente novamente.';
         toast.error(erroMsg);
