@@ -22,13 +22,13 @@ export class Candidatos implements OnInit {
 
   ngOnInit(): void {
     this.candidatoService.getCandidatos().subscribe({
-      next: (res) => {
+      next: (res: any) => {
         if (res.dados) {
           this.candidatos.set(res.dados);
         }
         this.isLoading.set(false);
       },
-      error: (err) => {
+      error: (err: any) => {
         console.error('Erro ao buscar candidatos', err);
         this.isLoading.set(false);
       },

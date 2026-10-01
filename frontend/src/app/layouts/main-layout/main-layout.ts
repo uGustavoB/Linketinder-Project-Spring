@@ -56,7 +56,7 @@ export class MainLayout {
   private readonly candidateItems: NavItem[] = [
     { title: 'Painel', path: '/dashboard', icon: 'lucideHouse' },
     { title: 'Explorar Vagas', path: '/vagas', icon: 'lucideSearch' },
-    { title: 'Meu Currículo', path: '/curriculo', icon: 'lucideFileText' },
+    { title: 'Meu Perfil', path: '/perfil', icon: 'lucideFileText' },
   ];
 
   private readonly companyItems: NavItem[] = [
@@ -85,7 +85,7 @@ export class MainLayout {
 
   logout() {
     this.authService.logout().subscribe({
-      next: (res) => {
+      next: (res: any) => {
         toast.success(res.mensagem || 'Logout realizado com sucesso');
         this.router.navigate(['/login']);
       },

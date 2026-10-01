@@ -35,13 +35,13 @@ export class Login {
     this.isLoading.set(true);
 
     this.authService.login(this.loginForm.getRawValue()).subscribe({
-      next: (res) => {
+      next: (res: any) => {
         toast.success(res.mensagem || 'Login realizado com sucesso!');
 
         const returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/dashboard';
         this.router.navigateByUrl(returnUrl);
       },
-      error: (err) => {
+      error: (err: any) => {
         this.isLoading.set(false);
         const erroMsg = err.error?.mensagem || 'Erro ao fazer login. Tente novamente.';
         toast.error(erroMsg);
