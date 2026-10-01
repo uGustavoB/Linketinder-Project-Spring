@@ -6,6 +6,7 @@ import { ZardButtonComponent } from '@/shared/components/button/button.component
 import { ZardIdDirective } from '@/shared/core';
 import { RegisterService } from '../../core/services/register.service';
 import { toast } from 'ngx-sonner';
+import { handleServerErrors, getFormValidationErrors } from '@/shared/utils/form-utils';
 import { CommonModule } from '@angular/common';
 
 @Component({
@@ -63,6 +64,8 @@ export class Register {
 
     if (form.invalid) {
       form.markAllAsTouched();
+      const erros = getFormValidationErrors(form);
+      erros.forEach((e: string) => toast.error(e));
       return;
     }
 
@@ -80,9 +83,8 @@ export class Register {
       },
       error: (err: any) => {
         this.isLoading.set(false);
-        const erroMsg = err.error?.mensagem || 'Erro ao fazer cadastro. Tente novamente.';
-        toast.error(erroMsg);
-        console.error('Register error:', err);
+        const mensagens = handleServerErrors(form, err);
+        mensagens.forEach((msg) => toast.error(msg));
       },
     });
   }

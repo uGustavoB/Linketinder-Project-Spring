@@ -44,7 +44,14 @@
         </div>
       </div>
       <div z-card-footer class="flex-col gap-2">
-        <button z-button zType="outline" type="submit" class="w-full" [zDisabled]="isLoading()" [zLoading]="isLoading()">
+        <button
+          z-button
+          zType="outline"
+          type="submit"
+          class="w-full"
+          [zDisabled]="isLoading()"
+          [zLoading]="isLoading()"
+        >
           {{ isLoading() ? 'Entrando...' : 'Entrar' }}
         </button>
       </div>

@@ -6,6 +6,7 @@ import { ZardButtonComponent } from '@/shared/components/button/button.component
 import { ZardIdDirective } from '@/shared/core';
 import { AuthService } from '../../core/services/auth.service';
 import { toast } from 'ngx-sonner';
+import { handleServerErrors, getFormValidationErrors } from '@/shared/utils/form-utils';
 
 @Component({
   imports: [ZardCardImports, ZardButtonComponent, ZardIdDirective, ReactiveFormsModule],
@@ -29,6 +30,8 @@ export class Login {
   protected onSubmit(): void {
     if (this.loginForm.invalid) {
       this.loginForm.markAllAsTouched();
+      const erros = getFormValidationErrors(this.loginForm);
+      erros.forEach((e: string) => toast.error(e));
       return;
     }
 
@@ -43,9 +46,8 @@ export class Login {
       },
       error: (err: any) => {
         this.isLoading.set(false);
-        const erroMsg = err.error?.mensagem || 'Erro ao fazer login. Tente novamente.';
-        toast.error(erroMsg);
-        console.error('Login error:', err);
+        const mensagens = handleServerErrors(this.loginForm, err);
+        mensagens.forEach((msg) => toast.error(msg));
       },
     });
   }

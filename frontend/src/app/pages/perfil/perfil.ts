@@ -7,6 +7,7 @@ import { PerfilService } from '@/core/services/perfil.service';
 import { AuthService } from '@/core/services/auth.service';
 import { ZardAlertDialogService } from '@/shared/components/alert-dialog/alert-dialog.service';
 import { toast } from 'ngx-sonner';
+import { handleServerErrors, getFormValidationErrors } from '@/shared/utils/form-utils';
 import { CommonModule } from '@angular/common';
 
 @Component({
@@ -68,6 +69,8 @@ export class Perfil implements OnInit {
   protected onSubmit(): void {
     if (this.perfilForm.invalid) {
       this.perfilForm.markAllAsTouched();
+      const erros = getFormValidationErrors(this.perfilForm);
+      erros.forEach((e: string) => toast.error(e));
       return;
     }
 
@@ -87,9 +90,8 @@ export class Perfil implements OnInit {
       },
       error: (err: any) => {
         this.isLoading.set(false);
-        const erroMsg = err.error?.mensagem || 'Erro ao atualizar perfil. Tente novamente.';
-        toast.error(erroMsg);
-        console.error('Update error:', err);
+        const mensagens = handleServerErrors(this.perfilForm, err);
+        mensagens.forEach((msg) => toast.error(msg));
       },
     });
   }
