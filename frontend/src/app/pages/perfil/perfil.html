@@ -2,14 +2,20 @@
   <z-card>
     <div z-card-header>
       <z-card-title zTitle="Meu Perfil" />
-      <z-card-description zDescription="Atualize suas informações pessoais e profissionais" />
+      <z-card-description zDescription="Atualize suas informações" />
     </div>
 
     <div z-card-content>
       @if (isFetching()) {
         <div class="py-10 text-center text-muted-foreground">Carregando perfil...</div>
       } @else {
-        <form [formGroup]="perfilForm" (ngSubmit)="onSubmit()" class="space-y-4">
+        <!-- CANDIDATO FORM -->
+        <form
+          *ngIf="userType() === 'CANDIDATO'"
+          [formGroup]="perfilForm"
+          (ngSubmit)="onSubmit()"
+          class="space-y-4"
+        >
           <div class="grid grid-cols-2 gap-4">
             <div class="space-y-2">
               <label class="text-sm font-medium">Nome</label>
@@ -90,6 +96,104 @@
 
           <div class="space-y-2">
             <label class="text-sm font-medium">Descrição (Sobre mim)</label>
+            <textarea
+              formControlName="descricao"
+              rows="4"
+              class="border-input bg-background flex w-full rounded-md border px-3 py-2 text-sm focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+            ></textarea>
+          </div>
+
+          <div class="flex justify-between items-center pt-4 border-t mt-4">
+            <button
+              z-button
+              type="button"
+              zType="destructive"
+              [zDisabled]="isDeleting()"
+              [zLoading]="isDeleting()"
+              (click)="onDelete()"
+            >
+              Deletar Conta
+            </button>
+            <button
+              z-button
+              type="submit"
+              [zDisabled]="isLoading() || isDeleting()"
+              [zLoading]="isLoading()"
+            >
+              {{ isLoading() ? 'Salvando...' : 'Salvar Alterações' }}
+            </button>
+          </div>
+        </form>
+
+        <!-- EMPRESA FORM -->
+        <form
+          *ngIf="userType() === 'EMPRESA'"
+          [formGroup]="empresaForm"
+          (ngSubmit)="onSubmit()"
+          class="space-y-4"
+        >
+          <div class="space-y-2">
+            <label class="text-sm font-medium">Razão Social / Nome</label>
+            <input
+              formControlName="nome"
+              class="border-input bg-background flex h-10 w-full rounded-md border px-3 py-2 text-sm focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+            />
+          </div>
+
+          <div class="grid grid-cols-2 gap-4">
+            <div class="space-y-2">
+              <label class="text-sm font-medium">CNPJ</label>
+              <input
+                formControlName="cnpj"
+                class="border-input bg-background flex h-10 w-full rounded-md border px-3 py-2 text-sm focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+              />
+            </div>
+            <div class="space-y-2">
+              <label class="text-sm font-medium">Email</label>
+              <input
+                type="email"
+                formControlName="email"
+                class="border-input bg-background flex h-10 w-full rounded-md border px-3 py-2 text-sm focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+              />
+            </div>
+          </div>
+
+          <div class="space-y-2">
+            <label class="text-sm font-medium">Senha</label>
+            <input
+              type="password"
+              formControlName="senha"
+              placeholder="Digite sua senha ou uma nova para salvar"
+              class="border-input bg-background flex h-10 w-full rounded-md border px-3 py-2 text-sm focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+            />
+          </div>
+
+          <div class="grid grid-cols-3 gap-4">
+            <div class="space-y-2 col-span-1">
+              <label class="text-sm font-medium">País</label>
+              <input
+                formControlName="pais"
+                class="border-input bg-background flex h-10 w-full rounded-md border px-3 py-2 text-sm focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+              />
+            </div>
+            <div class="space-y-2 col-span-1">
+              <label class="text-sm font-medium">Estado</label>
+              <input
+                formControlName="estado"
+                class="border-input bg-background flex h-10 w-full rounded-md border px-3 py-2 text-sm focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+              />
+            </div>
+            <div class="space-y-2 col-span-1">
+              <label class="text-sm font-medium">CEP</label>
+              <input
+                formControlName="cep"
+                class="border-input bg-background flex h-10 w-full rounded-md border px-3 py-2 text-sm focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+              />
+            </div>
+          </div>
+
+          <div class="space-y-2">
+            <label class="text-sm font-medium">Descrição da Empresa</label>
             <textarea
               formControlName="descricao"
               rows="4"

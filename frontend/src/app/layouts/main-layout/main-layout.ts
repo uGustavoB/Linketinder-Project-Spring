@@ -63,6 +63,7 @@ export class MainLayout {
     { title: 'Painel', path: '/dashboard', icon: 'lucideHouse' },
     { title: 'Vagas Publicadas', path: '/vagas', icon: 'lucideBriefcase' },
     { title: 'Candidatos', path: '/candidatos', icon: 'lucideSearch' },
+    { title: 'Perfil da Empresa', path: '/perfil', icon: 'lucideFileText' },
   ];
 
   readonly currentNavItems = computed(() => {

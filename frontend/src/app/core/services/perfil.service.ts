@@ -14,12 +14,4 @@ export class PerfilService {
   getPerfil(): Observable<ApiResponse<any>> {
     return this.http.get<ApiResponse<any>>(`${this.apiUrl}/perfil`);
   }
-
-  updateCandidato(id: number, dados: any): Observable<ApiResponse<any>> {
-    return this.http.put<ApiResponse<any>>(`${this.apiUrl}/candidato/${id}`, dados);
-  }
-
-  deleteCandidato(id: number): Observable<ApiResponse<any>> {
-    return this.http.delete<ApiResponse<any>>(`${this.apiUrl}/candidato/${id}`);
-  }
 }

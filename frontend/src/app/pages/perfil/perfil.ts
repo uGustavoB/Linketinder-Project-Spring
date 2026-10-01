@@ -4,6 +4,8 @@ import { Router } from '@angular/router';
 import { ZardCardImports } from '@/shared/components/card/card.imports';
 import { ZardButtonComponent } from '@/shared/components/button/button.component';
 import { PerfilService } from '@/core/services/perfil.service';
+import { CandidatoService } from '@/core/services/candidato.service';
+import { EmpresaService } from '@/core/services/empresa.service';
 import { AuthService } from '@/core/services/auth.service';
 import { ZardAlertDialogService } from '@/shared/components/alert-dialog/alert-dialog.service';
 import { toast } from 'ngx-sonner';
@@ -19,6 +21,8 @@ import { CommonModule } from '@angular/common';
 export class Perfil implements OnInit {
   private fb = inject(FormBuilder);
   private perfilService = inject(PerfilService);
+  private candidatoService = inject(CandidatoService);
+  private empresaService = inject(EmpresaService);
   private authService = inject(AuthService);
   private alertDialog = inject(ZardAlertDialogService);
   private router = inject(Router);
@@ -26,6 +30,7 @@ export class Perfil implements OnInit {
   public isLoading = signal(false);
   public isFetching = signal(true);
   public isDeleting = signal(false);
+  public userType = signal<'CANDIDATO' | 'EMPRESA'>('CANDIDATO');
 
   public perfilForm = this.fb.nonNullable.group({
     nome: ['', Validators.required],
@@ -40,21 +45,49 @@ export class Perfil implements OnInit {
     descricao: [''],
   });
 
+  public empresaForm = this.fb.nonNullable.group({
+    nome: ['', Validators.required],
+    cnpj: ['', Validators.required],
+    email: ['', [Validators.required, Validators.email]],
+    senha: ['', [Validators.required, Validators.minLength(6)]],
+    pais: ['', Validators.required],
+    estado: ['', Validators.required],
+    cep: ['', Validators.required],
+    descricao: [''],
+  });
+
   ngOnInit(): void {
+    const user = this.authService.currentUser();
+    if (user?.tipoUsuario === 'EMPRESA') {
+      this.userType.set('EMPRESA');
+    }
+
     this.perfilService.getPerfil().subscribe({
       next: (res: any) => {
         if (res.dados) {
-          this.perfilForm.patchValue({
-            nome: res.dados.nome,
-            sobrenome: res.dados.sobrenome,
-            dataNascimento: res.dados.dataNascimento,
-            email: res.dados.email,
-            cpf: res.dados.cpf,
-            pais: res.dados.pais,
-            estado: res.dados.estado,
-            cep: res.dados.cep,
-            descricao: res.dados.descricao,
-          });
+          if (res.dados.tipoUsuario === 'EMPRESA' || this.userType() === 'EMPRESA') {
+            this.empresaForm.patchValue({
+              nome: res.dados.nome,
+              cnpj: res.dados.cnpj,
+              email: res.dados.email,
+              pais: res.dados.pais,
+              estado: res.dados.estado,
+              cep: res.dados.cep,
+              descricao: res.dados.descricao,
+            });
+          } else {
+            this.perfilForm.patchValue({
+              nome: res.dados.nome,
+              sobrenome: res.dados.sobrenome,
+              dataNascimento: res.dados.dataNascimento,
+              email: res.dados.email,
+              cpf: res.dados.cpf,
+              pais: res.dados.pais,
+              estado: res.dados.estado,
+              cep: res.dados.cep,
+              descricao: res.dados.descricao,
+            });
+          }
         }
         this.isFetching.set(false);
       },
@@ -67,9 +100,12 @@ export class Perfil implements OnInit {
   }
 
   protected onSubmit(): void {
-    if (this.perfilForm.invalid) {
-      this.perfilForm.markAllAsTouched();
-      const erros = getFormValidationErrors(this.perfilForm);
+    const isCandidato = this.userType() === 'CANDIDATO';
+    const form = isCandidato ? this.perfilForm : this.empresaForm;
+
+    if (form.invalid) {
+      form.markAllAsTouched();
+      const erros = getFormValidationErrors(form);
       erros.forEach((e: string) => toast.error(e));
       return;
     }
@@ -81,16 +117,20 @@ export class Perfil implements OnInit {
     }
 
     this.isLoading.set(true);
-    const dados = this.perfilForm.getRawValue();
+    const dados = form.getRawValue();
 
-    this.perfilService.updateCandidato(user.id, dados).subscribe({
+    const request$ = isCandidato
+      ? this.candidatoService.updateCandidato(user.id, dados)
+      : this.empresaService.updateEmpresa(user.id, dados);
+
+    request$.subscribe({
       next: (res: any) => {
         toast.success(res.mensagem || 'Perfil atualizado com sucesso!');
         this.isLoading.set(false);
       },
       error: (err: any) => {
         this.isLoading.set(false);
-        const mensagens = handleServerErrors(this.perfilForm, err);
+        const mensagens = handleServerErrors(form, err);
         mensagens.forEach((msg) => toast.error(msg));
       },
     });
@@ -109,7 +149,12 @@ export class Perfil implements OnInit {
         if (!user || !user.id) return;
 
         this.isDeleting.set(true);
-        this.perfilService.deleteCandidato(user.id).subscribe({
+        const isCandidato = this.userType() === 'CANDIDATO';
+        const request$ = isCandidato
+          ? this.candidatoService.deleteCandidato(user.id)
+          : this.empresaService.deleteEmpresa(user.id);
+
+        request$.subscribe({
           next: (res: any) => {
             toast.success(res.mensagem || 'Conta deletada com sucesso.');
             this.authService.isAuthenticated.set(false);
