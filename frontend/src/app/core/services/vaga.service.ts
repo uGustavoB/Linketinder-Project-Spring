@@ -24,6 +24,14 @@ export class VagaService {
     return this.http.get<ApiResponse<Vaga[]>>(`${this.apiUrl}/sugeridas`);
   }
 
+  getCandidatosSugeridos(idVaga: number): Observable<ApiResponse<any[]>> {
+    return this.http.get<ApiResponse<any[]>>(`${this.apiUrl}/${idVaga}/candidatos/sugeridos`);
+  }
+
+  getCandidatosInteressados(idVaga: number): Observable<ApiResponse<any[]>> {
+    return this.http.get<ApiResponse<any[]>>(`${this.apiUrl}/${idVaga}/candidatos/interessados`);
+  }
+
   createVaga(vaga: any): Observable<ApiResponse<Vaga>> {
     return this.http.post<ApiResponse<Vaga>>(this.apiUrl, vaga);
   }

@@ -2,10 +2,33 @@
   <div class="p-6">
     <div class="flex justify-between items-center mb-4">
       <h3 class="font-semibold leading-none tracking-tight">
-        {{ isFormOpen() ? (selectedVagaId() ? 'Editar Vaga' : 'Criar Nova Vaga') : 'Listagem de Vagas' }}
+        @if (viewingCandidatosVagaId()) {
+          Candidatos da Vaga
+        } @else if (isFormOpen()) {
+          {{ selectedVagaId() ? 'Editar Vaga' : 'Criar Nova Vaga' }}
+        } @else {
+          Listagem de Vagas
+        }
       </h3>
       <div class="flex gap-2">
-        @if (authService.currentUser()?.tipoUsuario === 'CANDIDATO' && !isFormOpen()) {
+        @if (viewingCandidatosVagaId()) {
+          <div class="inline-flex h-9 items-center justify-center rounded-lg bg-muted p-1 text-muted-foreground">
+            <button
+              (click)="toggleCandidatosMode('SUGERIDOS')"
+              [class]="'inline-flex items-center justify-center whitespace-nowrap rounded-md px-3 py-1 text-sm font-medium ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ' + (viewingCandidatosMode() === 'SUGERIDOS' ? 'bg-background text-foreground shadow-sm' : 'hover:bg-background/50 text-muted-foreground/80')"
+            >
+              Sugeridos
+            </button>
+            <button
+              (click)="toggleCandidatosMode('INTERESSADOS')"
+              [class]="'inline-flex items-center justify-center whitespace-nowrap rounded-md px-3 py-1 text-sm font-medium ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ' + (viewingCandidatosMode() === 'INTERESSADOS' ? 'bg-background text-foreground shadow-sm' : 'hover:bg-background/50 text-muted-foreground/80')"
+            >
+              Interessados
+            </button>
+          </div>
+          <button z-button zType="outline" (click)="onBackToVagas()">Voltar</button>
+        }
+        @if (authService.currentUser()?.tipoUsuario === 'CANDIDATO' && !isFormOpen() && !viewingCandidatosVagaId()) {
           <div class="inline-flex h-9 items-center justify-center rounded-lg bg-muted p-1 text-muted-foreground">
             <button
               (click)="toggleFilterMode('TODAS')"
@@ -21,7 +44,7 @@
             </button>
           </div>
         }
-        @if (authService.currentUser()?.tipoUsuario === 'EMPRESA' && !isFormOpen()) {
+        @if (authService.currentUser()?.tipoUsuario === 'EMPRESA' && !isFormOpen() && !viewingCandidatosVagaId()) {
           <button z-button (click)="onNewVaga()">Nova Vaga</button>
         }
       </div>
@@ -87,6 +110,37 @@
           </div>
         </form>
       </div>
+    } @else if (viewingCandidatosVagaId()) {
+      <div class="pt-4">
+        <table z-table>
+          <thead z-table-header>
+            <tr z-table-row>
+              <th z-table-head>Nome/ID</th>
+              <th z-table-head>Descrição</th>
+              <th z-table-head>Localização</th>
+            </tr>
+          </thead>
+          <tbody z-table-body>
+            @if (isLoadingCandidatos()) {
+              <tr z-table-row>
+                <td z-table-cell colspan="3" class="text-center py-4">Carregando candidatos...</td>
+              </tr>
+            } @else if (candidatosVaga().length === 0) {
+              <tr z-table-row>
+                <td z-table-cell colspan="3" class="text-center py-4">Nenhum candidato encontrado.</td>
+              </tr>
+            } @else {
+              @for (candidato of candidatosVaga(); track candidato.id) {
+                <tr z-table-row>
+                  <td z-table-cell class="font-medium">Candidato #{{ candidato.id }}</td>
+                  <td z-table-cell class="max-w-xs truncate" [title]="candidato.descricao">{{ candidato.descricao || '-' }}</td>
+                  <td z-table-cell>{{ candidato.estado ? (candidato.estado + ' - ' + candidato.pais) : (candidato.pais || '-') }}</td>
+                </tr>
+              }
+            }
+          </tbody>
+        </table>
+      </div>
     } @else {
       <table z-table>
         <thead z-table-header>
@@ -124,6 +178,9 @@
                 </td>
                 @if (authService.currentUser()?.tipoUsuario === 'EMPRESA') {
                   <td z-table-cell class="text-right space-x-2">
+                    <button z-button zType="outline" zSize="sm" (click)="onViewCandidatos(vaga)" title="Ver Candidatos">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                    </button>
                     <button z-button zType="outline" zSize="sm" (click)="onEditVaga(vaga)" title="Editar Vaga">
                       <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></svg>
                     </button>

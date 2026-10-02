@@ -47,6 +47,12 @@ export class Vagas implements OnInit {
   readonly selectedVagaId = signal<number | null>(null);
   private existingVinculos = signal<VinculoCompetencia[]>([]);
 
+  // Visualização de Candidatos
+  readonly viewingCandidatosVagaId = signal<number | null>(null);
+  readonly viewingCandidatosMode = signal<'SUGERIDOS' | 'INTERESSADOS'>('SUGERIDOS');
+  readonly candidatosVaga = signal<any[]>([]);
+  readonly isLoadingCandidatos = signal<boolean>(false);
+
   readonly globalCompetencias = signal<Competencia[]>([]);
   readonly selectedCompetencias = signal<string[]>([]);
   readonly novaCompetenciaNome = signal<string>('');
@@ -61,6 +67,47 @@ export class Vagas implements OnInit {
 
   ngOnInit(): void {
     this.fetchVagas();
+  }
+
+  public onViewCandidatos(vaga: Vaga): void {
+    this.viewingCandidatosVagaId.set(vaga.id);
+    this.viewingCandidatosMode.set('SUGERIDOS');
+    this.fetchCandidatosVaga();
+  }
+
+  public fetchCandidatosVaga(): void {
+    const vagaId = this.viewingCandidatosVagaId();
+    if (!vagaId) return;
+
+    this.isLoadingCandidatos.set(true);
+    const mode = this.viewingCandidatosMode();
+    const request$ = mode === 'SUGERIDOS' 
+      ? this.vagaService.getCandidatosSugeridos(vagaId)
+      : this.vagaService.getCandidatosInteressados(vagaId);
+
+    request$.subscribe({
+      next: (res: any) => {
+        const data = res.dados || res.data || [];
+        this.candidatosVaga.set(data);
+        this.isLoadingCandidatos.set(false);
+      },
+      error: () => {
+        toast.error('Erro ao buscar candidatos.');
+        this.isLoadingCandidatos.set(false);
+      }
+    });
+  }
+
+  public toggleCandidatosMode(mode: 'SUGERIDOS' | 'INTERESSADOS'): void {
+    if (this.viewingCandidatosMode() !== mode) {
+      this.viewingCandidatosMode.set(mode);
+      this.fetchCandidatosVaga();
+    }
+  }
+
+  public onBackToVagas(): void {
+    this.viewingCandidatosVagaId.set(null);
+    this.candidatosVaga.set([]);
   }
 
   public fetchVagas(): void {
