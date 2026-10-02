@@ -28,6 +28,9 @@ import org.ugustavodev.msnucleo.usecase.interfaces.IEmpresaDescurteCandidatoUseC
 import org.ugustavodev.msnucleo.usecase.interfaces.IListarMatchesVagaUseCase
 import org.ugustavodev.msnucleo.usecase.interfaces.IListarVagasUseCase
 import org.ugustavodev.msnucleo.usecase.interfaces.IListarVagasSugeridasUseCase
+import org.ugustavodev.msnucleo.usecase.interfaces.IListarCandidatosSugeridosUseCase
+import org.ugustavodev.msnucleo.usecase.interfaces.IListarCandidatosInteressadosUseCase
+import org.ugustavodev.msnucleo.dto.response.CandidatoPublicoResponseDTO
 
 @RestController
 @RequestMapping("/api/vaga")
@@ -36,6 +39,8 @@ class VagaController {
     private final IBuscarVagaPorIdUseCase buscarVagaPorIdUseCase
     private final IListarVagasUseCase listarVagasUseCase
     private final IListarVagasSugeridasUseCase listarVagasSugeridasUseCase
+    private final IListarCandidatosSugeridosUseCase listarCandidatosSugeridosUseCase
+    private final IListarCandidatosInteressadosUseCase listarCandidatosInteressadosUseCase
     private final IAtualizarVagaUseCase atualizarVagaUseCase
     private final IDeletarVagaUseCase deletarVagaUseCase
     private final ICandidatoCurteVagaUseCase candidatoCurteVagaUseCase
@@ -51,6 +56,8 @@ class VagaController {
             IBuscarVagaPorIdUseCase buscarVagaPorIdUseCase,
             IListarVagasUseCase listarVagasUseCase,
             IListarVagasSugeridasUseCase listarVagasSugeridasUseCase,
+            IListarCandidatosSugeridosUseCase listarCandidatosSugeridosUseCase,
+            IListarCandidatosInteressadosUseCase listarCandidatosInteressadosUseCase,
             IAtualizarVagaUseCase atualizarVagaUseCase,
             IDeletarVagaUseCase deletarVagaUseCase,
             ICandidatoCurteVagaUseCase candidatoCurteVagaUseCase,
@@ -65,6 +72,8 @@ class VagaController {
         this.buscarVagaPorIdUseCase = buscarVagaPorIdUseCase
         this.listarVagasUseCase = listarVagasUseCase
         this.listarVagasSugeridasUseCase = listarVagasSugeridasUseCase
+        this.listarCandidatosSugeridosUseCase = listarCandidatosSugeridosUseCase
+        this.listarCandidatosInteressadosUseCase = listarCandidatosInteressadosUseCase
         this.atualizarVagaUseCase = atualizarVagaUseCase
         this.deletarVagaUseCase = deletarVagaUseCase
         this.candidatoCurteVagaUseCase = candidatoCurteVagaUseCase
@@ -201,5 +210,31 @@ class VagaController {
         
         List<VagaPublicoResponseDTO> vagas = listarVagasSugeridasUseCase.executar(candidato.getId())
         return ResponseEntity.ok(ApiResponseDTO.sucesso(vagas))
+    }
+
+    @PreAuthorize("hasRole('EMPRESA')")
+    @GetMapping("/{idVaga}/candidatos/sugeridos")
+    ResponseEntity<ApiResponseDTO<List<CandidatoPublicoResponseDTO>>> listarCandidatosSugeridos(
+            @PathVariable("idVaga") Long idVaga,
+            @AuthenticationPrincipal Usuario usuarioAutenticado
+    ) {
+        Empresa empresa = empresaRepository.findByUsuarioEmail(usuarioAutenticado.getUsername())
+                .orElseThrow(() -> new RuntimeException("Empresa não encontrada"))
+        
+        List<CandidatoPublicoResponseDTO> candidatos = listarCandidatosSugeridosUseCase.executar(idVaga, empresa.getId())
+        return ResponseEntity.ok(ApiResponseDTO.sucesso(candidatos))
+    }
+
+    @PreAuthorize("hasRole('EMPRESA')")
+    @GetMapping("/{idVaga}/candidatos/interessados")
+    ResponseEntity<ApiResponseDTO<List<CandidatoPublicoResponseDTO>>> listarCandidatosInteressados(
+            @PathVariable("idVaga") Long idVaga,
+            @AuthenticationPrincipal Usuario usuarioAutenticado
+    ) {
+        Empresa empresa = empresaRepository.findByUsuarioEmail(usuarioAutenticado.getUsername())
+                .orElseThrow(() -> new RuntimeException("Empresa não encontrada"))
+        
+        List<CandidatoPublicoResponseDTO> candidatos = listarCandidatosInteressadosUseCase.executar(idVaga, empresa.getId())
+        return ResponseEntity.ok(ApiResponseDTO.sucesso(candidatos))
     }
 }
