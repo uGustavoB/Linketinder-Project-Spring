@@ -39,6 +39,7 @@ export class Vagas implements OnInit {
   // Listagem
   readonly vagas = signal<Vaga[]>([]);
   readonly isLoadingVagas = signal<boolean>(true);
+  readonly filterMode = signal<'TODAS' | 'SUGERIDAS'>('TODAS');
 
   // Formulário
   readonly isFormOpen = signal<boolean>(false);
@@ -62,16 +63,22 @@ export class Vagas implements OnInit {
     this.fetchVagas();
   }
 
-  private fetchVagas(): void {
+  public fetchVagas(): void {
     this.isLoadingVagas.set(true);
     const user = this.authService.currentUser();
-    const empresaId = user?.tipoUsuario === 'EMPRESA' ? user.id : undefined;
+    const isEmpresa = user?.tipoUsuario === 'EMPRESA';
+    const empresaId = isEmpresa ? user.id : undefined;
     
-    this.vagaService.getVagas(empresaId).subscribe({
+    let request$ = this.vagaService.getVagas(empresaId);
+
+    if (!isEmpresa && this.filterMode() === 'SUGERIDAS') {
+      request$ = this.vagaService.getVagasSugeridasCandidato();
+    }
+    
+    request$.subscribe({
       next: (res: any) => {
-        if (res.dados) {
-          this.vagas.set(res.dados);
-        }
+        const vagasData = res.dados || res.data || [];
+        this.vagas.set(vagasData);
         this.isLoadingVagas.set(false);
       },
       error: (err: any) => {
@@ -80,6 +87,13 @@ export class Vagas implements OnInit {
         this.isLoadingVagas.set(false);
       },
     });
+  }
+
+  public toggleFilterMode(mode: 'TODAS' | 'SUGERIDAS'): void {
+    if (this.filterMode() !== mode) {
+      this.filterMode.set(mode);
+      this.fetchVagas();
+    }
   }
 
   private loadCompetencias(): void {

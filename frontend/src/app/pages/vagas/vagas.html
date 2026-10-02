@@ -4,9 +4,27 @@
       <h3 class="font-semibold leading-none tracking-tight">
         {{ isFormOpen() ? (selectedVagaId() ? 'Editar Vaga' : 'Criar Nova Vaga') : 'Listagem de Vagas' }}
       </h3>
-      @if (authService.currentUser()?.tipoUsuario === 'EMPRESA' && !isFormOpen()) {
-        <button z-button (click)="onNewVaga()">Nova Vaga</button>
-      }
+      <div class="flex gap-2">
+        @if (authService.currentUser()?.tipoUsuario === 'CANDIDATO' && !isFormOpen()) {
+          <div class="inline-flex h-9 items-center justify-center rounded-lg bg-muted p-1 text-muted-foreground">
+            <button
+              (click)="toggleFilterMode('TODAS')"
+              [class]="'inline-flex items-center justify-center whitespace-nowrap rounded-md px-3 py-1 text-sm font-medium ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ' + (filterMode() === 'TODAS' ? 'bg-background text-foreground shadow-sm' : 'hover:bg-background/50 text-muted-foreground/80')"
+            >
+              Todas
+            </button>
+            <button
+              (click)="toggleFilterMode('SUGERIDAS')"
+              [class]="'inline-flex items-center justify-center whitespace-nowrap rounded-md px-3 py-1 text-sm font-medium ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ' + (filterMode() === 'SUGERIDAS' ? 'bg-background text-foreground shadow-sm' : 'hover:bg-background/50 text-muted-foreground/80')"
+            >
+              Sugeridas
+            </button>
+          </div>
+        }
+        @if (authService.currentUser()?.tipoUsuario === 'EMPRESA' && !isFormOpen()) {
+          <button z-button (click)="onNewVaga()">Nova Vaga</button>
+        }
+      </div>
     </div>
 
     @if (isFormOpen()) {
