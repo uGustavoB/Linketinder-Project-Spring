@@ -7,16 +7,17 @@
           <th z-table-head class="w-[80px]">ID</th>
           <th z-table-head class="w-[200px]">Local</th>
           <th z-table-head>Descrição</th>
+          <th z-table-head class="w-[120px] text-right">Competências</th>
         </tr>
       </thead>
       <tbody z-table-body>
         @if (isLoading()) {
           <tr z-table-row>
-            <td z-table-cell colspan="3" class="text-center py-4">Carregando candidatos...</td>
+            <td z-table-cell colspan="4" class="text-center py-4">Carregando candidatos...</td>
           </tr>
         } @else if (candidatos().length === 0) {
           <tr z-table-row>
-            <td z-table-cell colspan="3" class="text-center py-4">Nenhum candidato encontrado.</td>
+            <td z-table-cell colspan="4" class="text-center py-4">Nenhum candidato encontrado.</td>
           </tr>
         } @else {
           @for (candidato of candidatos(); track candidato.id) {
@@ -25,6 +26,11 @@
               <td z-table-cell>{{ candidato.estado }}, {{ candidato.pais }}</td>
               <td z-table-cell class="max-w-md truncate" [title]="candidato.descricao">
                 {{ candidato.descricao }}
+              </td>
+              <td z-table-cell class="text-right">
+                <button type="button" z-button zType="outline" zSize="sm" (click)="openCompetencias(candidato)">
+                  Ver Mais
+                </button>
               </td>
             </tr>
           }

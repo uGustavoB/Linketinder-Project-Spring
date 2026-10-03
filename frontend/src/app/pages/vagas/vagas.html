@@ -118,16 +118,17 @@
               <th z-table-head>Nome/ID</th>
               <th z-table-head>Descrição</th>
               <th z-table-head>Localização</th>
+              <th z-table-head class="w-[120px] text-right">Ações</th>
             </tr>
           </thead>
           <tbody z-table-body>
             @if (isLoadingCandidatos()) {
               <tr z-table-row>
-                <td z-table-cell colspan="3" class="text-center py-4">Carregando candidatos...</td>
+                <td z-table-cell colspan="4" class="text-center py-4">Carregando candidatos...</td>
               </tr>
             } @else if (candidatosVaga().length === 0) {
               <tr z-table-row>
-                <td z-table-cell colspan="3" class="text-center py-4">Nenhum candidato encontrado.</td>
+                <td z-table-cell colspan="4" class="text-center py-4">Nenhum candidato encontrado.</td>
               </tr>
             } @else {
               @for (candidato of candidatosVaga(); track candidato.id) {
@@ -135,6 +136,11 @@
                   <td z-table-cell class="font-medium">Candidato #{{ candidato.id }}</td>
                   <td z-table-cell class="max-w-xs truncate" [title]="candidato.descricao">{{ candidato.descricao || '-' }}</td>
                   <td z-table-cell>{{ candidato.estado ? (candidato.estado + ' - ' + candidato.pais) : (candidato.pais || '-') }}</td>
+                  <td z-table-cell class="text-right">
+                    <button type="button" z-button zType="outline" zSize="sm" (click)="openCompetencias(candidato)">
+                      Ver Mais
+                    </button>
+                  </td>
                 </tr>
               }
             }

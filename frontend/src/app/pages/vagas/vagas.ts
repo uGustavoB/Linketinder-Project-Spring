@@ -15,8 +15,11 @@ import { VagaService } from '@/core/services/vaga.service';
 import { AuthService } from '@/core/services/auth.service';
 import { CompetenciaService } from '@/core/services/competencia.service';
 import { Vaga } from '@/core/models/vaga.model';
+import { CandidatoProfile } from '@/core/models/candidato.model';
 import { Competencia, VinculoRequest, VinculoCompetencia } from '@/core/models/competencia.model';
 import { handleServerErrors, getFormValidationErrors } from '@/shared/utils/form-utils';
+import { ZardDialogService } from '@/shared/components/dialog/dialog.service';
+import { CandidatoCompetenciasDialog } from '../candidatos/components/candidato-competencias-dialog/candidato-competencias-dialog';
 
 @Component({
   selector: 'app-vagas',
@@ -35,6 +38,7 @@ export class Vagas implements OnInit {
   private competenciaService = inject(CompetenciaService);
   private router = inject(Router);
   private alertDialog = inject(ZardAlertDialogService);
+  private dialogService = inject(ZardDialogService);
 
   // Listagem
   readonly vagas = signal<Vaga[]>([]);
@@ -108,6 +112,22 @@ export class Vagas implements OnInit {
   public onBackToVagas(): void {
     this.viewingCandidatosVagaId.set(null);
     this.candidatosVaga.set([]);
+  }
+
+  public openCompetencias(candidato: CandidatoProfile): void {
+    this.dialogService.create({
+      zTitle: `Perfil do Candidato #${candidato.id}`,
+      zDescription: 'Detalhes e competências do candidato.',
+      zContent: CandidatoCompetenciasDialog,
+      zData: { 
+        candidatoId: candidato.id,
+        descricao: candidato.descricao,
+        estado: candidato.estado,
+        pais: candidato.pais
+      },
+      zCancelText: 'Fechar',
+      zOkText: null,
+    });
   }
 
   public fetchVagas(): void {
