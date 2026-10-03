@@ -9,6 +9,39 @@
     </div>
   </div>
 
+  <div class="mb-6 space-y-4">
+    <h4 class="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-2">Formação Acadêmica</h4>
+    @if (!dialogData.formacoes || dialogData.formacoes.length === 0) {
+      <p class="text-sm text-muted-foreground">Nenhuma formação cadastrada.</p>
+    } @else {
+      <div class="space-y-3">
+        @for (formacao of dialogData.formacoes; track formacao.id) {
+          <div class="border-b pb-3 last:border-0 last:pb-0">
+            <div class="flex items-start justify-between">
+              <div>
+                <p class="font-medium text-sm">{{ formacao.curso }}</p>
+                <p class="text-sm text-muted-foreground">{{ formacao.instituicao }}</p>
+              </div>
+              <span class="text-xs px-2 py-1 bg-secondary text-secondary-foreground rounded-md font-medium whitespace-nowrap">
+                {{ formacao.nivel }}
+              </span>
+            </div>
+            <div class="flex items-center text-xs text-muted-foreground mt-2 space-x-2">
+              <span [class]="formacao.status === 'Concluído' ? 'text-green-600 dark:text-green-400 font-medium' : 'text-blue-600 dark:text-blue-400 font-medium'">
+                {{ formacao.status }}
+              </span>
+              <span>•</span>
+              <span>
+                {{ formacao.dataInicio ? (formacao.dataInicio | date:'yyyy') : '' }} 
+                {{ formacao.dataConclusao ? '- ' + (formacao.dataConclusao | date:'yyyy') : (formacao.status === 'Cursando' ? '- o momento' : '') }}
+              </span>
+            </div>
+          </div>
+        }
+      </div>
+    }
+  </div>
+
   <div class="space-y-4">
     <h4 class="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-2">Competências</h4>
     @if (isLoading()) {

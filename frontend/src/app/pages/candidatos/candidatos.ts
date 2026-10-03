@@ -47,7 +47,8 @@ export class Candidatos implements OnInit {
         candidatoId: candidato.id,
         descricao: candidato.descricao,
         estado: candidato.estado,
-        pais: candidato.pais
+        pais: candidato.pais,
+        formacoes: candidato.formacoes
       },
       zCancelText: 'Fechar',
       zOkText: null,

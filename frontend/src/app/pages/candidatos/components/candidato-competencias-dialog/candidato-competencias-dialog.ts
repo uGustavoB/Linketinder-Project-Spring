@@ -3,17 +3,22 @@ import { CompetenciaService } from '@/core/services/competencia.service';
 import { VinculoCompetencia } from '@/core/models/competencia.model';
 import { injectDialogData } from '@/shared/components/dialog/dialog.service';
 
+import { Formacao } from '@/core/models/candidato.model';
+
 export interface CandidatoDialogData {
   candidatoId: number;
   descricao?: string;
   estado?: string;
   pais?: string;
+  formacoes?: Formacao[];
 }
+
+import { DatePipe } from '@angular/common';
 
 @Component({
   selector: 'app-candidato-competencias-dialog',
   standalone: true,
-  imports: [],
+  imports: [DatePipe],
   templateUrl: './candidato-competencias-dialog.html',
   styleUrl: './candidato-competencias-dialog.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
