@@ -309,7 +309,7 @@ export class Vagas implements OnInit {
     removeObs$.pipe(
       switchMap(() => {
         if (toAddIds.length > 0) {
-          const vinculos: VinculoRequest[] = toAddIds.map(id => ({ competenciaId: id, nivel: 'MEDIO' }));
+          const vinculos: VinculoRequest[] = toAddIds.map(id => ({ competenciaId: id }));
           return this.competenciaService.vincularVaga(vagaId, vinculos);
         }
         return of([]);

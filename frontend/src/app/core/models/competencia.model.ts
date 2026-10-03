@@ -11,5 +11,5 @@ export interface VinculoCompetencia {
 
 export interface VinculoRequest {
   competenciaId: number;
-  nivel: 'BASICO' | 'MEDIO' | 'AVANCADO' | string;
+  nivel?: 'BASICO' | 'MEDIO' | 'AVANCADO' | string;
 }
