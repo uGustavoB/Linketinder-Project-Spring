@@ -12,6 +12,7 @@ record CandidatoResponseDTO(
         String pais,
         String estado,
         String cep,
-        String descricao
+        String descricao,
+        List<FormacaoResponseDTO> formacoes
 ) {
 }

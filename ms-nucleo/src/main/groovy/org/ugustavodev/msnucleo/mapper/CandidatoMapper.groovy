@@ -7,13 +7,24 @@ import org.ugustavodev.msnucleo.dto.request.CandidatoRequestDTO
 import org.ugustavodev.msnucleo.dto.response.CandidatoResponseDTO
 import org.ugustavodev.msnucleo.dto.response.CandidatoPublicoResponseDTO
 import org.ugustavodev.msnucleo.model.Candidato
+import org.ugustavodev.msnucleo.dto.response.FormacaoResponseDTO
 
 import java.time.LocalDate
 
 @Component
 class CandidatoMapper {
 
+    private final FormacaoMapper formacaoMapper
+
+    CandidatoMapper(FormacaoMapper formacaoMapper) {
+        this.formacaoMapper = formacaoMapper
+    }
+
     CandidatoResponseDTO toResponseDTO(Candidato candidato) {
+        List<FormacaoResponseDTO> formacoesDTO = candidato.formacoes?.stream()
+                ?.map(formacaoMapper::toResponseDTO)
+                ?.toList() ?: new ArrayList<>()
+
         return new CandidatoResponseDTO(
                 candidato.id,
                 candidato.nome,
@@ -24,16 +35,22 @@ class CandidatoMapper {
                 candidato.pais,
                 candidato.estado,
                 candidato.cep,
-                candidato.descricao
+                candidato.descricao,
+                formacoesDTO
         )
     }
 
     CandidatoPublicoResponseDTO toPublicoResponseDTO(Candidato candidato) {
+        List<FormacaoResponseDTO> formacoesDTO = candidato.formacoes?.stream()
+                ?.map(formacaoMapper::toResponseDTO)
+                ?.toList() ?: new ArrayList<>()
+
         return new CandidatoPublicoResponseDTO(
                 candidato.id,
                 candidato.pais,
                 candidato.estado,
-                candidato.descricao
+                candidato.descricao,
+                formacoesDTO
         )
     }
 
@@ -49,6 +66,7 @@ class CandidatoMapper {
         candidato.estado = dto.estado()
         candidato.cep = dto.cep()
         candidato.descricao = dto.descricao()
+        // formacoes should be updated via specific endpoints
         return candidato
     }
 

@@ -4,5 +4,6 @@ record CandidatoPublicoResponseDTO(
     Long id,
     String pais,
     String estado,
-    String descricao
+    String descricao,
+    List<FormacaoResponseDTO> formacoes
 ) {}
