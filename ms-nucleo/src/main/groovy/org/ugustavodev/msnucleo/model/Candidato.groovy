@@ -4,6 +4,10 @@ import jakarta.persistence.Column
 import jakarta.persistence.Entity
 import jakarta.persistence.Table
 
+import jakarta.persistence.OneToMany
+import jakarta.persistence.CascadeType
+import jakarta.persistence.FetchType
+
 @Entity
 @Table(name = "candidatos")
 class Candidato extends Pessoa {
@@ -15,6 +19,9 @@ class Candidato extends Pessoa {
 
     @Column(nullable = false, unique = true, length = 11)
     String cpf
+
+    @OneToMany(mappedBy = "candidato", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    List<Formacao> formacoes = new ArrayList<>()
 
     void atualizarDados(String nome, String sobrenome, String dataNascimento, String email, String cpf, String pais, String estado, String cep, String descricao, String senhaCriptografada) {
         this.nome = nome
