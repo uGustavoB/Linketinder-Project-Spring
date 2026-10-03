@@ -18,7 +18,7 @@ class CadastrarCompetenciaUseCase implements ICadastrarCompetenciaUseCase {
 
     @Override
     CompetenciaResponseDTO executar(CompetenciaRequestDTO requestDTO) {
-        if (repository.existsByNome(requestDTO.nome)) throw new IllegalArgumentException("Já existe uma competência com este nome.")
+        if (repository.existsByNomeIgnoreCase(requestDTO.nome)) throw new IllegalArgumentException("Já existe uma competência com este nome.")
         Competencia competencia = mapper.toEntity(requestDTO)
         competencia = repository.save(competencia)
         return mapper.toResponseDTO(competencia)

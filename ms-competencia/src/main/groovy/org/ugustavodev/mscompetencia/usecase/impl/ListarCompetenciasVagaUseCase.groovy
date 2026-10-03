@@ -1,7 +1,7 @@
 package org.ugustavodev.mscompetencia.usecase.impl
 
 import org.springframework.stereotype.Service
-import org.ugustavodev.mscompetencia.dto.response.CompetenciaVinculoResponseDTO
+import org.ugustavodev.mscompetencia.dto.response.CompetenciaVagaVinculoResponseDTO
 import org.ugustavodev.mscompetencia.mapper.CompetenciaVinculoMapper
 import org.ugustavodev.mscompetencia.repositories.CompetenciaVagaRepository
 import org.ugustavodev.mscompetencia.usecase.interfaces.IListarCompetenciasVagaUseCase
@@ -16,7 +16,7 @@ class ListarCompetenciasVagaUseCase implements IListarCompetenciasVagaUseCase {
     }
 
     @Override
-    List<CompetenciaVinculoResponseDTO> executar(Long vagaId) {
-        return repository.findByVagaId(vagaId).stream().map(mapper::toResponseDTO).toList()
+    List<CompetenciaVagaVinculoResponseDTO> executar(Long vagaId) {
+        return repository.findByVagaId(vagaId).stream().map(mapper::toVagaResponseDTO).toList()
     }
 }

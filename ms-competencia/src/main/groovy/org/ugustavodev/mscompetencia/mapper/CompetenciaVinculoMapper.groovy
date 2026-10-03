@@ -2,6 +2,7 @@ package org.ugustavodev.mscompetencia.mapper
 
 import org.springframework.stereotype.Component
 import org.ugustavodev.mscompetencia.dto.response.CompetenciaVinculoResponseDTO
+import org.ugustavodev.mscompetencia.dto.response.CompetenciaVagaVinculoResponseDTO
 import org.ugustavodev.mscompetencia.model.CompetenciaCandidato
 import org.ugustavodev.mscompetencia.model.CompetenciaEmpresa
 import org.ugustavodev.mscompetencia.model.CompetenciaVaga
@@ -30,11 +31,10 @@ class CompetenciaVinculoMapper {
         )
     }
 
-    CompetenciaVinculoResponseDTO toResponseDTO(CompetenciaVaga vinculo) {
-        return new CompetenciaVinculoResponseDTO(
+    CompetenciaVagaVinculoResponseDTO toVagaResponseDTO(CompetenciaVaga vinculo) {
+        return new CompetenciaVagaVinculoResponseDTO(
                 vinculo.id,
-                competenciaMapper.toResponseDTO(vinculo.competencia),
-                vinculo.nivel
+                competenciaMapper.toResponseDTO(vinculo.competencia)
         )
     }
 }

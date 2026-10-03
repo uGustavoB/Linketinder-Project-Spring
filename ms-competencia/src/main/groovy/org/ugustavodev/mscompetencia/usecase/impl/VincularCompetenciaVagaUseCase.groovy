@@ -1,8 +1,8 @@
 package org.ugustavodev.mscompetencia.usecase.impl
 
 import org.springframework.stereotype.Service
-import org.ugustavodev.mscompetencia.dto.request.VincularCompetenciaRequestDTO
-import org.ugustavodev.mscompetencia.dto.response.CompetenciaVinculoResponseDTO
+import org.ugustavodev.mscompetencia.dto.request.VincularCompetenciaVagaRequestDTO
+import org.ugustavodev.mscompetencia.dto.response.CompetenciaVagaVinculoResponseDTO
 import org.ugustavodev.mscompetencia.mapper.CompetenciaVinculoMapper
 import org.ugustavodev.mscompetencia.model.Competencia
 import org.ugustavodev.mscompetencia.model.CompetenciaVaga
@@ -21,10 +21,10 @@ class VincularCompetenciaVagaUseCase implements IVincularCompetenciaVagaUseCase 
     }
 
     @Override
-    List<CompetenciaVinculoResponseDTO> executar(Long vagaId, List<VincularCompetenciaRequestDTO> requestDTOs) {
-        List<CompetenciaVinculoResponseDTO> result = new ArrayList<>()
+    List<CompetenciaVagaVinculoResponseDTO> executar(Long vagaId, List<VincularCompetenciaVagaRequestDTO> requestDTOs) {
+        List<CompetenciaVagaVinculoResponseDTO> result = new ArrayList<>()
 
-        for (VincularCompetenciaRequestDTO requestDTO : requestDTOs) {
+        for (VincularCompetenciaVagaRequestDTO requestDTO : requestDTOs) {
             if (repository.existsByVagaIdAndCompetenciaId(vagaId, requestDTO.competenciaId)) {
                 continue // Pula caso a vaga já possua esta competência vinculada
             }
@@ -35,10 +35,9 @@ class VincularCompetenciaVagaUseCase implements IVincularCompetenciaVagaUseCase 
             CompetenciaVaga vinculo = new CompetenciaVaga()
             vinculo.vagaId = vagaId
             vinculo.competencia = competencia
-            vinculo.nivel = requestDTO.nivel
 
             vinculo = repository.save(vinculo)
-            result.add(mapper.toResponseDTO(vinculo))
+            result.add(mapper.toVagaResponseDTO(vinculo))
         }
 
         return result

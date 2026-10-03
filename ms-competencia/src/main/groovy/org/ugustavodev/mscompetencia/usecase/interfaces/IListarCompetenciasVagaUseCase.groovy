@@ -1,7 +1,7 @@
 package org.ugustavodev.mscompetencia.usecase.interfaces
 
-import org.ugustavodev.mscompetencia.dto.response.CompetenciaVinculoResponseDTO
+import org.ugustavodev.mscompetencia.dto.response.CompetenciaVagaVinculoResponseDTO
 
 interface IListarCompetenciasVagaUseCase {
-    List<CompetenciaVinculoResponseDTO> executar(Long vagaId)
+    List<CompetenciaVagaVinculoResponseDTO> executar(Long vagaId)
 }

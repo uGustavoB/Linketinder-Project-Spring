@@ -5,8 +5,8 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import org.ugustavodev.mscompetencia.dto.ApiResponseDTO
-import org.ugustavodev.mscompetencia.dto.request.VincularCompetenciaRequestDTO
-import org.ugustavodev.mscompetencia.dto.response.CompetenciaVinculoResponseDTO
+import org.ugustavodev.mscompetencia.dto.request.VincularCompetenciaVagaRequestDTO
+import org.ugustavodev.mscompetencia.dto.response.CompetenciaVagaVinculoResponseDTO
 import org.ugustavodev.mscompetencia.usecase.interfaces.*
 
 @RestController
@@ -24,17 +24,17 @@ class CompetenciaVagaController {
     }
 
     @PostMapping("/{vagaId}")
-    ResponseEntity<ApiResponseDTO<List<CompetenciaVinculoResponseDTO>>> vincularCompetencia(
+    ResponseEntity<ApiResponseDTO<List<CompetenciaVagaVinculoResponseDTO>>> vincularCompetencia(
             @PathVariable("vagaId") Long vagaId,
-            @Valid @RequestBody List<VincularCompetenciaRequestDTO> requestDTOs
+            @Valid @RequestBody List<VincularCompetenciaVagaRequestDTO> requestDTOs
     ) {
-        List<CompetenciaVinculoResponseDTO> responseDTOs = vincularUseCase.executar(vagaId, requestDTOs)
+        List<CompetenciaVagaVinculoResponseDTO> responseDTOs = vincularUseCase.executar(vagaId, requestDTOs)
         return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponseDTO.sucesso(responseDTOs, "Competências vinculadas à vaga com sucesso", HttpStatus.CREATED.value()))
     }
 
     @GetMapping("/{vagaId}")
-    ResponseEntity<ApiResponseDTO<List<CompetenciaVinculoResponseDTO>>> listarCompetencias(@PathVariable("vagaId") Long vagaId) {
-        List<CompetenciaVinculoResponseDTO> lista = listarUseCase.executar(vagaId)
+    ResponseEntity<ApiResponseDTO<List<CompetenciaVagaVinculoResponseDTO>>> listarCompetencias(@PathVariable("vagaId") Long vagaId) {
+        List<CompetenciaVagaVinculoResponseDTO> lista = listarUseCase.executar(vagaId)
         return ResponseEntity.ok(ApiResponseDTO.sucesso(lista))
     }
 
