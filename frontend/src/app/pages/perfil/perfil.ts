@@ -11,6 +11,8 @@ import { ZardAlertDialogService } from '@/shared/components/alert-dialog/alert-d
 import { toast } from 'ngx-sonner';
 import { handleServerErrors, getFormValidationErrors } from '@/shared/utils/form-utils';
 import { CommonModule } from '@angular/common';
+import { CompetenciaService } from '@/core/services/competencia.service';
+import { Competencia, VinculoCompetencia, VinculoRequest } from '@/core/models/competencia.model';
 
 @Component({
   imports: [ZardCardImports, ZardButtonComponent, ReactiveFormsModule, CommonModule],
@@ -26,11 +28,21 @@ export class Perfil implements OnInit {
   private authService = inject(AuthService);
   private alertDialog = inject(ZardAlertDialogService);
   private router = inject(Router);
+  private competenciaService = inject(CompetenciaService);
 
   public isLoading = signal(false);
   public isFetching = signal(true);
   public isDeleting = signal(false);
   public userType = signal<'CANDIDATO' | 'EMPRESA'>('CANDIDATO');
+
+  public competenciasCatalogo = signal<Competencia[]>([]);
+  public competenciasCandidato = signal<VinculoCompetencia[]>([]);
+  public isAddingCompetencia = signal(false);
+
+  public competenciaForm = this.fb.nonNullable.group({
+    competenciaId: [0, [Validators.required, Validators.min(1)]],
+    nivel: ['BASICO', Validators.required]
+  });
 
   public perfilForm = this.fb.nonNullable.group({
     nome: ['', Validators.required],
@@ -60,6 +72,8 @@ export class Perfil implements OnInit {
     const user = this.authService.currentUser();
     if (user?.tipoUsuario === 'EMPRESA') {
       this.userType.set('EMPRESA');
+    } else if (user?.id) {
+      this.loadCompetencias(user.id);
     }
 
     this.perfilService.getPerfil().subscribe({
@@ -169,5 +183,89 @@ export class Perfil implements OnInit {
         });
       },
     });
+  }
+
+  private loadCompetencias(candidatoId: number) {
+    this.competenciaService.getCompetencias().subscribe(res => {
+       if (res.dados) this.competenciasCatalogo.set(res.dados);
+    });
+    this.competenciaService.getCompetenciasCandidato(candidatoId).subscribe(res => {
+       if (res.dados) this.competenciasCandidato.set(res.dados);
+    });
+  }
+
+  protected addCompetencia() {
+    if (this.competenciaForm.invalid) return;
+    const user = this.authService.currentUser();
+    if (!user || !user.id) return;
+    
+    this.isAddingCompetencia.set(true);
+    const val = this.competenciaForm.getRawValue();
+    const compId = Number(val.competenciaId);
+    
+    const existingVinculo = this.competenciasCandidato().find(v => v.competencia.id === compId);
+
+    const request: VinculoRequest[] = [{
+        competenciaId: compId,
+        nivel: val.nivel
+    }];
+
+    if (existingVinculo) {
+        if (existingVinculo.nivel === val.nivel) {
+            this.isAddingCompetencia.set(false);
+            toast.info('A competência selecionada já possui este nível.');
+            return;
+        }
+
+        this.competenciaService.removerVinculoCandidato(existingVinculo.idVinculo).subscribe({
+            next: () => this.efetuarVinculo(user.id!, request),
+            error: () => {
+                this.isAddingCompetencia.set(false);
+                toast.error('Erro ao atualizar competência (falha ao remover anterior).');
+            }
+        });
+    } else {
+        this.efetuarVinculo(user.id, request);
+    }
+  }
+
+  private efetuarVinculo(userId: number, request: VinculoRequest[]) {
+    this.competenciaService.vincularCandidato(userId, request).subscribe({
+        next: () => {
+           this.loadCompetencias(userId);
+           this.competenciaForm.reset({ competenciaId: 0, nivel: 'BASICO' });
+           this.isAddingCompetencia.set(false);
+           toast.success('Competência salva com sucesso!');
+        },
+        error: (err) => {
+           this.isAddingCompetencia.set(false);
+           const mensagens = handleServerErrors(this.competenciaForm, err);
+           mensagens.forEach((msg) => toast.error(msg));
+        }
+    });
+  }
+
+  protected removeCompetencia(vinculoId: number) {
+    const user = this.authService.currentUser();
+    if (!user || !user.id) return;
+
+    this.competenciaService.removerVinculoCandidato(vinculoId).subscribe({
+       next: () => {
+           this.loadCompetencias(user.id!);
+           toast.success('Competência removida!');
+       },
+       error: (err) => {
+           toast.error(err.error?.mensagem || 'Erro ao remover competência.');
+       }
+    });
+  }
+
+  protected formatNivel(nivel: string): string {
+    const niveis: Record<string, string> = {
+      'BASICO': 'Básico',
+      'MEDIO': 'Médio',
+      'AVANCADO': 'Avançado',
+    };
+    return niveis[nivel] || nivel;
   }
 }
