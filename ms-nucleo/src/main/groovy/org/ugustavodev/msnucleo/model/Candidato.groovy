@@ -7,6 +7,9 @@ import jakarta.persistence.Table
 import jakarta.persistence.OneToMany
 import jakarta.persistence.CascadeType
 import jakarta.persistence.FetchType
+import org.ugustavodev.msnucleo.dto.request.CandidatoRequestDTO
+
+import java.time.LocalDate
 
 @Entity
 @Table(name = "candidatos")
@@ -15,7 +18,7 @@ class Candidato extends Pessoa {
     String sobrenome
 
     @Column(name = "data_nascimento", nullable = false)
-    String dataNascimento
+    LocalDate dataNascimento
 
     @Column(nullable = false, unique = true, length = 11)
     String cpf
@@ -23,7 +26,7 @@ class Candidato extends Pessoa {
     @OneToMany(mappedBy = "candidato", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     List<Formacao> formacoes = new ArrayList<>()
 
-    void atualizarDados(String nome, String sobrenome, String dataNascimento, String email, String cpf, String pais, String estado, String cep, String descricao, String senhaCriptografada) {
+    void atualizarDados(String nome, String sobrenome, LocalDate dataNascimento, String email, String cpf, String pais, String estado, String cep, String descricao, String senhaCriptografada) {
         this.nome = nome
         this.sobrenome = sobrenome
         this.dataNascimento = dataNascimento

@@ -34,7 +34,7 @@ class CadastrarCandidatoUseCaseTest extends Specification {
 
     void "Deve lancar excecao quando email ja estiver cadastrado"() {
         given: "Um request de candidato valido"
-        CandidatoRequestDTO request = new CandidatoRequestDTO(email: "teste@teste.com", cpf: "111")
+        CandidatoRequestDTO request = new CandidatoRequestDTO(email: "teste@teste.com", cpf: "111", senha: "senha123")
 
         and: "O repositorio retorna que ja existe um usuario com esse email"
         usuarioRepository.findByEmail("teste@teste.com") >> Optional.of(new Usuario())
@@ -49,7 +49,7 @@ class CadastrarCandidatoUseCaseTest extends Specification {
 
     void "Deve lancar excecao quando CPF ja estiver cadastrado"() {
         given: "Um request de candidato com email unico, mas CPF repetido"
-        CandidatoRequestDTO request = new CandidatoRequestDTO(email: "unico@teste.com", cpf: "12345678900")
+        CandidatoRequestDTO request = new CandidatoRequestDTO(email: "unico@teste.com", cpf: "12345678900", senha: "senha123")
 
         and: "O email nao existe"
         usuarioRepository.findByEmail("unico@teste.com") >> Optional.empty()
@@ -89,7 +89,7 @@ class CadastrarCandidatoUseCaseTest extends Specification {
 
     void "Deve salvar o candidato com sucesso e retornar DTO"() {
         given: "Um request valido"
-        CandidatoRequestDTO request = new CandidatoRequestDTO(email: "sucesso@teste.com", cpf: "123")
+        CandidatoRequestDTO request = new CandidatoRequestDTO(email: "sucesso@teste.com", cpf: "123", senha: "senha123")
 
         and: "Mock das dependencias para sucesso"
         usuarioRepository.findByEmail(_ as String) >> Optional.empty()

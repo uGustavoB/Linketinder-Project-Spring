@@ -29,7 +29,7 @@ class CandidatoMapper {
                 candidato.id,
                 candidato.nome,
                 candidato.sobrenome,
-                LocalDate.parse(candidato.dataNascimento),
+                candidato.dataNascimento,
                 candidato.usuario?.email,
                 candidato.cpf,
                 candidato.pais,
@@ -59,14 +59,13 @@ class CandidatoMapper {
         candidato.id = dto.id()
         candidato.nome = dto.nome()
         candidato.sobrenome = dto.sobrenome()
-        candidato.dataNascimento = dto.dataNascimento().toString()
+        candidato.dataNascimento = dto.dataNascimento()
         candidato.usuario = new Usuario(email: dto.email())
         candidato.cpf = dto.cpf()
         candidato.pais = dto.pais()
         candidato.estado = dto.estado()
         candidato.cep = dto.cep()
         candidato.descricao = dto.descricao()
-        // formacoes should be updated via specific endpoints
         return candidato
     }
 
@@ -74,7 +73,7 @@ class CandidatoMapper {
         Candidato candidato = new Candidato()
         candidato.nome = dto.nome
         candidato.sobrenome = dto.sobrenome
-        candidato.dataNascimento = dto.dataNascimento?.toString()
+        candidato.dataNascimento = dto.dataNascimento
         candidato.usuario = new Usuario(email: dto.email, senha: dto.senha, role: Role.CANDIDATO)
         candidato.cpf = dto.cpf
         candidato.pais = dto.pais

@@ -27,7 +27,6 @@ class CandidatoRequestDTO {
     @Size(min = 11, max = 11, message = "O CPF deve ter 11 dígitos")
     String cpf
 
-    @NotBlank(message = "O campo da senha é obrigatório")
     @Size(min = 6, message = "A senha deve ter no mínimo 6 caracteres")
     String senha
 
@@ -69,4 +68,9 @@ class CandidatoRequestDTO {
     void setDescricao(String descricao) {
         this.descricao = descricao?.trim()
     }
+
+    void setSenha(String senha) {
+        this.senha = senha?.trim() ? senha.trim() : null
+    }
+
 }

@@ -18,7 +18,6 @@ class EmpresaRequestDTO {
     @Email(message = "O campo email deve ser um email válido")
     String email
 
-    @NotBlank(message = "O campo da senha é obrigatório")
     @Size(min = 6, message = "A senha deve ter no mínimo 6 caracteres")
     String senha
 
@@ -56,4 +55,9 @@ class EmpresaRequestDTO {
     void setDescricao(String descricao) {
         this.descricao = descricao?.trim()
     }
+
+    void setSenha(String senha) {
+        this.senha = senha?.trim() ? senha.trim() : null
+    }
+
 }
