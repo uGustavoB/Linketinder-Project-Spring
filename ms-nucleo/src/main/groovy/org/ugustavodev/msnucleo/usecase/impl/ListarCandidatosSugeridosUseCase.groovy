@@ -1,5 +1,6 @@
 package org.ugustavodev.msnucleo.usecase.impl
 
+import org.springframework.security.access.AccessDeniedException
 import org.springframework.stereotype.Service
 import org.ugustavodev.msnucleo.dto.response.CandidatoPublicoResponseDTO
 import org.ugustavodev.msnucleo.mapper.CandidatoMapper
@@ -27,7 +28,7 @@ class ListarCandidatosSugeridosUseCase implements IListarCandidatosSugeridosUseC
                 .orElseThrow(() -> new NoSuchElementException("Vaga não encontrada para o ID: ${vagaId}"))
 
         if (vaga.empresa == null || vaga.empresa.id != empresaId) {
-            throw new IllegalArgumentException("A vaga informada não pertence à empresa autenticada")
+            throw new AccessDeniedException("A vaga informada não pertence à empresa autenticada")
         }
 
         List<Candidato> candidatos = candidatoRepository.findCandidatosSugeridosParaVaga(vagaId)

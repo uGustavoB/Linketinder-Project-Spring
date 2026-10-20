@@ -1,5 +1,6 @@
 package org.ugustavodev.msnucleo.usecase.impl
 
+import org.springframework.security.access.AccessDeniedException
 import org.springframework.stereotype.Service
 import org.ugustavodev.msnucleo.dto.request.VagaRequestDTO
 import org.ugustavodev.msnucleo.dto.response.VagaResponseDTO
@@ -38,7 +39,7 @@ class AtualizarVagaUseCase implements IAtualizarVagaUseCase {
                 .orElseThrow(() -> new NoSuchElementException("Vaga não encontrada para o ID: ${id}"))
 
         if (vagaExistente.empresa == null || vagaExistente.empresa.id != empresaId) {
-            throw new IllegalArgumentException("Você não tem permissão para editar esta vaga.")
+            throw new AccessDeniedException("Você não tem permissão para editar esta vaga.")
         }
 
         vagaExistente.atualizarDados(
