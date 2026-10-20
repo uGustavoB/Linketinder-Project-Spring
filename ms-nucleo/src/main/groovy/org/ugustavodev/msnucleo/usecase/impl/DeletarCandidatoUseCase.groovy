@@ -1,25 +1,29 @@
 package org.ugustavodev.msnucleo.usecase.impl
 
-import org.springframework.stereotype.Service
-import org.ugustavodev.msnucleo.repositories.CandidatoRepository
-import org.ugustavodev.msnucleo.usecase.interfaces.IDeletarCandidatoUseCase
-
+import jakarta.transaction.Transactional
 import org.springframework.security.access.AccessDeniedException
 import org.springframework.security.core.Authentication
 import org.springframework.security.core.context.SecurityContextHolder
+import org.springframework.stereotype.Service
 import org.ugustavodev.msnucleo.domain.Usuario
 import org.ugustavodev.msnucleo.domain.enums.Role
 import org.ugustavodev.msnucleo.model.Candidato
+import org.ugustavodev.msnucleo.repositories.CandidatoRepository
+import org.ugustavodev.msnucleo.repositories.CurtidaRepository
+import org.ugustavodev.msnucleo.usecase.interfaces.IDeletarCandidatoUseCase
 
 @Service
 class DeletarCandidatoUseCase implements IDeletarCandidatoUseCase {
     private final CandidatoRepository candidatoRepository
+    private final CurtidaRepository curtidaRepository
 
-    DeletarCandidatoUseCase(CandidatoRepository candidatoRepository) {
+    DeletarCandidatoUseCase(CandidatoRepository candidatoRepository, CurtidaRepository curtidaRepository) {
         this.candidatoRepository = candidatoRepository
+        this.curtidaRepository = curtidaRepository
     }
 
     @Override
+    @Transactional
     void executar(Long id) {
         if (id == null) {
             throw new IllegalArgumentException("O ID do candidato não pode ser nulo.")
@@ -39,6 +43,7 @@ class DeletarCandidatoUseCase implements IDeletarCandidatoUseCase {
             }
         }
 
+        curtidaRepository.deleteByCandidatoId(id)
         candidatoRepository.delete(candidato)
     }
 }
