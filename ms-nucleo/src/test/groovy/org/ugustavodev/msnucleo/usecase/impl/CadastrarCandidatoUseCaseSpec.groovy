@@ -13,7 +13,7 @@ import spock.lang.Subject
 
 import java.time.LocalDate
 
-class CadastrarCandidatoUseCaseTest extends Specification {
+class CadastrarCandidatoUseCaseSpec extends Specification {
 
     CandidatoRepository candidatoRepository = Mock(CandidatoRepository)
     PasswordEncoder passwordEncoder = Mock(PasswordEncoder)
