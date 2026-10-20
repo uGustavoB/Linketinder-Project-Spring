@@ -10,4 +10,6 @@ interface VagaRepository extends JpaRepository<Vaga, Long> {
     
     @Query("SELECT v FROM Vaga v WHERE v.id NOT IN (SELECT c.vaga.id FROM Curtida c WHERE c.candidato.id = :candidatoId AND c.candidatoCurtiuEm IS NOT NULL)")
     List<Vaga> findVagasSugeridasParaCandidato(@Param("candidatoId") Long candidatoId)
+
+    void deleteByEmpresaId(Long empresaId)
 }
