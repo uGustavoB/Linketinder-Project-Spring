@@ -75,7 +75,7 @@ class ExceptionHandlerController {
     ResponseEntity<ApiResponseDTO<Object>> handleException(Exception ex) {
         ApiResponseDTO<Object> resposta = new ApiResponseDTO<>(
                 codigo: HttpStatus.INTERNAL_SERVER_ERROR.value(),
-                mensagem: "Ocorreu um erro: ${ex.message}",
+                mensagem: "Ocorreu um erro interno no servidor.",
                 tipo: "Erro Interno"
         )
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(resposta)

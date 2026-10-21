@@ -1,5 +1,6 @@
 package org.ugustavodev.msnucleo.usecase.impl
 
+import jakarta.transaction.Transactional
 import org.springframework.stereotype.Service
 import org.ugustavodev.msnucleo.dto.response.CurtidaResponseDTO
 import org.ugustavodev.msnucleo.mapper.CurtidaMapper
@@ -28,6 +29,7 @@ class CandidatoCurteVagaUseCase implements ICandidatoCurteVagaUseCase {
     }
 
     @Override
+    @Transactional
     CurtidaResponseDTO executar(Long idCandidato, Long idVaga) {
         if (idCandidato == null) {
             throw new IllegalArgumentException("O ID do candidato não pode ser nulo.")
@@ -50,7 +52,7 @@ class CandidatoCurteVagaUseCase implements ICandidatoCurteVagaUseCase {
             curtida = optionalCurtida.get()
 
             if (curtida.getCandidatoCurtiuEm() != null) {
-                throw new IllegalStateException("O candidato já curtiu esta vaga.")
+                return curtidaMapper.toResponseDTO(curtida)
             }
 
             curtida.setCandidatoCurtiuEm(LocalDateTime.now())

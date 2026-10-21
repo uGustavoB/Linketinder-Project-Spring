@@ -71,5 +71,5 @@ class BuscarVagaPorIdUseCase implements IBuscarVagaPorIdUseCase {
                 null
         )
     }
-    
+
 }

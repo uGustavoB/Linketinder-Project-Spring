@@ -11,11 +11,12 @@ class CurtidaMapper {
         if (curtida == null) return null
 
         return new CurtidaResponseDTO(
+                idCurtida: curtida.id,
                 candidatoId: curtida.candidato?.id,
                 vagaId: curtida.vaga?.id,
                 candidatoCurtiuEm: curtida.candidatoCurtiuEm,
                 empresaCurtiuEm: curtida.empresaCurtiuEm,
-                isMatch: curtida.isMatch()
+                match: curtida.isMatch()
         )
     }
 
