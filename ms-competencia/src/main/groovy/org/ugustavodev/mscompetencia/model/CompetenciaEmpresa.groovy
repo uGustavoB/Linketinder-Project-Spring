@@ -4,7 +4,12 @@ import jakarta.persistence.*
 import org.ugustavodev.mscompetencia.model.enums.NivelCompetencia
 
 @Entity
-@Table(name = "competencias_empresas")
+@Table(
+        name = "competencias_empresas",
+        uniqueConstraints = [
+                @UniqueConstraint(name = "uk_competencia_empresa", columnNames = ["empresa_id", "competencia_id"])
+        ]
+)
 class CompetenciaEmpresa {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
