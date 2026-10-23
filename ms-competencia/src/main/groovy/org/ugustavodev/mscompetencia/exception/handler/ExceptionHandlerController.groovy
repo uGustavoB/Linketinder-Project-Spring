@@ -2,6 +2,7 @@ package org.ugustavodev.mscompetencia.exception.handler
 
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import org.springframework.security.access.AccessDeniedException
 import org.springframework.web.bind.MethodArgumentNotValidException
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.RestControllerAdvice
@@ -62,8 +63,19 @@ class ExceptionHandlerController {
         return ResponseEntity.status(HttpStatus.CONFLICT).body(resposta)
     }
 
+    @ExceptionHandler(AccessDeniedException)
+    ResponseEntity<ApiResponseDTO<Object>> handleAccessDeniedException() {
+        ApiResponseDTO<Object> resposta = new ApiResponseDTO<>(
+                codigo: HttpStatus.FORBIDDEN.value(),
+                status: HttpStatus.FORBIDDEN.value(),
+                mensagem: "Você não tem permissão para acessar este recurso.",
+                tipo: "Acesso Negado"
+        )
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(resposta)
+    }
+
     @ExceptionHandler(Exception)
-    ResponseEntity<ApiResponseDTO<Object>> handleException(Exception ex) {
+    ResponseEntity<ApiResponseDTO<Object>> handleException() {
         ApiResponseDTO<Object> resposta = new ApiResponseDTO<>(
                 codigo: HttpStatus.INTERNAL_SERVER_ERROR.value(),
                 status: HttpStatus.INTERNAL_SERVER_ERROR.value(),
