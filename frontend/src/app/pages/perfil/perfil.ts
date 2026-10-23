@@ -1,5 +1,5 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
-import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormBuilder, ReactiveFormsModule, FormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ZardCardImports } from '@/shared/components/card/card.imports';
 import { ZardButtonComponent } from '@/shared/components/button/button.component';
@@ -13,9 +13,10 @@ import { handleServerErrors, getFormValidationErrors } from '@/shared/utils/form
 import { CommonModule } from '@angular/common';
 import { CompetenciaService } from '@/core/services/competencia.service';
 import { Competencia, VinculoCompetencia, VinculoRequest } from '@/core/models/competencia.model';
+import { Formacao } from '@/core/models/candidato.model';
 
 @Component({
-  imports: [ZardCardImports, ZardButtonComponent, ReactiveFormsModule, CommonModule],
+  imports: [ZardCardImports, ZardButtonComponent, ReactiveFormsModule, FormsModule, CommonModule],
   selector: 'app-perfil',
   styleUrl: './perfil.css',
   templateUrl: './perfil.html',
@@ -35,13 +36,29 @@ export class Perfil implements OnInit {
   public isDeleting = signal(false);
   public userType = signal<'CANDIDATO' | 'EMPRESA'>('CANDIDATO');
 
+  // Competências
   public competenciasCatalogo = signal<Competencia[]>([]);
   public competenciasCandidato = signal<VinculoCompetencia[]>([]);
   public isAddingCompetencia = signal(false);
+  public novaCompetenciaNome = signal('');
+  public isCreatingCompetencia = signal(false);
+
+  // Formações Acadêmicas
+  public formacoesCandidato = signal<Formacao[]>([]);
+  public isAddingFormacao = signal(false);
 
   public competenciaForm = this.fb.nonNullable.group({
     competenciaId: [0, [Validators.required, Validators.min(1)]],
-    nivel: ['BASICO', Validators.required]
+    nivel: ['BASICO', Validators.required],
+  });
+
+  public formacaoForm = this.fb.nonNullable.group({
+    instituicao: ['', Validators.required],
+    curso: ['', Validators.required],
+    nivel: ['Graduação', Validators.required],
+    status: ['Em Andamento', Validators.required],
+    dataInicio: [''],
+    dataConclusao: [''],
   });
 
   public perfilForm = this.fb.nonNullable.group({
@@ -50,7 +67,7 @@ export class Perfil implements OnInit {
     dataNascimento: ['', Validators.required],
     email: ['', [Validators.required, Validators.email]],
     cpf: ['', Validators.required],
-    senha: ['', [Validators.required, Validators.minLength(6)]],
+    senha: ['', [Validators.minLength(6)]],
     pais: ['', Validators.required],
     estado: ['', Validators.required],
     cep: ['', Validators.required],
@@ -61,7 +78,7 @@ export class Perfil implements OnInit {
     nome: ['', Validators.required],
     cnpj: ['', Validators.required],
     email: ['', [Validators.required, Validators.email]],
-    senha: ['', [Validators.required, Validators.minLength(6)]],
+    senha: ['', [Validators.minLength(6)]],
     pais: ['', Validators.required],
     estado: ['', Validators.required],
     cep: ['', Validators.required],
@@ -101,6 +118,9 @@ export class Perfil implements OnInit {
               cep: res.dados.cep,
               descricao: res.dados.descricao,
             });
+            if (res.dados.formacoes) {
+              this.formacoesCandidato.set(res.dados.formacoes);
+            }
           }
         }
         this.isFetching.set(false);
@@ -131,7 +151,13 @@ export class Perfil implements OnInit {
     }
 
     this.isLoading.set(true);
-    const dados = form.getRawValue();
+    const rawDados = form.getRawValue();
+    const dados: Record<string, any> = { ...rawDados };
+
+    // Se senha estiver em branco, remove para não alterar no backend
+    if (!dados['senha'] || dados['senha'].trim() === '') {
+      delete dados['senha'];
+    }
 
     const request$ = isCandidato
       ? this.candidatoService.updateCandidato(user.id, dados)
@@ -186,11 +212,34 @@ export class Perfil implements OnInit {
   }
 
   private loadCompetencias(candidatoId: number) {
-    this.competenciaService.getCompetencias().subscribe(res => {
-       if (res.dados) this.competenciasCatalogo.set(res.dados);
+    this.competenciaService.getCompetencias().subscribe((res) => {
+      if (res.dados) this.competenciasCatalogo.set(res.dados);
     });
-    this.competenciaService.getCompetenciasCandidato(candidatoId).subscribe(res => {
-       if (res.dados) this.competenciasCandidato.set(res.dados);
+    this.competenciaService.getCompetenciasCandidato(candidatoId).subscribe((res) => {
+      if (res.dados) this.competenciasCandidato.set(res.dados);
+    });
+  }
+
+  protected onAddNovaCompetencia(): void {
+    const nome = this.novaCompetenciaNome().trim();
+    if (!nome) return;
+
+    this.isCreatingCompetencia.set(true);
+    this.competenciaService.criarCompetencia(nome).subscribe({
+      next: (res: any) => {
+        const nova = res.data || res.dados;
+        if (nova) {
+          this.competenciasCatalogo.update((list) => [...list, nova]);
+          this.competenciaForm.patchValue({ competenciaId: nova.id });
+          this.novaCompetenciaNome.set('');
+          toast.success(`Competência "${nova.nome}" cadastrada no catálogo!`);
+        }
+        this.isCreatingCompetencia.set(false);
+      },
+      error: () => {
+        toast.error('Erro ao cadastrar competência.');
+        this.isCreatingCompetencia.set(false);
+      },
     });
   }
 
@@ -198,50 +247,30 @@ export class Perfil implements OnInit {
     if (this.competenciaForm.invalid) return;
     const user = this.authService.currentUser();
     if (!user || !user.id) return;
-    
+
     this.isAddingCompetencia.set(true);
     const val = this.competenciaForm.getRawValue();
     const compId = Number(val.competenciaId);
-    
-    const existingVinculo = this.competenciasCandidato().find(v => v.competencia.id === compId);
 
-    const request: VinculoRequest[] = [{
+    const request: VinculoRequest[] = [
+      {
         competenciaId: compId,
-        nivel: val.nivel
-    }];
+        nivel: val.nivel,
+      },
+    ];
 
-    if (existingVinculo) {
-        if (existingVinculo.nivel === val.nivel) {
-            this.isAddingCompetencia.set(false);
-            toast.info('A competência selecionada já possui este nível.');
-            return;
-        }
-
-        this.competenciaService.removerVinculoCandidato(existingVinculo.idVinculo).subscribe({
-            next: () => this.efetuarVinculo(user.id!, request),
-            error: () => {
-                this.isAddingCompetencia.set(false);
-                toast.error('Erro ao atualizar competência (falha ao remover anterior).');
-            }
-        });
-    } else {
-        this.efetuarVinculo(user.id, request);
-    }
-  }
-
-  private efetuarVinculo(userId: number, request: VinculoRequest[]) {
-    this.competenciaService.vincularCandidato(userId, request).subscribe({
-        next: () => {
-           this.loadCompetencias(userId);
-           this.competenciaForm.reset({ competenciaId: 0, nivel: 'BASICO' });
-           this.isAddingCompetencia.set(false);
-           toast.success('Competência salva com sucesso!');
-        },
-        error: (err) => {
-           this.isAddingCompetencia.set(false);
-           const mensagens = handleServerErrors(this.competenciaForm, err);
-           mensagens.forEach((msg) => toast.error(msg));
-        }
+    this.competenciaService.vincularCandidato(user.id, request).subscribe({
+      next: () => {
+        this.loadCompetencias(user.id!);
+        this.competenciaForm.reset({ competenciaId: 0, nivel: 'BASICO' });
+        this.isAddingCompetencia.set(false);
+        toast.success('Competência vinculada com sucesso!');
+      },
+      error: (err) => {
+        this.isAddingCompetencia.set(false);
+        const mensagens = handleServerErrors(this.competenciaForm, err);
+        mensagens.forEach((msg) => toast.error(msg));
+      },
     });
   }
 
@@ -250,21 +279,74 @@ export class Perfil implements OnInit {
     if (!user || !user.id) return;
 
     this.competenciaService.removerVinculoCandidato(vinculoId).subscribe({
-       next: () => {
-           this.loadCompetencias(user.id!);
-           toast.success('Competência removida!');
-       },
-       error: (err) => {
-           toast.error(err.error?.mensagem || 'Erro ao remover competência.');
-       }
+      next: () => {
+        this.loadCompetencias(user.id!);
+        toast.success('Competência removida!');
+      },
+      error: (err) => {
+        toast.error(err.error?.mensagem || 'Erro ao remover competência.');
+      },
+    });
+  }
+
+  protected addFormacao(): void {
+    if (this.formacaoForm.invalid) {
+      this.formacaoForm.markAllAsTouched();
+      return;
+    }
+
+    this.isAddingFormacao.set(true);
+    const val = this.formacaoForm.getRawValue();
+    const payload = {
+      instituicao: val.instituicao,
+      curso: val.curso,
+      nivel: val.nivel,
+      status: val.status,
+      dataInicio: val.dataInicio || null,
+      dataConclusao: val.dataConclusao || null,
+    };
+
+    this.candidatoService.adicionarFormacao(payload).subscribe({
+      next: (res) => {
+        const nova = res.dados;
+        if (nova) {
+          this.formacoesCandidato.update((list) => [...list, nova]);
+        }
+        this.formacaoForm.reset({
+          instituicao: '',
+          curso: '',
+          nivel: 'Graduação',
+          status: 'Em Andamento',
+          dataInicio: '',
+          dataConclusao: '',
+        });
+        this.isAddingFormacao.set(false);
+        toast.success('Formação acadêmica adicionada!');
+      },
+      error: (err) => {
+        this.isAddingFormacao.set(false);
+        toast.error(err.error?.mensagem || 'Erro ao adicionar formação.');
+      },
+    });
+  }
+
+  protected removeFormacao(id: number): void {
+    this.candidatoService.removerFormacao(id).subscribe({
+      next: () => {
+        this.formacoesCandidato.update((list) => list.filter((f) => f.id !== id));
+        toast.success('Formação removida!');
+      },
+      error: (err) => {
+        toast.error(err.error?.mensagem || 'Erro ao remover formação.');
+      },
     });
   }
 
   protected formatNivel(nivel: string): string {
     const niveis: Record<string, string> = {
-      'BASICO': 'Básico',
-      'MEDIO': 'Médio',
-      'AVANCADO': 'Avançado',
+      BASICO: 'Básico',
+      MEDIO: 'Médio',
+      AVANCADO: 'Avançado',
     };
     return niveis[nivel] || nivel;
   }
