@@ -1,3 +1,5 @@
+import { Competencia } from './competencia.model';
+
 export interface Vaga {
   id: number;
   nome: string;
@@ -6,4 +8,5 @@ export interface Vaga {
   nivel: string;
   empresaId: number;
   competenciaIds: number[];
+  competencias?: Competencia[];
 }

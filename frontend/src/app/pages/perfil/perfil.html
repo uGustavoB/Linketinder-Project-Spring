@@ -61,11 +61,11 @@
             </div>
 
             <div class="space-y-2">
-              <label class="text-sm font-medium">Senha</label>
+              <label class="text-sm font-medium">Senha (opcional para manter a atual)</label>
               <input
                 type="password"
                 formControlName="senha"
-                placeholder="Digite sua senha ou uma nova para salvar"
+                placeholder="Deixe em branco para não alterar ou digite nova senha (mín. 6 caracteres)"
                 class="border-input bg-background flex h-10 w-full rounded-md border px-3 py-2 text-sm focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
               />
             </div>
@@ -125,6 +125,7 @@
             </div>
           </form>
 
+          <!-- SEÇÃO: COMPETÊNCIAS DO CANDIDATO -->
           <div class="space-y-4 pt-6 mt-6 border-t">
             <h3 class="text-lg font-medium">Minhas Competências</h3>
             
@@ -151,9 +152,17 @@
               </button>
             </form>
 
+            <!-- Cadastrar nova competência no catálogo -->
+            <div class="flex gap-2 items-center pt-1">
+              <input [(ngModel)]="novaCompetenciaNome" (ngModelChange)="novaCompetenciaNome.set($event)" placeholder="Ou cadastre uma nova competência..." class="border-input bg-background flex h-9 w-full rounded-md border px-3 py-1 text-sm focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none" />
+              <button z-button type="button" zSize="sm" zType="outline" [zDisabled]="isCreatingCompetencia() || !novaCompetenciaNome().trim()" [zLoading]="isCreatingCompetencia()" (click)="onAddNovaCompetencia()">
+                Cadastrar
+              </button>
+            </div>
+
             <div class="space-y-2 mt-4">
               @if (competenciasCandidato().length === 0) {
-                <p class="text-sm text-muted-foreground">Nenhuma competência cadastrada.</p>
+                <p class="text-sm text-muted-foreground">Nenhuma competência vinculada ainda.</p>
               } @else {
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-4">
                   @for (vinculo of competenciasCandidato(); track vinculo.idVinculo) {
@@ -163,6 +172,88 @@
                         <p class="text-xs text-muted-foreground">Nível: {{ formatNivel(vinculo.nivel) }}</p>
                       </div>
                       <button type="button" class="text-red-500 hover:text-red-700 text-sm font-medium" (click)="removeCompetencia(vinculo.idVinculo)">
+                        Remover
+                      </button>
+                    </div>
+                  }
+                </div>
+              }
+            </div>
+          </div>
+
+          <!-- SEÇÃO: FORMAÇÕES ACADÊMICAS DO CANDIDATO -->
+          <div class="space-y-4 pt-6 mt-6 border-t">
+            <h3 class="text-lg font-medium">Minha Formação Acadêmica</h3>
+
+            <form [formGroup]="formacaoForm" (ngSubmit)="addFormacao()" class="space-y-3 p-4 border rounded-lg bg-muted/20">
+              <div class="grid grid-cols-2 gap-3">
+                <div class="space-y-1">
+                  <label class="text-xs font-medium">Instituição</label>
+                  <input formControlName="instituicao" placeholder="Ex: USP, FIAP, Udemy" class="border-input bg-background flex h-9 w-full rounded-md border px-3 py-1 text-sm focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none" />
+                </div>
+                <div class="space-y-1">
+                  <label class="text-xs font-medium">Curso</label>
+                  <input formControlName="curso" placeholder="Ex: Ciência da Computação" class="border-input bg-background flex h-9 w-full rounded-md border px-3 py-1 text-sm focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none" />
+                </div>
+              </div>
+
+              <div class="grid grid-cols-2 gap-3">
+                <div class="space-y-1">
+                  <label class="text-xs font-medium">Grau / Nível</label>
+                  <select formControlName="nivel" class="border-input bg-background flex h-9 w-full rounded-md border px-3 py-1 text-sm focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none">
+                    <option value="Graduação">Graduação</option>
+                    <option value="Pós-Graduação">Pós-Graduação</option>
+                    <option value="Mestrado">Mestrado</option>
+                    <option value="Doutorado">Doutorado</option>
+                    <option value="Técnico">Técnico</option>
+                    <option value="Certificação">Certificação / Curso Livre</option>
+                  </select>
+                </div>
+                <div class="space-y-1">
+                  <label class="text-xs font-medium">Status</label>
+                  <select formControlName="status" class="border-input bg-background flex h-9 w-full rounded-md border px-3 py-1 text-sm focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none">
+                    <option value="Em Andamento">Em Andamento</option>
+                    <option value="Concluído">Concluído</option>
+                    <option value="Interrompido">Interrompido</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="grid grid-cols-2 gap-3">
+                <div class="space-y-1">
+                  <label class="text-xs font-medium">Data de Início</label>
+                  <input type="date" formControlName="dataInicio" class="border-input bg-background flex h-9 w-full rounded-md border px-3 py-1 text-sm focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none" />
+                </div>
+                <div class="space-y-1">
+                  <label class="text-xs font-medium">Data de Conclusão</label>
+                  <input type="date" formControlName="dataConclusao" class="border-input bg-background flex h-9 w-full rounded-md border px-3 py-1 text-sm focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none" />
+                </div>
+              </div>
+
+              <div class="flex justify-end pt-2">
+                <button z-button type="submit" zSize="sm" [zDisabled]="formacaoForm.invalid || isAddingFormacao()" [zLoading]="isAddingFormacao()">
+                  Adicionar Formação
+                </button>
+              </div>
+            </form>
+
+            <div class="space-y-2 mt-4">
+              @if (formacoesCandidato().length === 0) {
+                <p class="text-sm text-muted-foreground">Nenhuma formação acadêmica cadastrada.</p>
+              } @else {
+                <div class="space-y-2">
+                  @for (formacao of formacoesCandidato(); track formacao.id) {
+                    <div class="flex justify-between items-center p-3 border rounded-md">
+                      <div>
+                        <p class="font-medium text-sm">{{ formacao.curso }} - <span class="text-muted-foreground font-normal">{{ formacao.instituicao }}</span></p>
+                        <p class="text-xs text-muted-foreground">
+                          {{ formacao.nivel }} • {{ formacao.status }}
+                          @if (formacao.dataInicio || formacao.dataConclusao) {
+                            • ({{ formacao.dataInicio || '?' }} a {{ formacao.dataConclusao || 'atual' }})
+                          }
+                        </p>
+                      </div>
+                      <button type="button" class="text-red-500 hover:text-red-700 text-sm font-medium" (click)="removeFormacao(formacao.id)">
                         Remover
                       </button>
                     </div>
@@ -207,11 +298,11 @@
           </div>
 
           <div class="space-y-2">
-            <label class="text-sm font-medium">Senha</label>
+            <label class="text-sm font-medium">Senha (opcional para manter a atual)</label>
             <input
               type="password"
               formControlName="senha"
-              placeholder="Digite sua senha ou uma nova para salvar"
+              placeholder="Deixe em branco para não alterar ou digite nova senha (mín. 6 caracteres)"
               class="border-input bg-background flex h-10 w-full rounded-md border px-3 py-2 text-sm focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
             />
           </div>

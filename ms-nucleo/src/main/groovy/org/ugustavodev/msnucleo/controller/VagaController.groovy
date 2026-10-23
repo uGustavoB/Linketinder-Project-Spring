@@ -125,8 +125,15 @@ class VagaController {
     }
 
     @DeleteMapping("/{id}")
-    ResponseEntity<ApiResponseDTO<Void>> deletarVaga(@PathVariable("id") Long id) {
-        deletarVagaUseCase.executar(id)
+    @PreAuthorize("hasRole('EMPRESA')")
+    ResponseEntity<ApiResponseDTO<Void>> deletarVaga(
+            @PathVariable("id") Long id,
+            @AuthenticationPrincipal Usuario usuarioAutenticado
+    ) {
+        Empresa empresa = empresaRepository.findByUsuarioEmail(usuarioAutenticado.getUsername())
+                .orElseThrow(() -> new RuntimeException("Empresa não encontrada"))
+
+        deletarVagaUseCase.executar(id, empresa.getId())
         return ResponseEntity.ok(ApiResponseDTO.sucesso("Vaga deletada com sucesso", HttpStatus.OK.value()))
     }
 

@@ -1,25 +1,32 @@
 package org.ugustavodev.msnucleo.usecase.impl
 
-import org.springframework.stereotype.Service
-import org.ugustavodev.msnucleo.repositories.EmpresaRepository
-import org.ugustavodev.msnucleo.usecase.interfaces.IDeletarEmpresaUseCase
-
+import jakarta.transaction.Transactional
 import org.springframework.security.access.AccessDeniedException
 import org.springframework.security.core.Authentication
 import org.springframework.security.core.context.SecurityContextHolder
+import org.springframework.stereotype.Service
 import org.ugustavodev.msnucleo.domain.Usuario
 import org.ugustavodev.msnucleo.domain.enums.Role
 import org.ugustavodev.msnucleo.model.Empresa
+import org.ugustavodev.msnucleo.repositories.CurtidaRepository
+import org.ugustavodev.msnucleo.repositories.EmpresaRepository
+import org.ugustavodev.msnucleo.repositories.VagaRepository
+import org.ugustavodev.msnucleo.usecase.interfaces.IDeletarEmpresaUseCase
 
 @Service
 class DeletarEmpresaUseCase implements IDeletarEmpresaUseCase {
     private final EmpresaRepository empresaRepository
+    private final CurtidaRepository curtidaRepository
+    private final VagaRepository vagaRepository
 
-    DeletarEmpresaUseCase(EmpresaRepository empresaRepository) {
+    DeletarEmpresaUseCase(EmpresaRepository empresaRepository, CurtidaRepository curtidaRepository, VagaRepository vagaRepository) {
         this.empresaRepository = empresaRepository
+        this.curtidaRepository = curtidaRepository
+        this.vagaRepository = vagaRepository
     }
 
     @Override
+    @Transactional
     void executar(Long id) {
         if (id == null) {
             throw new IllegalArgumentException("O ID da empresa não pode ser nulo.")
@@ -39,6 +46,8 @@ class DeletarEmpresaUseCase implements IDeletarEmpresaUseCase {
             }
         }
 
+        curtidaRepository.deleteByVagaEmpresaId(id)
+        vagaRepository.deleteByEmpresaId(id)
         empresaRepository.delete(empresa)
     }
 }

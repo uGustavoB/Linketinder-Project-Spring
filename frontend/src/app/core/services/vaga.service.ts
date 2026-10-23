@@ -4,6 +4,7 @@ import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { Vaga } from '../models/vaga.model';
 import { ApiResponse } from '../models/api-response.model';
+import { CurtidaResponse, MatchEmpresa } from '../models/match.model';
 
 @Injectable({
   providedIn: 'root',
@@ -30,6 +31,31 @@ export class VagaService {
 
   getCandidatosInteressados(idVaga: number): Observable<ApiResponse<any[]>> {
     return this.http.get<ApiResponse<any[]>>(`${this.apiUrl}/${idVaga}/candidatos/interessados`);
+  }
+
+  curtirVaga(idVaga: number): Observable<ApiResponse<CurtidaResponse>> {
+    return this.http.post<ApiResponse<CurtidaResponse>>(`${this.apiUrl}/${idVaga}/curtir`, {});
+  }
+
+  descurtirVaga(idVaga: number): Observable<ApiResponse<void>> {
+    return this.http.delete<ApiResponse<void>>(`${this.apiUrl}/${idVaga}/curtir`);
+  }
+
+  curtirCandidato(idVaga: number, idCandidato: number): Observable<ApiResponse<CurtidaResponse>> {
+    return this.http.post<ApiResponse<CurtidaResponse>>(
+      `${this.apiUrl}/${idVaga}/candidato/${idCandidato}/curtir`,
+      {},
+    );
+  }
+
+  descurtirCandidato(idVaga: number, idCandidato: number): Observable<ApiResponse<void>> {
+    return this.http.delete<ApiResponse<void>>(
+      `${this.apiUrl}/${idVaga}/candidato/${idCandidato}/curtir`,
+    );
+  }
+
+  getMatchesDaVaga(idVaga: number): Observable<ApiResponse<MatchEmpresa[]>> {
+    return this.http.get<ApiResponse<MatchEmpresa[]>>(`${this.apiUrl}/${idVaga}/matches`);
   }
 
   createVaga(vaga: any): Observable<ApiResponse<Vaga>> {

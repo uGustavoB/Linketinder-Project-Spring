@@ -1,5 +1,6 @@
 package org.ugustavodev.mscompetencia.usecase.impl
 
+import jakarta.transaction.Transactional
 import org.springframework.stereotype.Service
 import org.ugustavodev.mscompetencia.dto.request.VincularCompetenciaRequestDTO
 import org.ugustavodev.mscompetencia.dto.response.CompetenciaVinculoResponseDTO
@@ -21,6 +22,7 @@ class VincularCompetenciaEmpresaUseCase implements IVincularCompetenciaEmpresaUs
     }
 
     @Override
+    @Transactional
     List<CompetenciaVinculoResponseDTO> executar(Long empresaId, List<VincularCompetenciaRequestDTO> requestDTOs) {
         List<CompetenciaVinculoResponseDTO> result = new ArrayList<>()
 

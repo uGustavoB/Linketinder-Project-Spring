@@ -1,0 +1,113 @@
+<div class="rounded-xl border bg-card text-card-foreground shadow">
+  <div class="p-6">
+    <div class="flex justify-between items-center mb-4">
+      <div>
+        <h3 class="font-semibold leading-none tracking-tight text-lg">Meus Matches 🎉</h3>
+        <p class="text-sm text-muted-foreground mt-1">
+          @if (authService.currentUser()?.tipoUsuario === 'CANDIDATO') {
+            Vagas em que você e a empresa deram match mútuo. Contatos para entrevista liberados!
+          } @else {
+            Candidatos que deram match com as suas vagas. Entre em contato por e-mail!
+          }
+        </p>
+      </div>
+      <button z-button zType="outline" zSize="sm" (click)="fetchMatches()" [zDisabled]="isLoading()">
+        Atualizar
+      </button>
+    </div>
+
+    @if (authService.currentUser()?.tipoUsuario === 'CANDIDATO') {
+      <table z-table>
+        <thead z-table-header>
+          <tr z-table-row>
+            <th z-table-head>Vaga</th>
+            <th z-table-head>Empresa</th>
+            <th z-table-head>E-mail de Contato</th>
+            <th z-table-head>Localização</th>
+            <th z-table-head>Nível</th>
+            <th z-table-head>Data do Match</th>
+          </tr>
+        </thead>
+        <tbody z-table-body>
+          @if (isLoading()) {
+            <tr z-table-row>
+              <td z-table-cell colspan="6" class="text-center py-6">Carregando matches...</td>
+            </tr>
+          } @else if (matchesCandidato().length === 0) {
+            <tr z-table-row>
+              <td z-table-cell colspan="6" class="text-center py-6 text-muted-foreground">
+                Nenhum match encontrado ainda. Continue explorando e curtindo vagas!
+              </td>
+            </tr>
+          } @else {
+            @for (match of matchesCandidato(); track match.vaga.id) {
+              <tr z-table-row>
+                <td z-table-cell class="font-semibold">{{ match.vaga.nome }}</td>
+                <td z-table-cell class="font-medium text-foreground">{{ match.empresaNome }}</td>
+                <td z-table-cell class="text-primary font-mono text-sm font-medium">
+                  <a [href]="'mailto:' + match.empresaEmail" class="underline hover:opacity-80">
+                    {{ match.empresaEmail }}
+                  </a>
+                </td>
+                <td z-table-cell>{{ match.vaga.local }}</td>
+                <td z-table-cell>
+                  <span class="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold">
+                    {{ match.vaga.nivel }}
+                  </span>
+                </td>
+                <td z-table-cell>{{ match.dataMatch | date:'dd/MM/yyyy HH:mm' }}</td>
+              </tr>
+            }
+          }
+        </tbody>
+      </table>
+    } @else {
+      <table z-table>
+        <thead z-table-header>
+          <tr z-table-row>
+            <th z-table-head>Vaga</th>
+            <th z-table-head>Candidato</th>
+            <th z-table-head>E-mail de Contato</th>
+            <th z-table-head>Localização</th>
+            <th z-table-head>Data do Match</th>
+            <th z-table-head class="w-[120px] text-right">Ações</th>
+          </tr>
+        </thead>
+        <tbody z-table-body>
+          @if (isLoading()) {
+            <tr z-table-row>
+              <td z-table-cell colspan="6" class="text-center py-6">Carregando matches...</td>
+            </tr>
+          } @else if (matchesEmpresa().length === 0) {
+            <tr z-table-row>
+              <td z-table-cell colspan="6" class="text-center py-6 text-muted-foreground">
+                Nenhum match registrado em suas vagas até o momento.
+              </td>
+            </tr>
+          } @else {
+            @for (match of matchesEmpresa(); track (match.vagaId + '-' + match.candidato.id)) {
+              <tr z-table-row>
+                <td z-table-cell class="font-semibold">{{ match.vagaNome }}</td>
+                <td z-table-cell class="font-medium text-foreground">{{ match.candidatoNome }}</td>
+                <td z-table-cell class="text-primary font-mono text-sm font-medium">
+                  <a [href]="'mailto:' + match.candidatoEmail" class="underline hover:opacity-80">
+                    {{ match.candidatoEmail }}
+                  </a>
+                </td>
+                <td z-table-cell>
+                  {{ match.candidato.estado ? (match.candidato.estado + ' - ' + match.candidato.pais) : (match.candidato.pais || '-') }}
+                </td>
+                <td z-table-cell>{{ match.dataMatch | date:'dd/MM/yyyy HH:mm' }}</td>
+                <td z-table-cell class="text-right">
+                  <button type="button" z-button zType="outline" zSize="sm" (click)="openCompetencias(match.candidato)">
+                    Ver Perfil
+                  </button>
+                </td>
+              </tr>
+            }
+          }
+        </tbody>
+      </table>
+    }
+  </div>
+</div>

@@ -29,7 +29,11 @@ class ListarMatchesCandidatoUseCase implements IListarMatchesCandidatoUseCase {
             def dataMatch = curtida.candidatoCurtiuEm.isAfter(curtida.empresaCurtiuEm) ? curtida.candidatoCurtiuEm : curtida.empresaCurtiuEm
             return new MatchCandidatoResponseDTO(
                     vagaMapper.toPublicoResponseDTO(curtida.vaga),
-                    curtida.vaga.empresa.nome,
+                    curtida.vaga.empresa?.nome,
+                    curtida.vaga.empresa?.usuario?.email,
+                    curtida.vaga.empresa?.pais,
+                    curtida.vaga.empresa?.estado,
+                    curtida.vaga.empresa?.descricao,
                     dataMatch
             )
         }).toList()

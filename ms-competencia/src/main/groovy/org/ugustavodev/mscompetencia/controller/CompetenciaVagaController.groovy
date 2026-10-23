@@ -3,6 +3,7 @@ package org.ugustavodev.mscompetencia.controller
 import jakarta.validation.Valid
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.web.bind.annotation.*
 import org.ugustavodev.mscompetencia.dto.ApiResponseDTO
 import org.ugustavodev.mscompetencia.dto.request.VincularCompetenciaVagaRequestDTO
@@ -24,6 +25,7 @@ class CompetenciaVagaController {
     }
 
     @PostMapping("/{vagaId}")
+    @PreAuthorize("hasRole('EMPRESA')")
     ResponseEntity<ApiResponseDTO<List<CompetenciaVagaVinculoResponseDTO>>> vincularCompetencia(
             @PathVariable("vagaId") Long vagaId,
             @Valid @RequestBody List<VincularCompetenciaVagaRequestDTO> requestDTOs
@@ -39,6 +41,7 @@ class CompetenciaVagaController {
     }
 
     @DeleteMapping("/vinculo/{vinculoId}")
+    @PreAuthorize("hasRole('EMPRESA')")
     ResponseEntity<ApiResponseDTO<Void>> desvincularCompetencia(@PathVariable("vinculoId") Long vinculoId) {
         desvincularUseCase.executar(vinculoId)
         return ResponseEntity.ok(ApiResponseDTO.sucesso("Vínculo removido com sucesso", HttpStatus.OK.value()))

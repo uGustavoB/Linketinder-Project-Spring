@@ -1,5 +1,6 @@
 package org.ugustavodev.msnucleo.usecase.impl
 
+import jakarta.transaction.Transactional
 import org.springframework.stereotype.Service
 import org.ugustavodev.msnucleo.dto.request.CandidatoRequestDTO
 import org.ugustavodev.msnucleo.dto.response.CandidatoResponseDTO
@@ -29,6 +30,7 @@ class AtualizarCandidatoUseCase implements IAtualizarCandidatoUseCase {
     }
 
     @Override
+    @Transactional
     CandidatoResponseDTO executar(Long id, CandidatoRequestDTO requestDTO) {
         if (id == null) {
             throw new IllegalArgumentException("O ID do candidato não pode ser nulo.")
@@ -65,12 +67,16 @@ class AtualizarCandidatoUseCase implements IAtualizarCandidatoUseCase {
             }
         }
 
+        if (requestDTO.senha != null && requestDTO.senha.length() < 6) {
+            throw new IllegalArgumentException("A senha deve ter no mínimo 6 caracteres.")
+        }
+
         String senhaCriptografada = requestDTO.senha ? passwordEncoder.encode(requestDTO.senha) : null
         
         candidatoExistente.atualizarDados(
                 requestDTO.nome,
                 requestDTO.sobrenome,
-                requestDTO.dataNascimento?.toString(),
+                requestDTO.dataNascimento,
                 requestDTO.email,
                 requestDTO.cpf,
                 requestDTO.pais,

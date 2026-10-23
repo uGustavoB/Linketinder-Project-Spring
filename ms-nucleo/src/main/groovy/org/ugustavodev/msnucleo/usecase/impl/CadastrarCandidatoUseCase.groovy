@@ -32,6 +32,10 @@ class CadastrarCandidatoUseCase implements ICadastrarCandidatoUseCase{
             throw new IllegalArgumentException("O objeto CandidatoRequestDTO não pode ser nulo.")
         }
 
+        if (!requestDTO.senha || requestDTO.senha.trim().length() < 6) {
+            throw new IllegalArgumentException("A senha é obrigatória e deve ter no mínimo 6 caracteres.")
+        }
+
         if (usuarioRepository.findByEmail(requestDTO.email).isPresent()) {
             throw new IllegalArgumentException("Já existe um usuário cadastrado com o email informado")
         }

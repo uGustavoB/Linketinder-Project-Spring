@@ -1,5 +1,6 @@
 package org.ugustavodev.msnucleo.usecase.impl
 
+import jakarta.transaction.Transactional
 import org.springframework.security.access.AccessDeniedException
 import org.springframework.stereotype.Service
 import org.ugustavodev.msnucleo.dto.response.CurtidaResponseDTO
@@ -29,6 +30,7 @@ class EmpresaCurteCandidatoUseCase implements IEmpresaCurteCandidatoUseCase{
     }
 
     @Override
+    @Transactional
     CurtidaResponseDTO executar(Long idEmpresa, Long idCandidato, Long idVaga) {
         if (idEmpresa == null) {
             throw new IllegalArgumentException("O ID da empresa não pode ser nulo.")
@@ -57,7 +59,7 @@ class EmpresaCurteCandidatoUseCase implements IEmpresaCurteCandidatoUseCase{
             curtida = optionalCurtida.get()
 
             if (curtida.getEmpresaCurtiuEm() != null) {
-                throw new IllegalStateException("A empresa já curtiu esta vaga.")
+                return curtidaMapper.toResponseDTO(curtida)
             }
 
             curtida.setEmpresaCurtiuEm(LocalDateTime.now())

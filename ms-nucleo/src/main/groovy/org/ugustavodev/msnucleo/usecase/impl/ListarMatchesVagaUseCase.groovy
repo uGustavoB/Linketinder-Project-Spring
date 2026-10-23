@@ -42,6 +42,7 @@ class ListarMatchesVagaUseCase implements IListarMatchesVagaUseCase {
             return new MatchVagaResponseDTO(
                     candidatoMapper.toPublicoResponseDTO(curtida.candidato),
                     curtida.candidato.nome + " " + curtida.candidato.sobrenome,
+                    curtida.candidato.usuario.email,
                     dataMatch
             )
         }).toList()

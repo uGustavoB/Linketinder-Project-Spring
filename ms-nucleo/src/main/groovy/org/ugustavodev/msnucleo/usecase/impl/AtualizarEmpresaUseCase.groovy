@@ -1,5 +1,6 @@
 package org.ugustavodev.msnucleo.usecase.impl
 
+import jakarta.transaction.Transactional
 import org.springframework.stereotype.Service
 import org.ugustavodev.msnucleo.dto.request.EmpresaRequestDTO
 import org.ugustavodev.msnucleo.dto.response.EmpresaResponseDTO
@@ -29,6 +30,7 @@ class AtualizarEmpresaUseCase implements IAtualizarEmpresaUseCase {
     }
 
     @Override
+    @Transactional
     EmpresaResponseDTO executar(Long id, EmpresaRequestDTO requestDTO) {
         if (id == null) {
             throw new IllegalArgumentException("O ID da empresa não pode ser nulo.")
@@ -63,6 +65,10 @@ class AtualizarEmpresaUseCase implements IAtualizarEmpresaUseCase {
             if (comMesmoCnpj.isPresent() && comMesmoCnpj.get().id != id) {
                 throw new IllegalArgumentException("Já existe outra empresa cadastrada com o CNPJ informado")
             }
+        }
+
+        if (requestDTO.senha != null && requestDTO.senha.length() < 6) {
+            throw new IllegalArgumentException("A senha deve ter no mínimo 6 caracteres.")
         }
 
         String senhaCriptografada = requestDTO.senha ? passwordEncoder.encode(requestDTO.senha) : null

@@ -56,6 +56,7 @@ export class MainLayout {
   private readonly candidateItems: NavItem[] = [
     { title: 'Painel', path: '/dashboard', icon: 'lucideHouse' },
     { title: 'Explorar Vagas', path: '/vagas', icon: 'lucideSearch' },
+    { title: 'Meus Matches', path: '/matches', icon: 'lucideInbox' },
     { title: 'Meu Perfil', path: '/perfil', icon: 'lucideFileText' },
   ];
 
@@ -63,6 +64,7 @@ export class MainLayout {
     { title: 'Painel', path: '/dashboard', icon: 'lucideHouse' },
     { title: 'Vagas Publicadas', path: '/vagas', icon: 'lucideBriefcase' },
     { title: 'Candidatos', path: '/candidatos', icon: 'lucideSearch' },
+    { title: 'Matches', path: '/matches', icon: 'lucideInbox' },
     { title: 'Perfil da Empresa', path: '/perfil', icon: 'lucideFileText' },
   ];
 
