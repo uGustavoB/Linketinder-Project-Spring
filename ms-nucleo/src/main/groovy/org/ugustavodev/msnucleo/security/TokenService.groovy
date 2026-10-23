@@ -21,9 +21,11 @@ class TokenService {
     String gerarToken(Usuario usuario) {
         try {
             Algorithm algoritmo = Algorithm.HMAC256(chaveSecreta)
+
             return JWT.create()
                     .withIssuer("ms-nucleo")
                     .withSubject(usuario.email)
+                    .withClaim("role", usuario.role.name())
                     .withExpiresAt(gerarDataExpiracao())
                     .sign(algoritmo)
         } catch (JWTCreationException excecao) {
