@@ -1,6 +1,6 @@
-import { Injectable, inject, signal } from '@angular/core';
+import { inject, Injectable, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, tap } from 'rxjs';
+import { Observable, tap, of, map, catchError } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { LoginRequest, LoginResponse, UserData } from '../models/auth.model';
 import { ApiResponse } from '../models/api-response.model';
@@ -34,6 +34,36 @@ export class AuthService {
       tap(() => {
         this.isAuthenticated.set(false);
         this.currentUser.set(null);
+      }),
+    );
+  }
+
+  checkSession(): Observable<boolean> {
+    if (this.isAuthenticated() && this.currentUser()) {
+      return of(true);
+    }
+
+    return this.http.get<ApiResponse<any>>(`${environment.apiUrl}/perfil`).pipe(
+      map((response) => {
+        if (response && response.dados) {
+          this.isAuthenticated.set(true);
+          this.currentUser.set({
+            id: response.dados.id,
+            email: response.dados.email,
+            nome: response.dados.nome,
+            sobrenome: response.dados.sobrenome || null,
+            tipoUsuario: response.dados.tipoUsuario,
+          });
+          return true;
+        }
+        this.isAuthenticated.set(false);
+        this.currentUser.set(null);
+        return false;
+      }),
+      catchError(() => {
+        this.isAuthenticated.set(false);
+        this.currentUser.set(null);
+        return of(false);
       }),
     );
   }
