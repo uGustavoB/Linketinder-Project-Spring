@@ -26,9 +26,11 @@ class ObterPerfilUseCase implements IObterPerfilUseCase {
     Object executar(Usuario usuario) {
         if (usuario.role == Role.CANDIDATO) {
             Optional<Candidato> candidatoOpt = candidatoRepository.findByUsuarioEmail(usuario.email)
+
             if (candidatoOpt.isPresent()) {
                 Candidato candidato = candidatoOpt.get()
                 return new PerfilCandidatoDTO(
+                        candidato.id,
                         "CANDIDATO",
                         candidato.nome,
                         candidato.sobrenome,
@@ -43,9 +45,11 @@ class ObterPerfilUseCase implements IObterPerfilUseCase {
             }
         } else if (usuario.role == Role.EMPRESA) {
             Optional<Empresa> empresaOpt = empresaRepository.findByUsuarioEmail(usuario.email)
+
             if (empresaOpt.isPresent()) {
                 Empresa empresa = empresaOpt.get()
                 return new PerfilEmpresaDTO(
+                        empresa.id,
                         "EMPRESA",
                         empresa.nome,
                         empresa.cnpj,
