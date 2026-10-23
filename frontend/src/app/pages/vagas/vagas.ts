@@ -9,7 +9,7 @@ import { ZardSelectImports } from '@/shared/components/select/select.imports';
 import { ZardCardImports } from '@/shared/components/card/card.imports';
 import { ZardAlertDialogService } from '@/shared/components/alert-dialog/alert-dialog.service';
 import { toast } from 'ngx-sonner';
-import { forkJoin, of, switchMap } from 'rxjs';
+import { catchError, forkJoin, of, switchMap } from 'rxjs';
 
 import { VagaService } from '@/core/services/vaga.service';
 import { AuthService } from '@/core/services/auth.service';
@@ -17,6 +17,7 @@ import { CompetenciaService } from '@/core/services/competencia.service';
 import { Vaga } from '@/core/models/vaga.model';
 import { CandidatoProfile } from '@/core/models/candidato.model';
 import { Competencia, VinculoRequest, VinculoCompetencia } from '@/core/models/competencia.model';
+import { MatchEmpresa } from '@/core/models/match.model';
 import { handleServerErrors, getFormValidationErrors } from '@/shared/utils/form-utils';
 import { ZardDialogService } from '@/shared/components/dialog/dialog.service';
 import { CandidatoCompetenciasDialog } from '../candidatos/components/candidato-competencias-dialog/candidato-competencias-dialog';
@@ -40,10 +41,10 @@ export class Vagas implements OnInit {
   private alertDialog = inject(ZardAlertDialogService);
   private dialogService = inject(ZardDialogService);
 
-  // Listagem
+  // Listagem de vagas
   readonly vagas = signal<Vaga[]>([]);
   readonly isLoadingVagas = signal<boolean>(true);
-  readonly filterMode = signal<'TODAS' | 'SUGERIDAS'>('TODAS');
+  readonly filterMode = signal<'TODAS' | 'SUGERIDAS'>('SUGERIDAS');
 
   // Formulário
   readonly isFormOpen = signal<boolean>(false);
@@ -51,12 +52,14 @@ export class Vagas implements OnInit {
   readonly selectedVagaId = signal<number | null>(null);
   private existingVinculos = signal<VinculoCompetencia[]>([]);
 
-  // Visualização de Candidatos
+  // Visualização de Candidatos da Vaga
   readonly viewingCandidatosVagaId = signal<number | null>(null);
-  readonly viewingCandidatosMode = signal<'SUGERIDOS' | 'INTERESSADOS'>('SUGERIDOS');
+  readonly viewingCandidatosMode = signal<'INTERESSADOS' | 'SUGERIDOS' | 'MATCHES'>('INTERESSADOS');
   readonly candidatosVaga = signal<any[]>([]);
+  readonly matchesVaga = signal<MatchEmpresa[]>([]);
   readonly isLoadingCandidatos = signal<boolean>(false);
 
+  // Competências
   readonly globalCompetencias = signal<Competencia[]>([]);
   readonly selectedCompetencias = signal<string[]>([]);
   readonly novaCompetenciaNome = signal<string>('');
@@ -75,7 +78,7 @@ export class Vagas implements OnInit {
 
   public onViewCandidatos(vaga: Vaga): void {
     this.viewingCandidatosVagaId.set(vaga.id);
-    this.viewingCandidatosMode.set('SUGERIDOS');
+    this.viewingCandidatosMode.set('INTERESSADOS');
     this.fetchCandidatosVaga();
   }
 
@@ -85,7 +88,23 @@ export class Vagas implements OnInit {
 
     this.isLoadingCandidatos.set(true);
     const mode = this.viewingCandidatosMode();
-    const request$ = mode === 'SUGERIDOS' 
+
+    if (mode === 'MATCHES') {
+      this.vagaService.getMatchesDaVaga(vagaId).subscribe({
+        next: (res: any) => {
+          const data = res.dados || res.data || [];
+          this.matchesVaga.set(data);
+          this.isLoadingCandidatos.set(false);
+        },
+        error: () => {
+          toast.error('Erro ao buscar matches da vaga.');
+          this.isLoadingCandidatos.set(false);
+        },
+      });
+      return;
+    }
+
+    const request$ = mode === 'SUGERIDOS'
       ? this.vagaService.getCandidatosSugeridos(vagaId)
       : this.vagaService.getCandidatosInteressados(vagaId);
 
@@ -98,20 +117,54 @@ export class Vagas implements OnInit {
       error: () => {
         toast.error('Erro ao buscar candidatos.');
         this.isLoadingCandidatos.set(false);
-      }
+      },
     });
   }
 
-  public toggleCandidatosMode(mode: 'SUGERIDOS' | 'INTERESSADOS'): void {
+  public toggleCandidatosMode(mode: 'INTERESSADOS' | 'SUGERIDOS' | 'MATCHES'): void {
     if (this.viewingCandidatosMode() !== mode) {
       this.viewingCandidatosMode.set(mode);
       this.fetchCandidatosVaga();
     }
   }
 
+  public curtirCandidato(candidato: CandidatoProfile): void {
+    const vagaId = this.viewingCandidatosVagaId();
+    if (!vagaId) return;
+
+    this.vagaService.curtirCandidato(vagaId, candidato.id).subscribe({
+      next: (res: any) => {
+        const data = res.dados || res.data;
+        if (data && data.match) {
+          toast.success('Deu Match! 🎉 O contato do candidato foi liberado na aba Matches.');
+        } else {
+          toast.success('Interesse registrado no candidato!');
+        }
+        this.candidatosVaga.update((list) => list.filter((c) => c.id !== candidato.id));
+      },
+      error: () => toast.error('Erro ao curtir candidato.'),
+    });
+  }
+
+  public curtirVaga(vaga: Vaga): void {
+    this.vagaService.curtirVaga(vaga.id).subscribe({
+      next: (res: any) => {
+        const data = res.dados || res.data;
+        if (data && data.match) {
+          toast.success('Deu Match! 🎉 Contato da empresa disponível em Meus Matches.');
+        } else {
+          toast.success('Interesse registrado na vaga!');
+        }
+        this.vagas.update((list) => list.filter((v) => v.id !== vaga.id));
+      },
+      error: () => toast.error('Erro ao curtir vaga.'),
+    });
+  }
+
   public onBackToVagas(): void {
     this.viewingCandidatosVagaId.set(null);
     this.candidatosVaga.set([]);
+    this.matchesVaga.set([]);
   }
 
   public openCompetencias(candidato: CandidatoProfile): void {
@@ -119,12 +172,12 @@ export class Vagas implements OnInit {
       zTitle: `Perfil do Candidato #${candidato.id}`,
       zDescription: 'Detalhes e competências do candidato.',
       zContent: CandidatoCompetenciasDialog,
-      zData: { 
+      zData: {
         candidatoId: candidato.id,
         descricao: candidato.descricao,
         estado: candidato.estado,
         pais: candidato.pais,
-        formacoes: candidato.formacoes
+        formacoes: candidato.formacoes,
       },
       zCancelText: 'Fechar',
       zOkText: null,
@@ -136,18 +189,43 @@ export class Vagas implements OnInit {
     const user = this.authService.currentUser();
     const isEmpresa = user?.tipoUsuario === 'EMPRESA';
     const empresaId = isEmpresa ? user.id : undefined;
-    
+
     let request$ = this.vagaService.getVagas(empresaId);
 
     if (!isEmpresa && this.filterMode() === 'SUGERIDAS') {
       request$ = this.vagaService.getVagasSugeridasCandidato();
     }
-    
+
     request$.subscribe({
       next: (res: any) => {
-        const vagasData = res.dados || res.data || [];
-        this.vagas.set(vagasData);
-        this.isLoadingVagas.set(false);
+        const vagasData: Vaga[] = res.dados || res.data || [];
+        if (vagasData.length === 0) {
+          this.vagas.set([]);
+          this.isLoadingVagas.set(false);
+          return;
+        }
+
+        // Busca as competências de cada vaga via ms-competencia de forma resiliente
+        const compRequests$ = vagasData.map((vaga) =>
+          this.competenciaService.getCompetenciasVaga(vaga.id).pipe(
+            catchError(() => of(null))
+          )
+        );
+
+        forkJoin(compRequests$).subscribe({
+          next: (compResults) => {
+            compResults.forEach((compRes, index) => {
+              const vinculos = compRes?.dados || compRes?.data || [];
+              vagasData[index].competencias = vinculos.map((v: VinculoCompetencia) => v.competencia);
+            });
+            this.vagas.set(vagasData);
+            this.isLoadingVagas.set(false);
+          },
+          error: () => {
+            this.vagas.set(vagasData);
+            this.isLoadingVagas.set(false);
+          },
+        });
       },
       error: (err: any) => {
         console.error('Erro ao buscar vagas', err);
@@ -174,7 +252,7 @@ export class Vagas implements OnInit {
       },
       error: (err: any) => {
         console.error('Erro ao buscar competências:', err);
-      }
+      },
     });
   }
 
@@ -193,15 +271,14 @@ export class Vagas implements OnInit {
       nome: vaga.nome,
       descricao: vaga.descricao,
       local: vaga.local,
-      nivel: vaga.nivel
+      nivel: vaga.nivel,
     });
-    
+
     this.isFormOpen.set(true);
     if (this.globalCompetencias().length === 0) {
       this.loadCompetencias();
     }
 
-    // Carregar competências existentes
     this.competenciaService.getCompetenciasVaga(vaga.id).subscribe({
       next: (res: any) => {
         const vinculos = res.data || res.dados || [];
@@ -209,7 +286,7 @@ export class Vagas implements OnInit {
         const idsSelecionados = vinculos.map((v: VinculoCompetencia) => v.competencia.id.toString());
         this.selectedCompetencias.set(idsSelecionados);
       },
-      error: () => toast.error('Falha ao carregar as competências desta vaga.')
+      error: () => toast.error('Falha ao carregar as competências desta vaga.'),
     });
   }
 
@@ -226,9 +303,9 @@ export class Vagas implements OnInit {
             toast.success('Vaga deletada com sucesso.');
             this.fetchVagas();
           },
-          error: () => toast.error('Falha ao deletar a vaga.')
+          error: () => toast.error('Falha ao deletar a vaga.'),
         });
-      }
+      },
     });
   }
 
@@ -249,17 +326,17 @@ export class Vagas implements OnInit {
       next: (res: any) => {
         const nova = res.data || res.dados;
         if (nova) {
-          this.globalCompetencias.update(list => [...list, nova]);
-          this.selectedCompetencias.update(selected => [...selected, nova.id.toString()]);
+          this.globalCompetencias.update((list) => [...list, nova]);
+          this.selectedCompetencias.update((selected) => [...selected, nova.id.toString()]);
           this.novaCompetenciaNome.set('');
           toast.success('Competência ' + nova.nome + ' adicionada com sucesso!');
         }
         this.isCreatingCompetencia.set(false);
       },
-      error: (err: any) => {
+      error: () => {
         toast.error('Falha ao adicionar nova competência.');
         this.isCreatingCompetencia.set(false);
-      }
+      },
     });
   }
 
@@ -274,8 +351,8 @@ export class Vagas implements OnInit {
     this.isSaving.set(true);
     const vagaDados = this.vagaForm.getRawValue();
     const isEdit = !!this.selectedVagaId();
-    const request$ = isEdit 
-      ? this.vagaService.updateVaga(this.selectedVagaId()!, vagaDados) 
+    const request$ = isEdit
+      ? this.vagaService.updateVaga(this.selectedVagaId()!, vagaDados)
       : this.vagaService.createVaga(vagaDados);
 
     request$.subscribe({
@@ -292,41 +369,41 @@ export class Vagas implements OnInit {
   }
 
   private syncCompetencias(vagaId: number): void {
-    const desiredIds = this.selectedCompetencias().map(id => parseInt(id));
+    const desiredIds = this.selectedCompetencias().map((id) => parseInt(id));
     const existing = this.existingVinculos();
-    
-    // Identifica vínculos para remover
-    const toRemove = existing.filter(v => !desiredIds.includes(v.competencia.id));
-    
-    // Identifica novas competências para vincular
-    const existingIds = existing.map(v => v.competencia.id);
-    const toAddIds = desiredIds.filter(id => !existingIds.includes(id));
 
-    const removeObs$ = toRemove.length > 0 
-      ? forkJoin(toRemove.map(v => this.competenciaService.removerVinculoVaga(v.idVinculo)))
-      : of([]);
+    const toRemove = existing.filter((v) => !desiredIds.includes(v.competencia.id));
+    const existingIds = existing.map((v) => v.competencia.id);
+    const toAddIds = desiredIds.filter((id) => !existingIds.includes(id));
 
-    removeObs$.pipe(
-      switchMap(() => {
-        if (toAddIds.length > 0) {
-          const vinculos: VinculoRequest[] = toAddIds.map(id => ({ competenciaId: id }));
-          return this.competenciaService.vincularVaga(vagaId, vinculos);
-        }
-        return of([]);
-      })
-    ).subscribe({
-      next: () => {
-        toast.success(this.selectedVagaId() ? 'Vaga atualizada com sucesso!' : 'Vaga criada com sucesso!');
-        this.isSaving.set(false);
-        this.onCancelForm();
-        this.fetchVagas();
-      },
-      error: () => {
-        toast.error('Vaga salva, mas falhou ao sincronizar algumas competências.');
-        this.isSaving.set(false);
-        this.onCancelForm();
-        this.fetchVagas();
-      }
-    });
+    const removeObs$ =
+      toRemove.length > 0
+        ? forkJoin(toRemove.map((v) => this.competenciaService.removerVinculoVaga(v.idVinculo)))
+        : of([]);
+
+    removeObs$
+      .pipe(
+        switchMap(() => {
+          if (toAddIds.length > 0) {
+            const vinculos: VinculoRequest[] = toAddIds.map((id) => ({ competenciaId: id }));
+            return this.competenciaService.vincularVaga(vagaId, vinculos);
+          }
+          return of([]);
+        }),
+      )
+      .subscribe({
+        next: () => {
+          toast.success(this.selectedVagaId() ? 'Vaga atualizada com sucesso!' : 'Vaga criada com sucesso!');
+          this.isSaving.set(false);
+          this.onCancelForm();
+          this.fetchVagas();
+        },
+        error: () => {
+          toast.error('Vaga salva, mas falhou ao sincronizar algumas competências.');
+          this.isSaving.set(false);
+          this.onCancelForm();
+          this.fetchVagas();
+        },
+      });
   }
 }
