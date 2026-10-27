@@ -6,7 +6,7 @@ import org.ugustavodev.msnucleo.mapper.CandidatoMapper
 import org.ugustavodev.msnucleo.mapper.VagaMapper
 import org.ugustavodev.msnucleo.model.Curtida
 import org.ugustavodev.msnucleo.repositories.CurtidaRepository
-import org.ugustavodev.msnucleo.usecase.interfaces.IListarMatchesEmpresaUseCase
+import org.ugustavodev.msnucleo.usecase.interfaces.matches.IListarMatchesEmpresaUseCase
 
 @Service
 class ListarMatchesEmpresaUseCase implements IListarMatchesEmpresaUseCase {

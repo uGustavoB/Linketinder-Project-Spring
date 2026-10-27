@@ -3,7 +3,7 @@ package org.ugustavodev.msnucleo.usecase.impl.formacao
 import org.springframework.stereotype.Service
 import org.ugustavodev.msnucleo.model.Formacao
 import org.ugustavodev.msnucleo.repositories.FormacaoRepository
-import org.ugustavodev.msnucleo.usecase.interfaces.IDeletarFormacaoUseCase
+import org.ugustavodev.msnucleo.usecase.interfaces.formacao.IDeletarFormacaoUseCase
 
 @Service
 class DeletarFormacaoUseCase implements IDeletarFormacaoUseCase {

@@ -5,7 +5,7 @@ import org.ugustavodev.msnucleo.dto.response.CandidatoResponseDTO
 import org.ugustavodev.msnucleo.mapper.CandidatoMapper
 import org.ugustavodev.msnucleo.model.Candidato
 import org.ugustavodev.msnucleo.repositories.CandidatoRepository
-import org.ugustavodev.msnucleo.usecase.interfaces.IBuscarCandidatoPorIdUseCase
+import org.ugustavodev.msnucleo.usecase.interfaces.candidatos.IBuscarCandidatoPorIdUseCase
 
 import org.springframework.security.access.AccessDeniedException
 import org.springframework.security.core.Authentication

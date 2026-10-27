@@ -6,7 +6,7 @@ import org.ugustavodev.msnucleo.dto.response.FormacaoResponseDTO
 import org.ugustavodev.msnucleo.mapper.FormacaoMapper
 import org.ugustavodev.msnucleo.model.Formacao
 import org.ugustavodev.msnucleo.repositories.FormacaoRepository
-import org.ugustavodev.msnucleo.usecase.interfaces.IAtualizarFormacaoUseCase
+import org.ugustavodev.msnucleo.usecase.interfaces.formacao.IAtualizarFormacaoUseCase
 
 @Service
 class AtualizarFormacaoUseCase implements IAtualizarFormacaoUseCase {

@@ -1,4 +1,4 @@
-package org.ugustavodev.msnucleo.usecase.interfaces
+package org.ugustavodev.msnucleo.usecase.interfaces.curtidas
 
 import org.ugustavodev.msnucleo.dto.response.CurtidaResponseDTO
 

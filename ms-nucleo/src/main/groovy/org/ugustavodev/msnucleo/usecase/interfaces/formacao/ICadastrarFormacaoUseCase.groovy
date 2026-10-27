@@ -1,4 +1,4 @@
-package org.ugustavodev.msnucleo.usecase.interfaces
+package org.ugustavodev.msnucleo.usecase.interfaces.formacao
 
 import org.ugustavodev.msnucleo.dto.request.FormacaoRequestDTO
 import org.ugustavodev.msnucleo.dto.response.FormacaoResponseDTO

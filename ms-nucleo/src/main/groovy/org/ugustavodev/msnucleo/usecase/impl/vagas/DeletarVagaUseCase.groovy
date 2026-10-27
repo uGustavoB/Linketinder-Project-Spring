@@ -5,7 +5,7 @@ import org.springframework.stereotype.Service
 import org.ugustavodev.msnucleo.model.Vaga
 import org.ugustavodev.msnucleo.repositories.CurtidaRepository
 import org.ugustavodev.msnucleo.repositories.VagaRepository
-import org.ugustavodev.msnucleo.usecase.interfaces.IDeletarVagaUseCase
+import org.ugustavodev.msnucleo.usecase.interfaces.vagas.IDeletarVagaUseCase
 
 @Service
 class DeletarVagaUseCase implements IDeletarVagaUseCase {

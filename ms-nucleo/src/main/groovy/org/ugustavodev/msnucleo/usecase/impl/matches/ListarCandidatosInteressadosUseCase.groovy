@@ -8,7 +8,7 @@ import org.ugustavodev.msnucleo.model.Candidato
 import org.ugustavodev.msnucleo.model.Vaga
 import org.ugustavodev.msnucleo.repositories.CandidatoRepository
 import org.ugustavodev.msnucleo.repositories.VagaRepository
-import org.ugustavodev.msnucleo.usecase.interfaces.IListarCandidatosInteressadosUseCase
+import org.ugustavodev.msnucleo.usecase.interfaces.matches.IListarCandidatosInteressadosUseCase
 
 @Service
 class ListarCandidatosInteressadosUseCase implements IListarCandidatosInteressadosUseCase {

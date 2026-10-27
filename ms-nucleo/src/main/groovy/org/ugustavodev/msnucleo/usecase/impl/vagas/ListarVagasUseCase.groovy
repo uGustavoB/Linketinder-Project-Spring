@@ -4,7 +4,7 @@ import org.springframework.stereotype.Service
 import org.ugustavodev.msnucleo.dto.response.VagaPublicoResponseDTO
 import org.ugustavodev.msnucleo.mapper.VagaMapper
 import org.ugustavodev.msnucleo.repositories.VagaRepository
-import org.ugustavodev.msnucleo.usecase.interfaces.IListarVagasUseCase
+import org.ugustavodev.msnucleo.usecase.interfaces.vagas.IListarVagasUseCase
 
 @Service
 class ListarVagasUseCase implements IListarVagasUseCase {

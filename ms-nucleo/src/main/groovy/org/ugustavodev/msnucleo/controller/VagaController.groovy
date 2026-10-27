@@ -24,19 +24,19 @@ import org.ugustavodev.msnucleo.model.Candidato
 import org.ugustavodev.msnucleo.model.Empresa
 import org.ugustavodev.msnucleo.repositories.CandidatoRepository
 import org.ugustavodev.msnucleo.repositories.EmpresaRepository
-import org.ugustavodev.msnucleo.usecase.interfaces.IAtualizarVagaUseCase
-import org.ugustavodev.msnucleo.usecase.interfaces.IBuscarVagaPorIdUseCase
-import org.ugustavodev.msnucleo.usecase.interfaces.ICadastrarVagaUseCase
-import org.ugustavodev.msnucleo.usecase.interfaces.ICandidatoCurteVagaUseCase
-import org.ugustavodev.msnucleo.usecase.interfaces.ICandidatoDescurteVagaUseCase
-import org.ugustavodev.msnucleo.usecase.interfaces.IDeletarVagaUseCase
-import org.ugustavodev.msnucleo.usecase.interfaces.IEmpresaCurteCandidatoUseCase
-import org.ugustavodev.msnucleo.usecase.interfaces.IEmpresaDescurteCandidatoUseCase
-import org.ugustavodev.msnucleo.usecase.interfaces.IListarMatchesVagaUseCase
-import org.ugustavodev.msnucleo.usecase.interfaces.IListarVagasUseCase
-import org.ugustavodev.msnucleo.usecase.interfaces.IListarVagasSugeridasUseCase
-import org.ugustavodev.msnucleo.usecase.interfaces.IListarCandidatosSugeridosUseCase
-import org.ugustavodev.msnucleo.usecase.interfaces.IListarCandidatosInteressadosUseCase
+import org.ugustavodev.msnucleo.usecase.interfaces.vagas.IAtualizarVagaUseCase
+import org.ugustavodev.msnucleo.usecase.interfaces.vagas.IBuscarVagaPorIdUseCase
+import org.ugustavodev.msnucleo.usecase.interfaces.vagas.ICadastrarVagaUseCase
+import org.ugustavodev.msnucleo.usecase.interfaces.curtidas.ICandidatoCurteVagaUseCase
+import org.ugustavodev.msnucleo.usecase.interfaces.curtidas.ICandidatoDescurteVagaUseCase
+import org.ugustavodev.msnucleo.usecase.interfaces.vagas.IDeletarVagaUseCase
+import org.ugustavodev.msnucleo.usecase.interfaces.curtidas.IEmpresaCurteCandidatoUseCase
+import org.ugustavodev.msnucleo.usecase.interfaces.curtidas.IEmpresaDescurteCandidatoUseCase
+import org.ugustavodev.msnucleo.usecase.interfaces.matches.IListarMatchesVagaUseCase
+import org.ugustavodev.msnucleo.usecase.interfaces.vagas.IListarVagasUseCase
+import org.ugustavodev.msnucleo.usecase.interfaces.vagas.IListarVagasSugeridasUseCase
+import org.ugustavodev.msnucleo.usecase.interfaces.matches.IListarCandidatosSugeridosUseCase
+import org.ugustavodev.msnucleo.usecase.interfaces.matches.IListarCandidatosInteressadosUseCase
 import org.ugustavodev.msnucleo.dto.response.CandidatoPublicoResponseDTO
 
 @RestController

@@ -22,12 +22,12 @@ import org.ugustavodev.msnucleo.dto.response.MatchEmpresaResponseDTO
 import org.ugustavodev.msnucleo.dto.ApiResponseDTO
 import org.ugustavodev.msnucleo.model.Empresa
 import org.ugustavodev.msnucleo.repositories.EmpresaRepository
-import org.ugustavodev.msnucleo.usecase.interfaces.IAtualizarEmpresaUseCase
-import org.ugustavodev.msnucleo.usecase.interfaces.IBuscarEmpresaPorIdUseCase
-import org.ugustavodev.msnucleo.usecase.interfaces.ICadastrarEmpresaUseCase
-import org.ugustavodev.msnucleo.usecase.interfaces.IDeletarEmpresaUseCase
-import org.ugustavodev.msnucleo.usecase.interfaces.IListarEmpresasUseCase
-import org.ugustavodev.msnucleo.usecase.interfaces.IListarMatchesEmpresaUseCase
+import org.ugustavodev.msnucleo.usecase.interfaces.empresas.IAtualizarEmpresaUseCase
+import org.ugustavodev.msnucleo.usecase.interfaces.empresas.IBuscarEmpresaPorIdUseCase
+import org.ugustavodev.msnucleo.usecase.interfaces.empresas.ICadastrarEmpresaUseCase
+import org.ugustavodev.msnucleo.usecase.interfaces.empresas.IDeletarEmpresaUseCase
+import org.ugustavodev.msnucleo.usecase.interfaces.empresas.IListarEmpresasUseCase
+import org.ugustavodev.msnucleo.usecase.interfaces.matches.IListarMatchesEmpresaUseCase
 
 @RestController
 @RequestMapping("/api/empresa")

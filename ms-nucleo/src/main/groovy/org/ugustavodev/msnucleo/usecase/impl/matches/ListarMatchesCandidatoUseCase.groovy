@@ -5,7 +5,7 @@ import org.ugustavodev.msnucleo.dto.response.MatchCandidatoResponseDTO
 import org.ugustavodev.msnucleo.mapper.VagaMapper
 import org.ugustavodev.msnucleo.model.Curtida
 import org.ugustavodev.msnucleo.repositories.CurtidaRepository
-import org.ugustavodev.msnucleo.usecase.interfaces.IListarMatchesCandidatoUseCase
+import org.ugustavodev.msnucleo.usecase.interfaces.matches.IListarMatchesCandidatoUseCase
 
 @Service
 class ListarMatchesCandidatoUseCase implements IListarMatchesCandidatoUseCase {

@@ -4,7 +4,7 @@ import org.springframework.stereotype.Service
 import org.ugustavodev.msnucleo.dto.response.CandidatoPublicoResponseDTO
 import org.ugustavodev.msnucleo.mapper.CandidatoMapper
 import org.ugustavodev.msnucleo.repositories.CandidatoRepository
-import org.ugustavodev.msnucleo.usecase.interfaces.IListarCandidatosUseCase
+import org.ugustavodev.msnucleo.usecase.interfaces.candidatos.IListarCandidatosUseCase
 
 import org.springframework.security.core.Authentication
 import org.springframework.security.core.context.SecurityContextHolder

@@ -5,7 +5,7 @@ import org.ugustavodev.msnucleo.dto.response.VagaPublicoResponseDTO
 import org.ugustavodev.msnucleo.mapper.VagaMapper
 import org.ugustavodev.msnucleo.model.Vaga
 import org.ugustavodev.msnucleo.repositories.VagaRepository
-import org.ugustavodev.msnucleo.usecase.interfaces.IListarVagasSugeridasUseCase
+import org.ugustavodev.msnucleo.usecase.interfaces.vagas.IListarVagasSugeridasUseCase
 
 @Service
 class ListarVagasSugeridasUseCase implements IListarVagasSugeridasUseCase {

@@ -1,6 +1,6 @@
-package org.ugustavodev.msnucleo.usecase.interfaces
+package org.ugustavodev.msnucleo.usecase.interfaces.vagas
 
-import org.ugustavodev.msnucleo.dto.response.VagaResponseDTO
+
 import org.ugustavodev.msnucleo.dto.response.VagaPublicoResponseDTO
 
 interface IListarVagasUseCase {

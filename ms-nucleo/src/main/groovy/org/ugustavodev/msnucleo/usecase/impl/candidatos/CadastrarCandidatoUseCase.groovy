@@ -8,7 +8,7 @@ import org.ugustavodev.msnucleo.mapper.CandidatoMapper
 import org.ugustavodev.msnucleo.model.Candidato
 import org.ugustavodev.msnucleo.repositories.CandidatoRepository
 import org.ugustavodev.msnucleo.repositories.UsuarioRepository
-import org.ugustavodev.msnucleo.usecase.interfaces.ICadastrarCandidatoUseCase
+import org.ugustavodev.msnucleo.usecase.interfaces.candidatos.ICadastrarCandidatoUseCase
 
 import org.springframework.security.crypto.password.PasswordEncoder
 

@@ -19,9 +19,9 @@ import org.ugustavodev.msnucleo.dto.ApiResponseDTO
 import org.ugustavodev.msnucleo.dto.response.FormacaoResponseDTO
 import org.ugustavodev.msnucleo.model.Candidato
 import org.ugustavodev.msnucleo.repositories.CandidatoRepository
-import org.ugustavodev.msnucleo.usecase.interfaces.IAtualizarFormacaoUseCase
-import org.ugustavodev.msnucleo.usecase.interfaces.ICadastrarFormacaoUseCase
-import org.ugustavodev.msnucleo.usecase.interfaces.IDeletarFormacaoUseCase
+import org.ugustavodev.msnucleo.usecase.interfaces.formacao.IAtualizarFormacaoUseCase
+import org.ugustavodev.msnucleo.usecase.interfaces.formacao.ICadastrarFormacaoUseCase
+import org.ugustavodev.msnucleo.usecase.interfaces.formacao.IDeletarFormacaoUseCase
 
 @RestController
 @RequestMapping("/api/candidato/formacoes")

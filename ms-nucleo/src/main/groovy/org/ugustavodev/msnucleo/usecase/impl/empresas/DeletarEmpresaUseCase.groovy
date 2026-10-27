@@ -11,7 +11,7 @@ import org.ugustavodev.msnucleo.model.Empresa
 import org.ugustavodev.msnucleo.repositories.CurtidaRepository
 import org.ugustavodev.msnucleo.repositories.EmpresaRepository
 import org.ugustavodev.msnucleo.repositories.VagaRepository
-import org.ugustavodev.msnucleo.usecase.interfaces.IDeletarEmpresaUseCase
+import org.ugustavodev.msnucleo.usecase.interfaces.empresas.IDeletarEmpresaUseCase
 
 @Service
 class DeletarEmpresaUseCase implements IDeletarEmpresaUseCase {

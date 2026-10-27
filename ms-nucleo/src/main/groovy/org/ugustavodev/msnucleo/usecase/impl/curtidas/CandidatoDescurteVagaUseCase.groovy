@@ -3,7 +3,7 @@ package org.ugustavodev.msnucleo.usecase.impl.curtidas
 import org.springframework.stereotype.Service
 import org.ugustavodev.msnucleo.model.Curtida
 import org.ugustavodev.msnucleo.repositories.CurtidaRepository
-import org.ugustavodev.msnucleo.usecase.interfaces.ICandidatoDescurteVagaUseCase
+import org.ugustavodev.msnucleo.usecase.interfaces.curtidas.ICandidatoDescurteVagaUseCase
 
 @Service
 class CandidatoDescurteVagaUseCase implements ICandidatoDescurteVagaUseCase {

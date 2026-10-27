@@ -10,7 +10,7 @@ import org.ugustavodev.msnucleo.domain.enums.Role
 import org.ugustavodev.msnucleo.model.Candidato
 import org.ugustavodev.msnucleo.repositories.CandidatoRepository
 import org.ugustavodev.msnucleo.repositories.CurtidaRepository
-import org.ugustavodev.msnucleo.usecase.interfaces.IDeletarCandidatoUseCase
+import org.ugustavodev.msnucleo.usecase.interfaces.candidatos.IDeletarCandidatoUseCase
 
 @Service
 class DeletarCandidatoUseCase implements IDeletarCandidatoUseCase {

@@ -8,7 +8,7 @@ import org.ugustavodev.msnucleo.model.Candidato
 import org.ugustavodev.msnucleo.model.Formacao
 import org.ugustavodev.msnucleo.repositories.CandidatoRepository
 import org.ugustavodev.msnucleo.repositories.FormacaoRepository
-import org.ugustavodev.msnucleo.usecase.interfaces.ICadastrarFormacaoUseCase
+import org.ugustavodev.msnucleo.usecase.interfaces.formacao.ICadastrarFormacaoUseCase
 
 @Service
 class CadastrarFormacaoUseCase implements ICadastrarFormacaoUseCase {

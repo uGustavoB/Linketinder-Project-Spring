@@ -5,7 +5,7 @@ import org.ugustavodev.msnucleo.dto.response.EmpresaResponseDTO
 import org.ugustavodev.msnucleo.mapper.EmpresaMapper
 import org.ugustavodev.msnucleo.model.Empresa
 import org.ugustavodev.msnucleo.repositories.EmpresaRepository
-import org.ugustavodev.msnucleo.usecase.interfaces.IBuscarEmpresaPorIdUseCase
+import org.ugustavodev.msnucleo.usecase.interfaces.empresas.IBuscarEmpresaPorIdUseCase
 
 import org.springframework.security.access.AccessDeniedException
 import org.springframework.security.core.Authentication

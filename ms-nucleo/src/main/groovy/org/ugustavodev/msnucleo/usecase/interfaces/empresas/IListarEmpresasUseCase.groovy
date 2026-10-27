@@ -1,6 +1,6 @@
-package org.ugustavodev.msnucleo.usecase.interfaces
+package org.ugustavodev.msnucleo.usecase.interfaces.empresas
 
-import org.ugustavodev.msnucleo.dto.response.EmpresaResponseDTO
+
 import org.ugustavodev.msnucleo.dto.response.EmpresaPublicoResponseDTO
 
 interface IListarEmpresasUseCase {

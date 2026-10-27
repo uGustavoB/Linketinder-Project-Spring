@@ -7,7 +7,7 @@ import org.ugustavodev.msnucleo.dto.response.EmpresaResponseDTO
 import org.ugustavodev.msnucleo.mapper.EmpresaMapper
 import org.ugustavodev.msnucleo.model.Empresa
 import org.ugustavodev.msnucleo.repositories.EmpresaRepository
-import org.ugustavodev.msnucleo.usecase.interfaces.IAtualizarEmpresaUseCase
+import org.ugustavodev.msnucleo.usecase.interfaces.empresas.IAtualizarEmpresaUseCase
 
 import org.springframework.security.crypto.password.PasswordEncoder
 

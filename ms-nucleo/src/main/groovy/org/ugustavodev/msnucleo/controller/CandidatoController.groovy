@@ -22,12 +22,12 @@ import org.ugustavodev.msnucleo.dto.response.MatchCandidatoResponseDTO
 import org.ugustavodev.msnucleo.dto.ApiResponseDTO
 import org.ugustavodev.msnucleo.model.Candidato
 import org.ugustavodev.msnucleo.repositories.CandidatoRepository
-import org.ugustavodev.msnucleo.usecase.interfaces.IAtualizarCandidatoUseCase
-import org.ugustavodev.msnucleo.usecase.interfaces.IBuscarCandidatoPorIdUseCase
-import org.ugustavodev.msnucleo.usecase.interfaces.ICadastrarCandidatoUseCase
-import org.ugustavodev.msnucleo.usecase.interfaces.IDeletarCandidatoUseCase
-import org.ugustavodev.msnucleo.usecase.interfaces.IListarCandidatosUseCase
-import org.ugustavodev.msnucleo.usecase.interfaces.IListarMatchesCandidatoUseCase
+import org.ugustavodev.msnucleo.usecase.interfaces.candidatos.IAtualizarCandidatoUseCase
+import org.ugustavodev.msnucleo.usecase.interfaces.candidatos.IBuscarCandidatoPorIdUseCase
+import org.ugustavodev.msnucleo.usecase.interfaces.candidatos.ICadastrarCandidatoUseCase
+import org.ugustavodev.msnucleo.usecase.interfaces.candidatos.IDeletarCandidatoUseCase
+import org.ugustavodev.msnucleo.usecase.interfaces.candidatos.IListarCandidatosUseCase
+import org.ugustavodev.msnucleo.usecase.interfaces.matches.IListarMatchesCandidatoUseCase
 
 @RestController
 @RequestMapping("/api/candidato")

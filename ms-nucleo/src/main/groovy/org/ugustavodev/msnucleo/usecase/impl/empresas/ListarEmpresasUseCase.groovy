@@ -4,7 +4,7 @@ import org.springframework.stereotype.Service
 import org.ugustavodev.msnucleo.dto.response.EmpresaPublicoResponseDTO
 import org.ugustavodev.msnucleo.mapper.EmpresaMapper
 import org.ugustavodev.msnucleo.repositories.EmpresaRepository
-import org.ugustavodev.msnucleo.usecase.interfaces.IListarEmpresasUseCase
+import org.ugustavodev.msnucleo.usecase.interfaces.empresas.IListarEmpresasUseCase
 
 import org.springframework.security.core.Authentication
 import org.springframework.security.core.context.SecurityContextHolder

@@ -8,7 +8,7 @@ import org.ugustavodev.msnucleo.model.Empresa
 import org.ugustavodev.msnucleo.model.Vaga
 import org.ugustavodev.msnucleo.repositories.EmpresaRepository
 import org.ugustavodev.msnucleo.repositories.VagaRepository
-import org.ugustavodev.msnucleo.usecase.interfaces.ICadastrarVagaUseCase
+import org.ugustavodev.msnucleo.usecase.interfaces.vagas.ICadastrarVagaUseCase
 
 @Service
 class CadastrarVagaUseCase implements ICadastrarVagaUseCase {

@@ -1,4 +1,4 @@
-package org.ugustavodev.msnucleo.usecase.interfaces
+package org.ugustavodev.msnucleo.usecase.interfaces.matches
 
 import org.ugustavodev.msnucleo.dto.response.MatchVagaResponseDTO
 

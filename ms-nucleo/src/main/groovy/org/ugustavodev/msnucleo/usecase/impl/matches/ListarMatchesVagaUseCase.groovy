@@ -8,7 +8,7 @@ import org.ugustavodev.msnucleo.model.Curtida
 import org.ugustavodev.msnucleo.model.Vaga
 import org.ugustavodev.msnucleo.repositories.CurtidaRepository
 import org.ugustavodev.msnucleo.repositories.VagaRepository
-import org.ugustavodev.msnucleo.usecase.interfaces.IListarMatchesVagaUseCase
+import org.ugustavodev.msnucleo.usecase.interfaces.matches.IListarMatchesVagaUseCase
 
 @Service
 class ListarMatchesVagaUseCase implements IListarMatchesVagaUseCase {
