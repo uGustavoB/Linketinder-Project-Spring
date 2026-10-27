@@ -1,4 +1,4 @@
-package org.ugustavodev.msnucleo.usecase.impl
+package org.ugustavodev.msnucleo.usecase.impl.matches
 
 import org.springframework.stereotype.Service
 import org.ugustavodev.msnucleo.dto.response.MatchCandidatoResponseDTO

@@ -1,4 +1,4 @@
-package org.ugustavodev.msnucleo.usecase.impl
+package org.ugustavodev.msnucleo.usecase.impl.matches
 
 import org.springframework.security.access.AccessDeniedException
 import org.springframework.stereotype.Service
@@ -8,15 +8,15 @@ import org.ugustavodev.msnucleo.model.Candidato
 import org.ugustavodev.msnucleo.model.Vaga
 import org.ugustavodev.msnucleo.repositories.CandidatoRepository
 import org.ugustavodev.msnucleo.repositories.VagaRepository
-import org.ugustavodev.msnucleo.usecase.interfaces.IListarCandidatosSugeridosUseCase
+import org.ugustavodev.msnucleo.usecase.interfaces.IListarCandidatosInteressadosUseCase
 
 @Service
-class ListarCandidatosSugeridosUseCase implements IListarCandidatosSugeridosUseCase {
+class ListarCandidatosInteressadosUseCase implements IListarCandidatosInteressadosUseCase {
     private final CandidatoRepository candidatoRepository
     private final VagaRepository vagaRepository
     private final CandidatoMapper candidatoMapper
 
-    ListarCandidatosSugeridosUseCase(CandidatoRepository candidatoRepository, VagaRepository vagaRepository, CandidatoMapper candidatoMapper) {
+    ListarCandidatosInteressadosUseCase(CandidatoRepository candidatoRepository, VagaRepository vagaRepository, CandidatoMapper candidatoMapper) {
         this.candidatoRepository = candidatoRepository
         this.vagaRepository = vagaRepository
         this.candidatoMapper = candidatoMapper
@@ -31,7 +31,7 @@ class ListarCandidatosSugeridosUseCase implements IListarCandidatosSugeridosUseC
             throw new AccessDeniedException("A vaga informada não pertence à empresa autenticada")
         }
 
-        List<Candidato> candidatos = candidatoRepository.findCandidatosSugeridosParaVaga(vagaId)
+        List<Candidato> candidatos = candidatoRepository.findCandidatosInteressadosNaVaga(vagaId)
 
         return candidatos.stream()
                 .map(candidatoMapper::toPublicoResponseDTO)

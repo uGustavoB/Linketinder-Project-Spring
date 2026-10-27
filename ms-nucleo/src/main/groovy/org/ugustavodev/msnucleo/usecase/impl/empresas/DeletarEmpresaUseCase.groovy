@@ -1,4 +1,4 @@
-package org.ugustavodev.msnucleo.usecase.impl
+package org.ugustavodev.msnucleo.usecase.impl.empresas
 
 import jakarta.transaction.Transactional
 import org.springframework.security.access.AccessDeniedException

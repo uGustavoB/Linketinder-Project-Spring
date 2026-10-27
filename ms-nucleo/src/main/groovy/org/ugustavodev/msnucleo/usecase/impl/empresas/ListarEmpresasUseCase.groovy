@@ -1,7 +1,6 @@
-package org.ugustavodev.msnucleo.usecase.impl
+package org.ugustavodev.msnucleo.usecase.impl.empresas
 
 import org.springframework.stereotype.Service
-import org.ugustavodev.msnucleo.dto.response.EmpresaResponseDTO
 import org.ugustavodev.msnucleo.dto.response.EmpresaPublicoResponseDTO
 import org.ugustavodev.msnucleo.mapper.EmpresaMapper
 import org.ugustavodev.msnucleo.repositories.EmpresaRepository

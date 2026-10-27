@@ -1,7 +1,6 @@
-package org.ugustavodev.msnucleo.usecase.impl
+package org.ugustavodev.msnucleo.usecase.impl.vagas
 
 import org.springframework.stereotype.Service
-import org.ugustavodev.msnucleo.dto.response.VagaResponseDTO
 import org.ugustavodev.msnucleo.dto.response.VagaPublicoResponseDTO
 import org.ugustavodev.msnucleo.mapper.VagaMapper
 import org.ugustavodev.msnucleo.repositories.VagaRepository

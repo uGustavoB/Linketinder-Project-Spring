@@ -1,11 +1,10 @@
-package org.ugustavodev.msnucleo.usecase.impl
+package org.ugustavodev.msnucleo.usecase.impl.vagas
 
 import org.springframework.security.access.AccessDeniedException
 import org.springframework.stereotype.Service
 import org.ugustavodev.msnucleo.dto.request.VagaRequestDTO
 import org.ugustavodev.msnucleo.dto.response.VagaResponseDTO
 import org.ugustavodev.msnucleo.mapper.VagaMapper
-import org.ugustavodev.msnucleo.model.Empresa
 import org.ugustavodev.msnucleo.model.Vaga
 import org.ugustavodev.msnucleo.repositories.EmpresaRepository
 import org.ugustavodev.msnucleo.repositories.VagaRepository

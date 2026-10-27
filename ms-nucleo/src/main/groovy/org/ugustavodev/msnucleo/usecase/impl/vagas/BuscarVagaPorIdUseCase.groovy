@@ -1,4 +1,4 @@
-package org.ugustavodev.msnucleo.usecase.impl
+package org.ugustavodev.msnucleo.usecase.impl.vagas
 
 import org.springframework.security.core.Authentication
 import org.springframework.security.core.context.SecurityContextHolder

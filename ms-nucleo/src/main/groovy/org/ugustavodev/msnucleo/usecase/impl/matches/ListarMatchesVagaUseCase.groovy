@@ -1,4 +1,4 @@
-package org.ugustavodev.msnucleo.usecase.impl
+package org.ugustavodev.msnucleo.usecase.impl.matches
 
 import org.springframework.security.access.AccessDeniedException
 import org.springframework.stereotype.Service

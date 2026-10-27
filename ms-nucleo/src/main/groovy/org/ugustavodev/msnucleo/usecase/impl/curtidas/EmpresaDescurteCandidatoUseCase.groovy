@@ -1,4 +1,4 @@
-package org.ugustavodev.msnucleo.usecase.impl
+package org.ugustavodev.msnucleo.usecase.impl.curtidas
 
 import org.springframework.security.access.AccessDeniedException
 import org.springframework.stereotype.Service
@@ -7,8 +7,6 @@ import org.ugustavodev.msnucleo.model.Vaga
 import org.ugustavodev.msnucleo.repositories.CurtidaRepository
 import org.ugustavodev.msnucleo.repositories.VagaRepository
 import org.ugustavodev.msnucleo.usecase.interfaces.IEmpresaDescurteCandidatoUseCase
-
-import java.util.NoSuchElementException
 
 @Service
 class EmpresaDescurteCandidatoUseCase implements IEmpresaDescurteCandidatoUseCase {

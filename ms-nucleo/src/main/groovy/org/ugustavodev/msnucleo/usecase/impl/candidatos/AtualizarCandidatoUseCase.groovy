@@ -1,4 +1,4 @@
-package org.ugustavodev.msnucleo.usecase.impl
+package org.ugustavodev.msnucleo.usecase.impl.candidatos
 
 import jakarta.transaction.Transactional
 import org.springframework.stereotype.Service
