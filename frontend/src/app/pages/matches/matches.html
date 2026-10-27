@@ -66,9 +66,10 @@
         <thead z-table-header>
           <tr z-table-row>
             <th z-table-head>Vaga</th>
+            <th z-table-head>Nível / Local da Vaga</th>
             <th z-table-head>Candidato</th>
             <th z-table-head>E-mail de Contato</th>
-            <th z-table-head>Localização</th>
+            <th z-table-head>Localização do Candidato</th>
             <th z-table-head>Data do Match</th>
             <th z-table-head class="w-[120px] text-right">Ações</th>
           </tr>
@@ -76,18 +77,26 @@
         <tbody z-table-body>
           @if (isLoading()) {
             <tr z-table-row>
-              <td z-table-cell colspan="6" class="text-center py-6">Carregando matches...</td>
+              <td z-table-cell colspan="7" class="text-center py-6">Carregando matches...</td>
             </tr>
           } @else if (matchesEmpresa().length === 0) {
             <tr z-table-row>
-              <td z-table-cell colspan="6" class="text-center py-6 text-muted-foreground">
+              <td z-table-cell colspan="7" class="text-center py-6 text-muted-foreground">
                 Nenhum match registrado em suas vagas até o momento.
               </td>
             </tr>
           } @else {
-            @for (match of matchesEmpresa(); track (match.vagaId + '-' + match.candidato.id)) {
+            @for (match of matchesEmpresa(); track (match.vaga.id + '-' + match.candidato.id)) {
               <tr z-table-row>
-                <td z-table-cell class="font-semibold">{{ match.vagaNome }}</td>
+                <td z-table-cell class="font-semibold" [title]="match.vaga.descricao">
+                  {{ match.vaga.nome }}
+                </td>
+                <td z-table-cell>
+                  <span class="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold mr-2">
+                    {{ match.vaga.nivel }}
+                  </span>
+                  <span class="text-xs text-muted-foreground">{{ match.vaga.local }}</span>
+                </td>
                 <td z-table-cell class="font-medium text-foreground">{{ match.candidatoNome }}</td>
                 <td z-table-cell class="text-primary font-mono text-sm font-medium">
                   <a [href]="'mailto:' + match.candidatoEmail" class="underline hover:opacity-80">
