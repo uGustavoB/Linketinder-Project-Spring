@@ -1,6 +1,8 @@
 package org.ugustavodev.msnucleo.controller
 
 import io.swagger.v3.oas.annotations.Operation
+import io.swagger.v3.oas.annotations.media.Content
+import io.swagger.v3.oas.annotations.media.ExampleObject
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
 import io.swagger.v3.oas.annotations.tags.Tag
@@ -30,9 +32,87 @@ class PerfilController {
             description = "Retorna `PerfilCandidatoDTO` caso o usuário autenticado possua `ROLE_CANDIDATO`, ou `PerfilEmpresaDTO` caso possua `ROLE_EMPRESA`."
     )
     @ApiResponses([
-            @ApiResponse(responseCode = "200", description = "Perfil obtido com sucesso"),
-            @ApiResponse(responseCode = "401", description = "Usuário não autenticado"),
-            @ApiResponse(responseCode = "404", description = "Perfil não encontrado")
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Perfil obtido com sucesso",
+                    content = @Content(
+                            mediaType = "application/json",
+                            examples = [
+                                    @ExampleObject(
+                                            name = "Perfil de Candidato",
+                                            summary = "Retorno quando o usuário autenticado é CANDIDATO",
+                                            value = """{
+                                                "codigo": 200,
+                                                "mensagem": "Perfil obtido com sucesso",
+                                                "tipo": "Sucesso",
+                                                "dados": {
+                                                    "id": 1,
+                                                    "tipoUsuario": "CANDIDATO",
+                                                    "nome": "João",
+                                                    "sobrenome": "Silva",
+                                                    "dataNascimento": "1998-05-15",
+                                                    "email": "joao.silva@email.com",
+                                                    "cpf": "12345678901",
+                                                    "pais": "Brasil",
+                                                    "estado": "SP",
+                                                    "cep": "01001000",
+                                                    "descricao": "Desenvolvedor Backend com foco em Java, Groovy e Spring Boot."
+                                                }
+                                            }"""
+                                    ),
+                                    @ExampleObject(
+                                            name = "Perfil de Empresa",
+                                            summary = "Retorno quando o usuário autenticado é EMPRESA",
+                                            value = """{
+                                                "codigo": 200,
+                                                "mensagem": "Perfil obtido com sucesso",
+                                                "tipo": "Sucesso",
+                                                "dados": {
+                                                    "id": 1,
+                                                    "tipoUsuario": "EMPRESA",
+                                                    "nome": "Tech Solutions Ltda",
+                                                    "cnpj": "12345678000199",
+                                                    "email": "rh@techsolutions.com.br",
+                                                    "pais": "Brasil",
+                                                    "estado": "SP",
+                                                    "cep": "04538132",
+                                                    "descricao": "Consultoria especializada em arquitetura de microsserviços e soluções em nuvem."
+                                                }
+                                            }"""
+                                    )
+                            ]
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "401",
+                    description = "Usuário não autenticado",
+                    content = @Content(
+                            mediaType = "application/json",
+                            examples = @ExampleObject(
+                                    name = "Não Autenticado",
+                                    value = """{
+                                        "codigo": 401,
+                                        "mensagem": "Você não está autenticado. Informe um token JWT válido.",
+                                        "tipo": "Não Autorizado"
+                                    }"""
+                            )
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "Perfil não encontrado",
+                    content = @Content(
+                            mediaType = "application/json",
+                            examples = @ExampleObject(
+                                    name = "Perfil Não Encontrado",
+                                    value = """{
+                                        "codigo": 404,
+                                        "mensagem": "Perfil não encontrado",
+                                        "tipo": "Recurso Não Encontrado"
+                                    }"""
+                            )
+                    )
+            )
     ])
     @GetMapping
     ResponseEntity<ApiResponseDTO<Object>> getPerfil() {

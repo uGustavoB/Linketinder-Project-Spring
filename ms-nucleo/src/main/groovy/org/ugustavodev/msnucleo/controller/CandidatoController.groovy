@@ -2,6 +2,8 @@ package org.ugustavodev.msnucleo.controller
 
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
+import io.swagger.v3.oas.annotations.media.Content
+import io.swagger.v3.oas.annotations.media.ExampleObject
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
 import io.swagger.v3.oas.annotations.security.SecurityRequirements
@@ -63,9 +65,84 @@ class CandidatoController {
     )
     @SecurityRequirements
     @ApiResponses([
-            @ApiResponse(responseCode = "201", description = "Candidato cadastrado com sucesso"),
-            @ApiResponse(responseCode = "400", description = "E-mail/CPF já cadastrado ou senha inválida"),
-            @ApiResponse(responseCode = "422", description = "Erro de validação nos campos informados")
+            @ApiResponse(
+                    responseCode = "201",
+                    description = "Candidato cadastrado com sucesso",
+                    content = @Content(
+                            mediaType = "application/json",
+                            examples = @ExampleObject(
+                                    name = "Candidato Cadastrado",
+                                    value = """{
+                                        "codigo": 201,
+                                        "mensagem": "Candidato cadastrado com sucesso",
+                                        "tipo": "Sucesso",
+                                        "dados": {
+                                            "id": 1,
+                                            "nome": "João",
+                                            "sobrenome": "Silva",
+                                            "dataNascimento": "1998-05-15",
+                                            "email": "joao.silva@email.com",
+                                            "cpf": "12345678901",
+                                            "pais": "Brasil",
+                                            "estado": "SP",
+                                            "cep": "01001000",
+                                            "descricao": "Desenvolvedor Backend com foco em Java, Groovy e Spring Boot.",
+                                            "formacoes": []
+                                        }
+                                    }"""
+                            )
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "400",
+                    description = "E-mail/CPF já cadastrado ou senha inválida",
+                    content = @Content(
+                            mediaType = "application/json",
+                            examples = [
+                                    @ExampleObject(
+                                            name = "E-mail Duplicado",
+                                            value = """{
+                                                "codigo": 400,
+                                                "mensagem": "Já existe um usuário cadastrado com o email informado",
+                                                "tipo": "Requisição Inválida"
+                                            }"""
+                                    ),
+                                    @ExampleObject(
+                                            name = "CPF Duplicado",
+                                            value = """{
+                                                "codigo": 400,
+                                                "mensagem": "Já existe um candidato cadastrado com o CPF informado",
+                                                "tipo": "Requisição Inválida"
+                                            }"""
+                                    )
+                            ]
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "422",
+                    description = "Erro de validação nos campos informados",
+                    content = @Content(
+                            mediaType = "application/json",
+                            examples = @ExampleObject(
+                                    name = "Erro de Validação",
+                                    value = """{
+                                        "codigo": 422,
+                                        "mensagem": "Verifique os campos e tente novamente.",
+                                        "tipo": "Erro de Validação",
+                                        "erros": [
+                                            {
+                                                "campo": "cpf",
+                                                "mensagem": "O CPF deve ter 11 dígitos"
+                                            },
+                                            {
+                                                "campo": "email",
+                                                "mensagem": "O campo email deve ser um email válido"
+                                            }
+                                        ]
+                                    }"""
+                            )
+                    )
+            )
     ])
     @PostMapping
     ResponseEntity<ApiResponseDTO<CandidatoResponseDTO>> cadastrarCandidato(@Valid @RequestBody CandidatoRequestDTO requestDTO) {
@@ -78,8 +155,55 @@ class CandidatoController {
             description = "Retorna `CandidatoPublicoResponseDTO` contendo apenas ID, país, estado, descrição e formações acadêmicas. Oculta nome, sobrenome, e-mail, CPF, data de nascimento e CEP em respeito ao Princípio do Anonimato."
     )
     @ApiResponses([
-            @ApiResponse(responseCode = "200", description = "Lista de candidatos anônimos retornada com sucesso"),
-            @ApiResponse(responseCode = "401", description = "Usuário não autenticado")
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Lista de candidatos anônimos retornada com sucesso",
+                    content = @Content(
+                            mediaType = "application/json",
+                            examples = @ExampleObject(
+                                    name = "Lista Anonimizada de Candidatos",
+                                    value = """{
+                                        "codigo": 200,
+                                        "mensagem": "Operação realizada com sucesso",
+                                        "tipo": "Sucesso",
+                                        "dados": [
+                                            {
+                                                "id": 1,
+                                                "pais": "Brasil",
+                                                "estado": "SP",
+                                                "descricao": "Desenvolvedor Backend com foco em Java, Groovy e Spring Boot.",
+                                                "formacoes": [
+                                                    {
+                                                        "id": 1,
+                                                        "instituicao": "Universidade de São Paulo (USP)",
+                                                        "curso": "Ciência da Computação",
+                                                        "nivel": "Bacharelado",
+                                                        "status": "Concluído",
+                                                        "dataInicio": "2020-02-01",
+                                                        "dataConclusao": "2023-12-15"
+                                                    }
+                                                ]
+                                            }
+                                        ]
+                                    }"""
+                            )
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "401",
+                    description = "Usuário não autenticado",
+                    content = @Content(
+                            mediaType = "application/json",
+                            examples = @ExampleObject(
+                                    name = "Não Autenticado",
+                                    value = """{
+                                        "codigo": 401,
+                                        "mensagem": "Você não está autenticado. Informe um token JWT válido.",
+                                        "tipo": "Não Autorizado"
+                                    }"""
+                            )
+                    )
+            )
     ])
     @GetMapping
     ResponseEntity<ApiResponseDTO<List<CandidatoPublicoResponseDTO>>> listarCandidatos() {
@@ -92,10 +216,89 @@ class CandidatoController {
             description = "Retorna `CandidatoResponseDTO` com todos os dados pessoais. Bloqueia o acesso de empresas (`ROLE_EMPRESA`) e de outros candidatos com HTTP 403."
     )
     @ApiResponses([
-            @ApiResponse(responseCode = "200", description = "Dados do candidato retornados com sucesso"),
-            @ApiResponse(responseCode = "401", description = "Usuário não autenticado"),
-            @ApiResponse(responseCode = "403", description = "Acesso negado: empresas ou outros candidatos não podem visualizar dados sensíveis"),
-            @ApiResponse(responseCode = "404", description = "Candidato não encontrado")
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Dados do candidato retornados com sucesso",
+                    content = @Content(
+                            mediaType = "application/json",
+                            examples = @ExampleObject(
+                                    name = "Candidato Completo (Titular)",
+                                    value = """{
+                                        "codigo": 200,
+                                        "mensagem": "Operação realizada com sucesso",
+                                        "tipo": "Sucesso",
+                                        "dados": {
+                                            "id": 1,
+                                            "nome": "João",
+                                            "sobrenome": "Silva",
+                                            "dataNascimento": "1998-05-15",
+                                            "email": "joao.silva@email.com",
+                                            "cpf": "12345678901",
+                                            "pais": "Brasil",
+                                            "estado": "SP",
+                                            "cep": "01001000",
+                                            "descricao": "Desenvolvedor Backend com foco em Java, Groovy e Spring Boot.",
+                                            "formacoes": [
+                                                {
+                                                    "id": 1,
+                                                    "instituicao": "Universidade de São Paulo (USP)",
+                                                    "curso": "Ciência da Computação",
+                                                    "nivel": "Bacharelado",
+                                                    "status": "Concluído",
+                                                    "dataInicio": "2020-02-01",
+                                                    "dataConclusao": "2023-12-15"
+                                                }
+                                            ]
+                                        }
+                                    }"""
+                            )
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "401",
+                    description = "Usuário não autenticado",
+                    content = @Content(
+                            mediaType = "application/json",
+                            examples = @ExampleObject(
+                                    name = "Não Autenticado",
+                                    value = """{
+                                        "codigo": 401,
+                                        "mensagem": "Você não está autenticado. Informe um token JWT válido.",
+                                        "tipo": "Não Autorizado"
+                                    }"""
+                            )
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "403",
+                    description = "Acesso negado: empresas ou outros candidatos não podem visualizar dados sensíveis",
+                    content = @Content(
+                            mediaType = "application/json",
+                            examples = @ExampleObject(
+                                    name = "Acesso Negado",
+                                    value = """{
+                                        "codigo": 403,
+                                        "mensagem": "Você não tem permissão para acessar este recurso.",
+                                        "tipo": "Acesso Negado"
+                                    }"""
+                            )
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "Candidato não encontrado",
+                    content = @Content(
+                            mediaType = "application/json",
+                            examples = @ExampleObject(
+                                    name = "Candidato Não Encontrado",
+                                    value = """{
+                                        "codigo": 404,
+                                        "mensagem": "Candidato não encontrado.",
+                                        "tipo": "Recurso Não Encontrado"
+                                    }"""
+                            )
+                    )
+            )
     ])
     @GetMapping("/{id}")
     ResponseEntity<ApiResponseDTO<CandidatoResponseDTO>> buscarCandidatoPorId(
@@ -110,12 +313,115 @@ class CandidatoController {
             description = "Permite ao candidato titular atualizar seus dados pessoais e, opcionalmente, sua senha."
     )
     @ApiResponses([
-            @ApiResponse(responseCode = "200", description = "Candidato atualizado com sucesso"),
-            @ApiResponse(responseCode = "400", description = "Conflito de e-mail/CPF ou dados inválidos"),
-            @ApiResponse(responseCode = "401", description = "Usuário não autenticado"),
-            @ApiResponse(responseCode = "403", description = "Acesso negado para alterar perfil de terceiro"),
-            @ApiResponse(responseCode = "404", description = "Candidato não encontrado"),
-            @ApiResponse(responseCode = "422", description = "Erro de validação nos campos informados")
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Candidato atualizado com sucesso",
+                    content = @Content(
+                            mediaType = "application/json",
+                            examples = @ExampleObject(
+                                    name = "Candidato Atualizado",
+                                    value = """{
+                                        "codigo": 200,
+                                        "mensagem": "Candidato atualizado com sucesso",
+                                        "tipo": "Sucesso",
+                                        "dados": {
+                                            "id": 1,
+                                            "nome": "João",
+                                            "sobrenome": "Silva",
+                                            "dataNascimento": "1998-05-15",
+                                            "email": "joao.silva@email.com",
+                                            "cpf": "12345678901",
+                                            "pais": "Brasil",
+                                            "estado": "SP",
+                                            "cep": "01001000",
+                                            "descricao": "Desenvolvedor Backend Sênior com foco em Java, Groovy e Spring Boot.",
+                                            "formacoes": []
+                                        }
+                                    }"""
+                            )
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "400",
+                    description = "Conflito de e-mail/CPF ou dados inválidos",
+                    content = @Content(
+                            mediaType = "application/json",
+                            examples = @ExampleObject(
+                                    name = "Conflito de E-mail ou CPF",
+                                    value = """{
+                                        "codigo": 400,
+                                        "mensagem": "Já existe outro candidato cadastrado com o email informado",
+                                        "tipo": "Requisição Inválida"
+                                    }"""
+                            )
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "401",
+                    description = "Usuário não autenticado",
+                    content = @Content(
+                            mediaType = "application/json",
+                            examples = @ExampleObject(
+                                    name = "Não Autenticado",
+                                    value = """{
+                                        "codigo": 401,
+                                        "mensagem": "Você não está autenticado. Informe um token JWT válido.",
+                                        "tipo": "Não Autorizado"
+                                    }"""
+                            )
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "403",
+                    description = "Acesso negado para alterar perfil de terceiro",
+                    content = @Content(
+                            mediaType = "application/json",
+                            examples = @ExampleObject(
+                                    name = "Acesso Negado",
+                                    value = """{
+                                        "codigo": 403,
+                                        "mensagem": "Você não tem permissão para acessar este recurso.",
+                                        "tipo": "Acesso Negado"
+                                    }"""
+                            )
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "Candidato não encontrado",
+                    content = @Content(
+                            mediaType = "application/json",
+                            examples = @ExampleObject(
+                                    name = "Candidato Não Encontrado",
+                                    value = """{
+                                        "codigo": 404,
+                                        "mensagem": "Candidato não encontrado.",
+                                        "tipo": "Recurso Não Encontrado"
+                                    }"""
+                            )
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "422",
+                    description = "Erro de validação nos campos informados",
+                    content = @Content(
+                            mediaType = "application/json",
+                            examples = @ExampleObject(
+                                    name = "Erro de Validação",
+                                    value = """{
+                                        "codigo": 422,
+                                        "mensagem": "Verifique os campos e tente novamente.",
+                                        "tipo": "Erro de Validação",
+                                        "erros": [
+                                            {
+                                                "campo": "nome",
+                                                "mensagem": "O campo nome é obrigatório"
+                                            }
+                                        ]
+                                    }"""
+                            )
+                    )
+            )
     ])
     @PutMapping("/{id}")
     ResponseEntity<ApiResponseDTO<CandidatoResponseDTO>> atualizarCandidato(
@@ -131,10 +437,66 @@ class CandidatoController {
             description = "Remove em cascata todas as curtidas, formações acadêmicas, perfil e credenciais de usuário do candidato titular."
     )
     @ApiResponses([
-            @ApiResponse(responseCode = "200", description = "Candidato deletado com sucesso"),
-            @ApiResponse(responseCode = "401", description = "Usuário não autenticado"),
-            @ApiResponse(responseCode = "403", description = "Acesso negado para deletar perfil de terceiro"),
-            @ApiResponse(responseCode = "404", description = "Candidato não encontrado")
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Candidato deletado com sucesso",
+                    content = @Content(
+                            mediaType = "application/json",
+                            examples = @ExampleObject(
+                                    name = "Candidato Deletado",
+                                    value = """{
+                                        "codigo": 200,
+                                        "mensagem": "Candidato deletado com sucesso",
+                                        "tipo": "Sucesso"
+                                    }"""
+                            )
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "401",
+                    description = "Usuário não autenticado",
+                    content = @Content(
+                            mediaType = "application/json",
+                            examples = @ExampleObject(
+                                    name = "Não Autenticado",
+                                    value = """{
+                                        "codigo": 401,
+                                        "mensagem": "Você não está autenticado. Informe um token JWT válido.",
+                                        "tipo": "Não Autorizado"
+                                    }"""
+                            )
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "403",
+                    description = "Acesso negado para deletar perfil de terceiro",
+                    content = @Content(
+                            mediaType = "application/json",
+                            examples = @ExampleObject(
+                                    name = "Acesso Negado",
+                                    value = """{
+                                        "codigo": 403,
+                                        "mensagem": "Você não tem permissão para acessar este recurso.",
+                                        "tipo": "Acesso Negado"
+                                    }"""
+                            )
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "Candidato não encontrado",
+                    content = @Content(
+                            mediaType = "application/json",
+                            examples = @ExampleObject(
+                                    name = "Candidato Não Encontrado",
+                                    value = """{
+                                        "codigo": 404,
+                                        "mensagem": "Candidato não encontrado.",
+                                        "tipo": "Recurso Não Encontrado"
+                                    }"""
+                            )
+                    )
+            )
     ])
     @DeleteMapping("/{id}")
     ResponseEntity<ApiResponseDTO<Void>> deletarCandidato(
@@ -149,9 +511,69 @@ class CandidatoController {
             description = "Retorna todas as vagas em que houve interesse mútuo (`candidatoCurtiuEm != null` e `empresaCurtiuEm != null`), revelando o nome e o e-mail de contato da empresa contratante."
     )
     @ApiResponses([
-            @ApiResponse(responseCode = "200", description = "Lista de matches retornada com sucesso"),
-            @ApiResponse(responseCode = "401", description = "Usuário não autenticado"),
-            @ApiResponse(responseCode = "403", description = "Acesso restrito a usuários com papel CANDIDATO")
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Lista de matches retornada com sucesso",
+                    content = @Content(
+                            mediaType = "application/json",
+                            examples = @ExampleObject(
+                                    name = "Matches do Candidato",
+                                    value = """{
+                                        "codigo": 200,
+                                        "mensagem": "Operação realizada com sucesso",
+                                        "tipo": "Sucesso",
+                                        "dados": [
+                                            {
+                                                "vaga": {
+                                                    "id": 5,
+                                                    "nome": "Pessoa Desenvolvedora Backend Groovy/Spring",
+                                                    "descricao": "Atuação no desenvolvimento e manutenção de microsserviços RESTful com Spring Boot e PostgreSQL.",
+                                                    "local": "São Paulo - SP (Remoto)",
+                                                    "nivel": "Pleno",
+                                                    "empresaId": 1
+                                                },
+                                                "empresaNome": "Tech Solutions Ltda",
+                                                "empresaEmail": "rh@techsolutions.com.br",
+                                                "empresaPais": "Brasil",
+                                                "empresaEstado": "SP",
+                                                "empresaDescricao": "Consultoria especializada em arquitetura de microsserviços e soluções em nuvem.",
+                                                "dataMatch": "2026-10-23T09:15:00"
+                                            }
+                                        ]
+                                    }"""
+                            )
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "401",
+                    description = "Usuário não autenticado",
+                    content = @Content(
+                            mediaType = "application/json",
+                            examples = @ExampleObject(
+                                    name = "Não Autenticado",
+                                    value = """{
+                                        "codigo": 401,
+                                        "mensagem": "Você não está autenticado. Informe um token JWT válido.",
+                                        "tipo": "Não Autorizado"
+                                    }"""
+                            )
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "403",
+                    description = "Acesso restrito a usuários com papel CANDIDATO",
+                    content = @Content(
+                            mediaType = "application/json",
+                            examples = @ExampleObject(
+                                    name = "Acesso Negado",
+                                    value = """{
+                                        "codigo": 403,
+                                        "mensagem": "Você não tem permissão para acessar este recurso.",
+                                        "tipo": "Acesso Negado"
+                                    }"""
+                            )
+                    )
+            )
     ])
     @PreAuthorize("hasRole('CANDIDATO')")
     @GetMapping("/matches")

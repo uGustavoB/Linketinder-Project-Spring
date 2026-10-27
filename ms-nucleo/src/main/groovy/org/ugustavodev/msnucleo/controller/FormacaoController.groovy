@@ -2,6 +2,8 @@ package org.ugustavodev.msnucleo.controller
 
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
+import io.swagger.v3.oas.annotations.media.Content
+import io.swagger.v3.oas.annotations.media.ExampleObject
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
 import io.swagger.v3.oas.annotations.tags.Tag
@@ -47,10 +49,85 @@ class FormacaoController {
             description = "Adiciona um registro de formação acadêmica ao perfil do candidato autenticado (`ROLE_CANDIDATO`)."
     )
     @ApiResponses([
-            @ApiResponse(responseCode = "201", description = "Formação cadastrada com sucesso"),
-            @ApiResponse(responseCode = "401", description = "Usuário não autenticado"),
-            @ApiResponse(responseCode = "403", description = "Acesso restrito a usuários com papel CANDIDATO"),
-            @ApiResponse(responseCode = "422", description = "Erro de validação nos campos informados")
+            @ApiResponse(
+                    responseCode = "201",
+                    description = "Formação cadastrada com sucesso",
+                    content = @Content(
+                            mediaType = "application/json",
+                            examples = @ExampleObject(
+                                    name = "Formação Cadastrada",
+                                    value = """{
+                                        "codigo": 201,
+                                        "mensagem": "Formação cadastrada com sucesso",
+                                        "tipo": "Sucesso",
+                                        "dados": {
+                                            "id": 1,
+                                            "instituicao": "Universidade de São Paulo (USP)",
+                                            "curso": "Ciência da Computação",
+                                            "nivel": "Bacharelado",
+                                            "status": "Concluído",
+                                            "dataInicio": "2020-02-01",
+                                            "dataConclusao": "2023-12-15"
+                                        }
+                                    }"""
+                            )
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "401",
+                    description = "Usuário não autenticado",
+                    content = @Content(
+                            mediaType = "application/json",
+                            examples = @ExampleObject(
+                                    name = "Não Autenticado",
+                                    value = """{
+                                        "codigo": 401,
+                                        "mensagem": "Você não está autenticado. Informe um token JWT válido.",
+                                        "tipo": "Não Autorizado"
+                                    }"""
+                            )
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "403",
+                    description = "Acesso restrito a usuários com papel CANDIDATO",
+                    content = @Content(
+                            mediaType = "application/json",
+                            examples = @ExampleObject(
+                                    name = "Acesso Negado",
+                                    value = """{
+                                        "codigo": 403,
+                                        "mensagem": "Você não tem permissão para acessar este recurso.",
+                                        "tipo": "Acesso Negado"
+                                    }"""
+                            )
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "422",
+                    description = "Erro de validação nos campos informados",
+                    content = @Content(
+                            mediaType = "application/json",
+                            examples = @ExampleObject(
+                                    name = "Erro de Validação",
+                                    value = """{
+                                        "codigo": 422,
+                                        "mensagem": "Verifique os campos e tente novamente.",
+                                        "tipo": "Erro de Validação",
+                                        "erros": [
+                                            {
+                                                "campo": "instituicao",
+                                                "mensagem": "Instituição é obrigatória"
+                                            },
+                                            {
+                                                "campo": "curso",
+                                                "mensagem": "Curso é obrigatório"
+                                            }
+                                        ]
+                                    }"""
+                            )
+                    )
+            )
     ])
     @PreAuthorize("hasRole('CANDIDATO')")
     @PostMapping
@@ -70,12 +147,111 @@ class FormacaoController {
             description = "Atualiza os dados de uma formação acadêmica, validando se ela pertence ao candidato autenticado."
     )
     @ApiResponses([
-            @ApiResponse(responseCode = "200", description = "Formação atualizada com sucesso"),
-            @ApiResponse(responseCode = "400", description = "Violação de propriedade da formação ou dados inválidos"),
-            @ApiResponse(responseCode = "401", description = "Usuário não autenticado"),
-            @ApiResponse(responseCode = "403", description = "Acesso restrito a usuários com papel CANDIDATO"),
-            @ApiResponse(responseCode = "404", description = "Formação não encontrada"),
-            @ApiResponse(responseCode = "422", description = "Erro de validação nos campos informados")
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Formação atualizada com sucesso",
+                    content = @Content(
+                            mediaType = "application/json",
+                            examples = @ExampleObject(
+                                    name = "Formação Atualizada",
+                                    value = """{
+                                        "codigo": 200,
+                                        "mensagem": "Formação atualizada com sucesso",
+                                        "tipo": "Sucesso",
+                                        "dados": {
+                                            "id": 1,
+                                            "instituicao": "Universidade de São Paulo (USP)",
+                                            "curso": "Ciência da Computação",
+                                            "nivel": "Bacharelado",
+                                            "status": "Concluído",
+                                            "dataInicio": "2020-02-01",
+                                            "dataConclusao": "2023-12-15"
+                                        }
+                                    }"""
+                            )
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "400",
+                    description = "Violação de propriedade da formação ou dados inválidos",
+                    content = @Content(
+                            mediaType = "application/json",
+                            examples = @ExampleObject(
+                                    name = "Formação de Outro Candidato",
+                                    value = """{
+                                        "codigo": 400,
+                                        "mensagem": "Você não tem permissão para editar esta formação.",
+                                        "tipo": "Requisição Inválida"
+                                    }"""
+                            )
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "401",
+                    description = "Usuário não autenticado",
+                    content = @Content(
+                            mediaType = "application/json",
+                            examples = @ExampleObject(
+                                    name = "Não Autenticado",
+                                    value = """{
+                                        "codigo": 401,
+                                        "mensagem": "Você não está autenticado. Informe um token JWT válido.",
+                                        "tipo": "Não Autorizado"
+                                    }"""
+                            )
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "403",
+                    description = "Acesso restrito a usuários com papel CANDIDATO",
+                    content = @Content(
+                            mediaType = "application/json",
+                            examples = @ExampleObject(
+                                    name = "Acesso Negado",
+                                    value = """{
+                                        "codigo": 403,
+                                        "mensagem": "Você não tem permissão para acessar este recurso.",
+                                        "tipo": "Acesso Negado"
+                                    }"""
+                            )
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "Formação não encontrada",
+                    content = @Content(
+                            mediaType = "application/json",
+                            examples = @ExampleObject(
+                                    name = "Formação Não Encontrada",
+                                    value = """{
+                                        "codigo": 404,
+                                        "mensagem": "Formação não encontrada para o ID: 1",
+                                        "tipo": "Recurso Não Encontrado"
+                                    }"""
+                            )
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "422",
+                    description = "Erro de validação nos campos informados",
+                    content = @Content(
+                            mediaType = "application/json",
+                            examples = @ExampleObject(
+                                    name = "Erro de Validação",
+                                    value = """{
+                                        "codigo": 422,
+                                        "mensagem": "Verifique os campos e tente novamente.",
+                                        "tipo": "Erro de Validação",
+                                        "erros": [
+                                            {
+                                                "campo": "status",
+                                                "mensagem": "Status é obrigatório"
+                                            }
+                                        ]
+                                    }"""
+                            )
+                    )
+            )
     ])
     @PreAuthorize("hasRole('CANDIDATO')")
     @PutMapping("/{id}")
@@ -96,11 +272,81 @@ class FormacaoController {
             description = "Deleta uma formação acadêmica pertencente ao candidato autenticado."
     )
     @ApiResponses([
-            @ApiResponse(responseCode = "200", description = "Formação deletada com sucesso"),
-            @ApiResponse(responseCode = "400", description = "Violação de propriedade da formação"),
-            @ApiResponse(responseCode = "401", description = "Usuário não autenticado"),
-            @ApiResponse(responseCode = "403", description = "Acesso restrito a usuários com papel CANDIDATO"),
-            @ApiResponse(responseCode = "404", description = "Formação não encontrada")
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Formação deletada com sucesso",
+                    content = @Content(
+                            mediaType = "application/json",
+                            examples = @ExampleObject(
+                                    name = "Formação Deletada",
+                                    value = """{
+                                        "codigo": 200,
+                                        "mensagem": "Formação deletada com sucesso",
+                                        "tipo": "Sucesso"
+                                    }"""
+                            )
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "400",
+                    description = "Violação de propriedade da formação",
+                    content = @Content(
+                            mediaType = "application/json",
+                            examples = @ExampleObject(
+                                    name = "Formação de Outro Candidato",
+                                    value = """{
+                                        "codigo": 400,
+                                        "mensagem": "Você não tem permissão para deletar esta formação.",
+                                        "tipo": "Requisição Inválida"
+                                    }"""
+                            )
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "401",
+                    description = "Usuário não autenticado",
+                    content = @Content(
+                            mediaType = "application/json",
+                            examples = @ExampleObject(
+                                    name = "Não Autenticado",
+                                    value = """{
+                                        "codigo": 401,
+                                        "mensagem": "Você não está autenticado. Informe um token JWT válido.",
+                                        "tipo": "Não Autorizado"
+                                    }"""
+                            )
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "403",
+                    description = "Acesso restrito a usuários com papel CANDIDATO",
+                    content = @Content(
+                            mediaType = "application/json",
+                            examples = @ExampleObject(
+                                    name = "Acesso Negado",
+                                    value = """{
+                                        "codigo": 403,
+                                        "mensagem": "Você não tem permissão para acessar este recurso.",
+                                        "tipo": "Acesso Negado"
+                                    }"""
+                            )
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "Formação não encontrada",
+                    content = @Content(
+                            mediaType = "application/json",
+                            examples = @ExampleObject(
+                                    name = "Formação Não Encontrada",
+                                    value = """{
+                                        "codigo": 404,
+                                        "mensagem": "Formação não encontrada para o ID: 1",
+                                        "tipo": "Recurso Não Encontrado"
+                                    }"""
+                            )
+                    )
+            )
     ])
     @PreAuthorize("hasRole('CANDIDATO')")
     @DeleteMapping("/{id}")

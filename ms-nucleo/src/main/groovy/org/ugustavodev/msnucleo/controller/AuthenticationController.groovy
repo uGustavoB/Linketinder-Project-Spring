@@ -1,6 +1,8 @@
 package org.ugustavodev.msnucleo.controller
 
 import io.swagger.v3.oas.annotations.Operation
+import io.swagger.v3.oas.annotations.media.Content
+import io.swagger.v3.oas.annotations.media.ExampleObject
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
 import io.swagger.v3.oas.annotations.security.SecurityRequirements
@@ -45,15 +47,93 @@ class AuthenticationController {
     )
     @SecurityRequirements
     @ApiResponses([
-            @ApiResponse(responseCode = "200", description = "Login realizado com sucesso e cookie auth_token definido"),
-            @ApiResponse(responseCode = "401", description = "Credenciais inválidas ou usuário não encontrado"),
-            @ApiResponse(responseCode = "422", description = "Erro de validação nos campos informados")
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Login realizado com sucesso e cookie auth_token definido",
+                    content = @Content(
+                            mediaType = "application/json",
+                            examples = [
+                                    @ExampleObject(
+                                            name = "Login de Candidato",
+                                            summary = "Retorno ao autenticar um candidato",
+                                            value = """{
+                                                "codigo": 200,
+                                                "mensagem": "Login realizado com sucesso",
+                                                "tipo": "Sucesso",
+                                                "dados": {
+                                                    "id": 1,
+                                                    "tipoUsuario": "CANDIDATO",
+                                                    "nome": "João",
+                                                    "sobrenome": "Silva",
+                                                    "email": "joao.silva@email.com"
+                                                }
+                                            }"""
+                                    ),
+                                    @ExampleObject(
+                                            name = "Login de Empresaa",
+                                            summary = "Retorno ao autenticar uma empresaaaa",
+                                            value = """{
+                                                "codigo": 200,
+                                                "mensagem": "Login realizado com sucesso",
+                                                "tipo": "Sucesso",
+                                                "dados": {
+                                                    "id": 1,
+                                                    "tipoUsuario": "EMPRESA",
+                                                    "nome": "Tech Solutions Ltda",
+                                                    "sobrenome": null,
+                                                    "email": "rh@techsolutions.com.br"
+                                                }
+                                            }"""
+                                    )
+                            ]
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "401",
+                    description = "Credenciais inválidas ou usuário não encontrado",
+                    content = @Content(
+                            mediaType = "application/json",
+                            examples = @ExampleObject(
+                                    name = "Credenciais Inválidas",
+                                    value = """{
+                                        "codigo": 401,
+                                        "mensagem": "Credenciais inválidas ou usuário não encontrado.",
+                                        "tipo": "Não Autorizado"
+                                    }"""
+                            )
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "422",
+                    description = "Erro de validação nos campos informados",
+                    content = @Content(
+                            mediaType = "application/json",
+                            examples = @ExampleObject(
+                                    name = "Erro de Validação",
+                                    value = """{
+                                        "codigo": 422,
+                                        "mensagem": "Verifique os campos e tente novamente.",
+                                        "tipo": "Erro de Validação",
+                                        "erros": [
+                                            {
+                                                "campo": "email",
+                                                "mensagem": "Formato de email inválido"
+                                            },
+                                            {
+                                                "campo": "senha",
+                                                "mensagem": "O campo senha é obrigatório"
+                                            }
+                                        ]
+                                    }"""
+                            )
+                    )
+            )
     ])
     @PostMapping("/login")
     ResponseEntity<ApiResponseDTO<LoginResponseDTO>> login(@RequestBody @Valid AuthenticationDTO dados) {
         UsernamePasswordAuthenticationToken tokenAutenticacao = new UsernamePasswordAuthenticationToken(dados.email, dados.senha)
         Authentication autenticacao = gerenciadorAutenticacao.authenticate(tokenAutenticacao)
-        
+
         Usuario usuario = (Usuario) autenticacao.getPrincipal()
         String tokenJWT = servicoToken.gerarToken(usuario)
 
@@ -63,7 +143,7 @@ class AuthenticationController {
                 .path("/")
                 .maxAge(3600)
                 .build()
-                
+
         LoginResponseDTO loginResponseDTO = obterDadosLoginUseCase.executar(usuario)
 
         return ResponseEntity.ok()
@@ -76,8 +156,36 @@ class AuthenticationController {
             description = "Remove o cookie HTTP-only `auth_token` definindo seu tempo de expiração (`maxAge`) como zero."
     )
     @ApiResponses([
-            @ApiResponse(responseCode = "200", description = "Logout realizado com sucesso"),
-            @ApiResponse(responseCode = "401", description = "Usuário não autenticado")
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Logout realizado com sucesso",
+                    content = @Content(
+                            mediaType = "application/json",
+                            examples = @ExampleObject(
+                                    name = "Logout com Sucesso",
+                                    value = """{
+                                        "codigo": 200,
+                                        "mensagem": "Logout realizado com sucesso",
+                                        "tipo": "Sucesso"
+                                    }"""
+                            )
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "401",
+                    description = "Usuário não autenticado",
+                    content = @Content(
+                            mediaType = "application/json",
+                            examples = @ExampleObject(
+                                    name = "Não Autenticado",
+                                    value = """{
+                                        "codigo": 401,
+                                        "mensagem": "Você não está autenticado. Informe um token JWT válido.",
+                                        "tipo": "Não Autorizado"
+                                    }"""
+                            )
+                    )
+            )
     ])
     @PostMapping("/logout")
     ResponseEntity<ApiResponseDTO<String>> logout() {
