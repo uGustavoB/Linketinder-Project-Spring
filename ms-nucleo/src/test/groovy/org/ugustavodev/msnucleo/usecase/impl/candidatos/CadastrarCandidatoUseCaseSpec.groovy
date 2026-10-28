@@ -1,11 +1,11 @@
-package org.ugustavodev.msnucleo.usecase.impl
+package org.ugustavodev.msnucleo.usecase.impl.candidatos
 
 import org.springframework.security.crypto.password.PasswordEncoder
+import org.ugustavodev.msnucleo.domain.Usuario
 import org.ugustavodev.msnucleo.dto.request.CandidatoRequestDTO
 import org.ugustavodev.msnucleo.dto.response.CandidatoResponseDTO
 import org.ugustavodev.msnucleo.mapper.CandidatoMapper
 import org.ugustavodev.msnucleo.model.Candidato
-import org.ugustavodev.msnucleo.domain.Usuario
 import org.ugustavodev.msnucleo.repositories.CandidatoRepository
 import org.ugustavodev.msnucleo.repositories.UsuarioRepository
 import spock.lang.Specification
@@ -24,12 +24,27 @@ class CadastrarCandidatoUseCaseSpec extends Specification {
     CadastrarCandidatoUseCase useCase = new CadastrarCandidatoUseCase(candidatoRepository, passwordEncoder, candidatoMapper, usuarioRepository)
 
     void "Deve lancar excecao quando request for nulo"() {
+        given: "Um request nulo"
+        CandidatoRequestDTO request = null
+
         when: "Tenta executar o caso de uso com request nulo"
-        useCase.executar(null)
+        useCase.executar(request)
 
         then: "Lanca IllegalArgumentException"
         IllegalArgumentException ex = thrown(IllegalArgumentException)
         ex.message == "O objeto CandidatoRequestDTO não pode ser nulo."
+    }
+
+    void "Deve lancar excecao quando a senha for nula ou menor que 6 caracteres"() {
+        given: "Um request com senha curta"
+        CandidatoRequestDTO request = new CandidatoRequestDTO(email: "teste@teste.com", cpf: "111", senha: "123")
+
+        when: "Tenta cadastrar com senha invalida"
+        useCase.executar(request)
+
+        then: "Lanca IllegalArgumentException"
+        IllegalArgumentException ex = thrown(IllegalArgumentException)
+        ex.message == "A senha é obrigatória e deve ter no mínimo 6 caracteres."
     }
 
     void "Deve lancar excecao quando email ja estiver cadastrado"() {
@@ -82,7 +97,7 @@ class CadastrarCandidatoUseCaseSpec extends Specification {
 
         then: "O password encoder deve ser chamado para a senha plana"
         1 * passwordEncoder.encode("senha_plana") >> "senha_criptografada"
-        
+
         and: "A senha da entidade deve ser atualizada"
         candidatoMapeado.usuario.senha == "senha_criptografada"
     }
@@ -94,16 +109,16 @@ class CadastrarCandidatoUseCaseSpec extends Specification {
         and: "Mock das dependencias para sucesso"
         usuarioRepository.findByEmail(_ as String) >> Optional.empty()
         candidatoRepository.findByCpf(_ as String) >> Optional.empty()
-        
+
         Candidato candidatoMock = new Candidato(usuario: new Usuario(senha: "123"))
         candidatoMapper.fromRequestDTOToEntity(request) >> candidatoMock
-        
+
         passwordEncoder.encode(_ as CharSequence) >> "hash"
-        
+
         Candidato candidatoSalvo = new Candidato(id: 1L)
         candidatoRepository.save(candidatoMock) >> candidatoSalvo
-        
-        CandidatoResponseDTO responseDTO = new CandidatoResponseDTO(1L, "Nome", "Sobrenome", LocalDate.now(), "sucesso@teste.com", "123", "BR", "SP", "000", "Dev")
+
+        CandidatoResponseDTO responseDTO = new CandidatoResponseDTO(1L, "Nome", "Sobrenome", LocalDate.now(), "sucesso@teste.com", "123", "BR", "SP", "000", "Dev", [])
         candidatoMapper.toResponseDTO(candidatoSalvo) >> responseDTO
 
         when: "Executa o caso de uso"

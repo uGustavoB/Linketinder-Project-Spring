@@ -1,4 +1,4 @@
-package org.ugustavodev.msnucleo.usecase.impl
+package org.ugustavodev.msnucleo.usecase.impl.vagas
 
 import org.ugustavodev.msnucleo.model.Empresa
 import org.ugustavodev.msnucleo.model.Vaga
@@ -16,8 +16,12 @@ class DeletarVagaUseCaseSpec extends Specification {
     DeletarVagaUseCase useCase = new DeletarVagaUseCase(vagaRepository, curtidaRepository)
 
     void "Deve lancar excecao quando o ID da vaga for nulo"() {
+        given: "Um ID de vaga nulo e um ID de empresa valido"
+        Long vagaId = null
+        Long empresaId = 1L
+
         when: "Tenta executar com vagaId nulo"
-        useCase.executar(null, 1L)
+        useCase.executar(vagaId, empresaId)
 
         then: "Lanca IllegalArgumentException"
         IllegalArgumentException ex = thrown(IllegalArgumentException)
