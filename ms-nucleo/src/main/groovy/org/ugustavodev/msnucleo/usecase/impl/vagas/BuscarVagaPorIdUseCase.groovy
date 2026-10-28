@@ -26,8 +26,7 @@ class BuscarVagaPorIdUseCase implements IBuscarVagaPorIdUseCase {
             VagaRepository vagaRepository,
             VagaMapper vagaMapper,
             CurtidaRepository curtidaRepository,
-            CandidatoRepository candidatoRepository
-    ) {
+            CandidatoRepository candidatoRepository) {
         this.vagaRepository = vagaRepository
         this.vagaMapper = vagaMapper
         this.curtidaRepository = curtidaRepository
@@ -41,7 +40,7 @@ class BuscarVagaPorIdUseCase implements IBuscarVagaPorIdUseCase {
         }
 
         Vaga vaga = vagaRepository.findById(id)
-                .orElseThrow(() -> new NoSuchElementException("Vaga não encontrada para o ID: ${id}"))
+                .orElseThrow { new NoSuchElementException("Vaga não encontrada para o ID: ${id}") }
 
         Authentication auth = SecurityContextHolder.getContext().getAuthentication()
         if (auth != null && auth.getPrincipal() instanceof Usuario) {
@@ -59,7 +58,6 @@ class BuscarVagaPorIdUseCase implements IBuscarVagaPorIdUseCase {
                 }
             }
         }
-
 
         return new VagaResponseDTO(
                 vaga.id,

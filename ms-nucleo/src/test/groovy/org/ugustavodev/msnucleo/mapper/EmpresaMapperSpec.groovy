@@ -85,4 +85,5 @@ class EmpresaMapperSpec extends Specification {
         entidade.usuario.email == "rh@techsolutions.com.br"
         entidade.usuario.role == Role.EMPRESA
     }
+
 }

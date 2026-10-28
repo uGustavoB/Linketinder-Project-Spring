@@ -12,6 +12,7 @@ import org.ugustavodev.msnucleo.usecase.interfaces.matches.IListarMatchesVagaUse
 
 @Service
 class ListarMatchesVagaUseCase implements IListarMatchesVagaUseCase {
+
     private final CurtidaRepository curtidaRepository
     private final VagaRepository vagaRepository
     private final CandidatoMapper candidatoMapper
@@ -29,7 +30,7 @@ class ListarMatchesVagaUseCase implements IListarMatchesVagaUseCase {
         }
 
         Vaga vaga = vagaRepository.findById(idVaga)
-                .orElseThrow(() -> new NoSuchElementException("Vaga não encontrada."))
+                .orElseThrow { new NoSuchElementException("Vaga não encontrada.") }
 
         if (vaga.getEmpresa().getId() != idEmpresaLogada) {
             throw new AccessDeniedException("Esta vaga não pertence à sua empresa.")
@@ -47,4 +48,5 @@ class ListarMatchesVagaUseCase implements IListarMatchesVagaUseCase {
             )
         }).toList()
     }
+
 }

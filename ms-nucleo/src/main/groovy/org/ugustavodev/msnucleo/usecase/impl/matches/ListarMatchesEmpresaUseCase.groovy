@@ -10,6 +10,7 @@ import org.ugustavodev.msnucleo.usecase.interfaces.matches.IListarMatchesEmpresa
 
 @Service
 class ListarMatchesEmpresaUseCase implements IListarMatchesEmpresaUseCase {
+
     private final CurtidaRepository curtidaRepository
     private final VagaMapper vagaMapper
     private final CandidatoMapper candidatoMapper
@@ -17,8 +18,7 @@ class ListarMatchesEmpresaUseCase implements IListarMatchesEmpresaUseCase {
     ListarMatchesEmpresaUseCase(
             CurtidaRepository curtidaRepository,
             VagaMapper vagaMapper,
-            CandidatoMapper candidatoMapper
-    ) {
+            CandidatoMapper candidatoMapper) {
         this.curtidaRepository = curtidaRepository
         this.vagaMapper = vagaMapper
         this.candidatoMapper = candidatoMapper
@@ -43,4 +43,5 @@ class ListarMatchesEmpresaUseCase implements IListarMatchesEmpresaUseCase {
             )
         }).toList()
     }
+
 }

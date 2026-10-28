@@ -79,4 +79,5 @@ class EmpresaCurteCandidatoUseCaseSpec extends Specification {
         curtidaPrevia.isMatch()
         resultado.match
     }
+
 }

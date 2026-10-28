@@ -15,6 +15,7 @@ import org.ugustavodev.msnucleo.domain.enums.Role
 
 @Service
 class BuscarCandidatoPorIdUseCase implements IBuscarCandidatoPorIdUseCase {
+
     private final CandidatoRepository candidatoRepository
     private final CandidatoMapper candidatoMapper
 
@@ -23,7 +24,6 @@ class BuscarCandidatoPorIdUseCase implements IBuscarCandidatoPorIdUseCase {
         this.candidatoMapper = candidatoMapper
     }
 
-
     @Override
     CandidatoResponseDTO executar(Long id) {
         if (id == null) {
@@ -31,7 +31,7 @@ class BuscarCandidatoPorIdUseCase implements IBuscarCandidatoPorIdUseCase {
         }
 
         Candidato candidato = candidatoRepository.findById(id)
-                .orElseThrow(() -> new NoSuchElementException("Candidato não encontrado."))
+                .orElseThrow { new NoSuchElementException("Candidato não encontrado.") }
 
         Authentication auth = SecurityContextHolder.getContext().getAuthentication()
         if (auth != null && auth.getPrincipal() instanceof Usuario) {
@@ -47,4 +47,5 @@ class BuscarCandidatoPorIdUseCase implements IBuscarCandidatoPorIdUseCase {
 
         return candidatoMapper.toResponseDTO(candidato)
     }
+
 }

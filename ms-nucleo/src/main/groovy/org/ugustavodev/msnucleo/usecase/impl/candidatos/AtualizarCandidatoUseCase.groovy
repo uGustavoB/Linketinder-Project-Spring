@@ -19,6 +19,7 @@ import org.ugustavodev.msnucleo.domain.enums.Role
 
 @Service
 class AtualizarCandidatoUseCase implements IAtualizarCandidatoUseCase {
+
     private final CandidatoRepository candidatoRepository
     private final PasswordEncoder passwordEncoder
     private final CandidatoMapper candidatoMapper
@@ -40,7 +41,7 @@ class AtualizarCandidatoUseCase implements IAtualizarCandidatoUseCase {
         }
 
         Candidato candidatoExistente = candidatoRepository.findById(id)
-                .orElseThrow(() -> new NoSuchElementException("Candidato não encontrado."))
+                .orElseThrow { new NoSuchElementException("Candidato não encontrado.") }
 
         Authentication auth = SecurityContextHolder.getContext().getAuthentication()
         if (auth != null && auth.getPrincipal() instanceof Usuario) {
@@ -89,5 +90,5 @@ class AtualizarCandidatoUseCase implements IAtualizarCandidatoUseCase {
         Candidato candidatoAtualizado = candidatoRepository.save(candidatoExistente)
         return candidatoMapper.toResponseDTO(candidatoAtualizado)
     }
-}
 
+}

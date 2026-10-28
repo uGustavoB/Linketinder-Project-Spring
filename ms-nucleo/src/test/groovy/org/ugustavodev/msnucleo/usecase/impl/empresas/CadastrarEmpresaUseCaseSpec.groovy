@@ -105,4 +105,5 @@ class CadastrarEmpresaUseCaseSpec extends Specification {
         empresaMapeada.usuario.senha == "senha_criptografada"
         resultado == esperado
     }
+
 }

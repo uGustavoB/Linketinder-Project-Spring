@@ -83,4 +83,5 @@ class SecurityConfigurations {
         source.registerCorsConfiguration("/**", configuracao)
         return source
     }
+
 }

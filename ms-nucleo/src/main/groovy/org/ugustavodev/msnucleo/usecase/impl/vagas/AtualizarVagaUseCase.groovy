@@ -12,6 +12,7 @@ import org.ugustavodev.msnucleo.usecase.interfaces.vagas.IAtualizarVagaUseCase
 
 @Service
 class AtualizarVagaUseCase implements IAtualizarVagaUseCase {
+
     private final VagaRepository vagaRepository
     private final EmpresaRepository empresaRepository
     private final VagaMapper vagaMapper
@@ -35,7 +36,7 @@ class AtualizarVagaUseCase implements IAtualizarVagaUseCase {
         }
 
         Vaga vagaExistente = vagaRepository.findById(id)
-                .orElseThrow(() -> new NoSuchElementException("Vaga não encontrada para o ID: ${id}"))
+                .orElseThrow { new NoSuchElementException("Vaga não encontrada para o ID: ${id}") }
 
         if (vagaExistente.empresa == null || vagaExistente.empresa.id != empresaId) {
             throw new AccessDeniedException("Você não tem permissão para editar esta vaga.")
@@ -52,4 +53,5 @@ class AtualizarVagaUseCase implements IAtualizarVagaUseCase {
         Vaga vagaAtualizada = vagaRepository.save(vagaExistente)
         return vagaMapper.toResponseDTO(vagaAtualizada)
     }
+
 }

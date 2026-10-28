@@ -13,6 +13,7 @@ import org.ugustavodev.msnucleo.domain.enums.Role
 
 @Service
 class ListarCandidatosUseCase implements IListarCandidatosUseCase {
+
     private final CandidatoRepository candidatoRepository
     private final CandidatoMapper candidatoMapper
 
@@ -36,4 +37,5 @@ class ListarCandidatosUseCase implements IListarCandidatosUseCase {
         return candidatoRepository.findAll()
                 .collect { candidatoMapper.toPublicoResponseDTO(it) }
     }
+
 }

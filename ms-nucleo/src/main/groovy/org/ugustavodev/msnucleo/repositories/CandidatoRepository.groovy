@@ -6,6 +6,7 @@ import org.springframework.data.repository.query.Param
 import org.ugustavodev.msnucleo.model.Candidato
 
 interface CandidatoRepository extends JpaRepository<Candidato, Long> {
+
     Optional<Candidato> findByUsuarioEmail(String email)
     Optional<Candidato> findByCpf(String cpf)
 
@@ -14,4 +15,5 @@ interface CandidatoRepository extends JpaRepository<Candidato, Long> {
 
     @Query("SELECT c FROM Candidato c JOIN Curtida cu ON c.id = cu.candidato.id WHERE cu.vaga.id = :vagaId AND cu.candidatoCurtiuEm IS NOT NULL AND cu.empresaCurtiuEm IS NULL")
     List<Candidato> findCandidatosInteressadosNaVaga(@Param("vagaId") Long vagaId)
+
 }

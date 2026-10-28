@@ -5,7 +5,6 @@ import org.ugustavodev.msnucleo.domain.enums.Role
 import org.ugustavodev.msnucleo.dto.request.CandidatoRequestDTO
 import org.ugustavodev.msnucleo.dto.response.CandidatoPublicoResponseDTO
 import org.ugustavodev.msnucleo.dto.response.CandidatoResponseDTO
-import org.ugustavodev.msnucleo.dto.response.FormacaoResponseDTO
 import org.ugustavodev.msnucleo.model.Candidato
 import org.ugustavodev.msnucleo.model.Formacao
 import spock.lang.Specification
@@ -108,4 +107,5 @@ class CandidatoMapperSpec extends Specification {
         entidade.usuario.email == "joao@email.com"
         entidade.usuario.role == Role.CANDIDATO
     }
+
 }

@@ -9,6 +9,7 @@ import org.ugustavodev.msnucleo.usecase.interfaces.matches.IListarMatchesCandida
 
 @Service
 class ListarMatchesCandidatoUseCase implements IListarMatchesCandidatoUseCase {
+
     private final CurtidaRepository curtidaRepository
     private final VagaMapper vagaMapper
 
@@ -38,4 +39,5 @@ class ListarMatchesCandidatoUseCase implements IListarMatchesCandidatoUseCase {
             )
         }).toList()
     }
+
 }

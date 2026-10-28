@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import org.ugustavodev.msnucleo.domain.Usuario
-import org.ugustavodev.msnucleo.domain.enums.Role
 import org.ugustavodev.msnucleo.dto.ApiResponseDTO
 import org.ugustavodev.msnucleo.usecase.interfaces.IObterPerfilUseCase
 
@@ -126,4 +125,5 @@ class PerfilController {
 
         throw new NoSuchElementException("Perfil não encontrado")
     }
+
 }

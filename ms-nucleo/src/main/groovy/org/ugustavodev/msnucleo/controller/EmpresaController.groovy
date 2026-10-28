@@ -13,7 +13,14 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.security.core.annotation.AuthenticationPrincipal
-import org.springframework.web.bind.annotation.*
+import org.springframework.web.bind.annotation.DeleteMapping
+import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PathVariable
+import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.PutMapping
+import org.springframework.web.bind.annotation.RequestBody
+import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RestController
 import org.ugustavodev.msnucleo.domain.Usuario
 import org.ugustavodev.msnucleo.dto.request.EmpresaRequestDTO
 import org.ugustavodev.msnucleo.dto.response.EmpresaResponseDTO
@@ -33,6 +40,7 @@ import org.ugustavodev.msnucleo.usecase.interfaces.matches.IListarMatchesEmpresa
 @RequestMapping("/api/empresa")
 @Tag(name = "5. Empresas", description = "Gestão cadastral de empresas, listagem pública anonimizada e consulta de matches da empresa")
 class EmpresaController {
+
     private final ICadastrarEmpresaUseCase cadastrarEmpresaUseCase
     private final IBuscarEmpresaPorIdUseCase buscarEmpresaPorIdUseCase
     private final IListarEmpresasUseCase listarEmpresasUseCase
@@ -48,8 +56,7 @@ class EmpresaController {
             IAtualizarEmpresaUseCase atualizarEmpresaUseCase,
             IDeletarEmpresaUseCase deletarEmpresaUseCase,
             IListarMatchesEmpresaUseCase listarMatchesEmpresaUseCase,
-            EmpresaRepository empresaRepository
-    ) {
+            EmpresaRepository empresaRepository) {
         this.cadastrarEmpresaUseCase = cadastrarEmpresaUseCase
         this.buscarEmpresaPorIdUseCase = buscarEmpresaPorIdUseCase
         this.listarEmpresasUseCase = listarEmpresasUseCase
@@ -478,7 +485,8 @@ class EmpresaController {
 
     @Operation(
             summary = "Lista os matches consolidados da empresa autenticada (Pós-Match)",
-            description = "Retorna todos os matches ocorridos nas vagas da empresa autenticada (`candidatoCurtiuEm != null` e `empresaCurtiuEm != null`), incluindo os detalhes da vaga e revelando o nome completo e o e-mail de contato do candidato. Mantém CPF, CEP e data de nascimento ocultos."
+            description = "Retorna todos os matches ocorridos nas vagas da empresa autenticada (`candidatoCurtiuEm != null` e `empresaCurtiuEm != null`), " +
+                    "incluindo os detalhes da vaga e revelando o nome completo e o e-mail de contato do candidato. Mantém CPF, CEP e data de nascimento ocultos."
     )
     @ApiResponses([
             @ApiResponse(
@@ -565,10 +573,11 @@ class EmpresaController {
             @Parameter(hidden = true) @AuthenticationPrincipal Usuario usuarioAutenticado
     ) {
         Empresa empresa = empresaRepository.findByUsuarioEmail(usuarioAutenticado.getUsername())
-                .orElseThrow(() -> new RuntimeException("Empresa não encontrada"))
+                .orElseThrow { new RuntimeException("Empresa não encontrada") }
         Long idEmpresa = empresa.getId()
 
         List<MatchEmpresaResponseDTO> matches = listarMatchesEmpresaUseCase.executar(idEmpresa)
         return ResponseEntity.ok(ApiResponseDTO.sucesso(matches))
     }
+
 }

@@ -6,6 +6,7 @@ import io.swagger.v3.oas.annotations.media.Schema
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @Schema(description = "Envelope padrão de resposta HTTP da API do LinkeTinder")
 class ApiResponseDTO<T> {
+
     @Schema(description = "Código de status HTTP da resposta", example = "200")
     int codigo
 
@@ -46,4 +47,5 @@ class ApiResponseDTO<T> {
                 erros: erros
         )
     }
+
 }

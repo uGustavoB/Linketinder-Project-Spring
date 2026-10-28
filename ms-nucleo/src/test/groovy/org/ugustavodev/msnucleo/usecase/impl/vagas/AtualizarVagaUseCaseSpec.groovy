@@ -75,4 +75,5 @@ class AtualizarVagaUseCaseSpec extends Specification {
         vagaExistente.nivel == "Pleno"
         resultado == esperado
     }
+
 }

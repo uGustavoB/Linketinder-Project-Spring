@@ -7,6 +7,7 @@ import org.ugustavodev.msnucleo.usecase.interfaces.formacao.IDeletarFormacaoUseC
 
 @Service
 class DeletarFormacaoUseCase implements IDeletarFormacaoUseCase {
+
     private final FormacaoRepository formacaoRepository
 
     DeletarFormacaoUseCase(FormacaoRepository formacaoRepository) {
@@ -16,7 +17,7 @@ class DeletarFormacaoUseCase implements IDeletarFormacaoUseCase {
     @Override
     void executar(Long id, Long candidatoId) {
         Formacao formacaoExistente = formacaoRepository.findById(id)
-                .orElseThrow(() -> new NoSuchElementException("Formação não encontrada para o ID: ${id}"))
+                .orElseThrow { new NoSuchElementException("Formação não encontrada para o ID: ${id}") }
 
         if (formacaoExistente.candidato == null || formacaoExistente.candidato.id != candidatoId) {
             throw new IllegalArgumentException("Você não tem permissão para deletar esta formação.")
@@ -24,4 +25,5 @@ class DeletarFormacaoUseCase implements IDeletarFormacaoUseCase {
 
         formacaoRepository.delete(formacaoExistente)
     }
+
 }

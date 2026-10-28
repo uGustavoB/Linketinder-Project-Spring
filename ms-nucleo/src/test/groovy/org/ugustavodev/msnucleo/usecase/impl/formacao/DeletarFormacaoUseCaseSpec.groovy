@@ -57,4 +57,5 @@ class DeletarFormacaoUseCaseSpec extends Specification {
         then: "O repositorio remove a formacao"
         1 * formacaoRepository.delete(formacaoExistente)
     }
+
 }

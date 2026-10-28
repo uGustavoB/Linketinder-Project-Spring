@@ -18,6 +18,7 @@ class TokenService {
     @Value('${api.security.token.secret}')
     String chaveSecreta
 
+    @SuppressWarnings('ThrowRuntimeException')
     String gerarToken(Usuario usuario) {
         try {
             Algorithm algoritmo = Algorithm.HMAC256(chaveSecreta)
@@ -50,4 +51,5 @@ class TokenService {
     private static Instant gerarDataExpiracao() {
         return LocalDateTime.now().plusHours(24).toInstant(ZoneOffset.of("-03:00"))
     }
+
 }

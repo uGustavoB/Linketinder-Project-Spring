@@ -94,4 +94,5 @@ class DeletarCandidatoUseCaseSpec extends Specification {
         1 * curtidaRepository.deleteByCandidatoId(id)
         1 * candidatoRepository.delete(candidato)
     }
+
 }

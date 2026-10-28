@@ -13,7 +13,14 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.security.core.annotation.AuthenticationPrincipal
-import org.springframework.web.bind.annotation.*
+import org.springframework.web.bind.annotation.DeleteMapping
+import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PathVariable
+import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.PutMapping
+import org.springframework.web.bind.annotation.RequestBody
+import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RestController
 import org.ugustavodev.msnucleo.domain.Usuario
 import org.ugustavodev.msnucleo.dto.request.CandidatoRequestDTO
 import org.ugustavodev.msnucleo.dto.response.CandidatoResponseDTO
@@ -33,6 +40,7 @@ import org.ugustavodev.msnucleo.usecase.interfaces.matches.IListarMatchesCandida
 @RequestMapping("/api/candidato")
 @Tag(name = "3. Candidatos", description = "Gestão cadastral de candidatos, listagem pública anonimizada e consulta de matches do candidato")
 class CandidatoController {
+
     private final ICadastrarCandidatoUseCase cadastrarCandidatoUseCase
     private final IBuscarCandidatoPorIdUseCase buscarCandidatoPorIdUseCase
     private final IListarCandidatosUseCase listarCandidatosUseCase
@@ -48,8 +56,7 @@ class CandidatoController {
             IAtualizarCandidatoUseCase atualizarCandidatoUseCase,
             IDeletarCandidatoUseCase deletarCandidatoUseCase,
             IListarMatchesCandidatoUseCase listarMatchesCandidatoUseCase,
-            CandidatoRepository candidatoRepository
-    ) {
+            CandidatoRepository candidatoRepository) {
         this.cadastrarCandidatoUseCase = cadastrarCandidatoUseCase
         this.buscarCandidatoPorIdUseCase = buscarCandidatoPorIdUseCase
         this.listarCandidatosUseCase = listarCandidatosUseCase
@@ -152,7 +159,8 @@ class CandidatoController {
 
     @Operation(
             summary = "Lista candidatos de forma anonimizada (Pré-Match)",
-            description = "Retorna `CandidatoPublicoResponseDTO` contendo apenas ID, país, estado, descrição e formações acadêmicas. Oculta nome, sobrenome, e-mail, CPF, data de nascimento e CEP em respeito ao Princípio do Anonimato."
+            description = "Retorna `CandidatoPublicoResponseDTO` contendo apenas ID, país, estado, descrição e formações acadêmicas. " +
+                    "Oculta nome, sobrenome, e-mail, CPF, data de nascimento e CEP em respeito ao Princípio do Anonimato."
     )
     @ApiResponses([
             @ApiResponse(
@@ -508,7 +516,8 @@ class CandidatoController {
 
     @Operation(
             summary = "Lista os matches consolidados do candidato autenticado (Pós-Match)",
-            description = "Retorna todas as vagas em que houve interesse mútuo (`candidatoCurtiuEm != null` e `empresaCurtiuEm != null`), revelando o nome e o e-mail de contato da empresa contratante."
+            description = "Retorna todas as vagas em que houve interesse mútuo (`candidatoCurtiuEm != null` e `empresaCurtiuEm != null`), " +
+                    "revelando o nome e o e-mail de contato da empresa contratante."
     )
     @ApiResponses([
             @ApiResponse(
@@ -581,10 +590,11 @@ class CandidatoController {
             @Parameter(hidden = true) @AuthenticationPrincipal Usuario usuarioAutenticado
     ) {
         Candidato candidato = candidatoRepository.findByUsuarioEmail(usuarioAutenticado.getUsername())
-                .orElseThrow(() -> new RuntimeException("Candidato não encontrado"))
+                .orElseThrow { new RuntimeException("Candidato não encontrado") }
         Long idCandidato = candidato.getId()
         
         List<MatchCandidatoResponseDTO> matches = listarMatchesCandidatoUseCase.executar(idCandidato)
         return ResponseEntity.ok(ApiResponseDTO.sucesso(matches))
     }
+
 }

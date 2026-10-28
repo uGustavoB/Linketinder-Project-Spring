@@ -129,4 +129,5 @@ class CandidatoCurteVagaUseCaseSpec extends Specification {
         curtidaExistente.candidatoCurtiuEm == dataOriginal
         resultado == esperado
     }
+
 }

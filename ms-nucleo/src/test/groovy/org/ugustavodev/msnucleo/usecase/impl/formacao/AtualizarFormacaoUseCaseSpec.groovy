@@ -99,4 +99,5 @@ class AtualizarFormacaoUseCaseSpec extends Specification {
         formacaoExistente.curso == "Engenharia de Computação"
         resultado == esperado
     }
+
 }

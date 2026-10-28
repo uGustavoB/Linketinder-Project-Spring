@@ -12,7 +12,13 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.security.core.annotation.AuthenticationPrincipal
-import org.springframework.web.bind.annotation.*
+import org.springframework.web.bind.annotation.DeleteMapping
+import org.springframework.web.bind.annotation.PathVariable
+import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.PutMapping
+import org.springframework.web.bind.annotation.RequestBody
+import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RestController
 import org.ugustavodev.msnucleo.domain.Usuario
 import org.ugustavodev.msnucleo.dto.request.FormacaoRequestDTO
 import org.ugustavodev.msnucleo.dto.ApiResponseDTO
@@ -27,6 +33,7 @@ import org.ugustavodev.msnucleo.usecase.interfaces.formacao.IDeletarFormacaoUseC
 @RequestMapping("/api/candidato/formacoes")
 @Tag(name = "4. Formações Acadêmicas", description = "CRUD de formações acadêmicas vinculadas ao perfil do candidato autenticado")
 class FormacaoController {
+
     private final ICadastrarFormacaoUseCase cadastrarFormacaoUseCase
     private final IAtualizarFormacaoUseCase atualizarFormacaoUseCase
     private final IDeletarFormacaoUseCase deletarFormacaoUseCase
@@ -36,8 +43,7 @@ class FormacaoController {
             ICadastrarFormacaoUseCase cadastrarFormacaoUseCase,
             IAtualizarFormacaoUseCase atualizarFormacaoUseCase,
             IDeletarFormacaoUseCase deletarFormacaoUseCase,
-            CandidatoRepository candidatoRepository
-    ) {
+            CandidatoRepository candidatoRepository) {
         this.cadastrarFormacaoUseCase = cadastrarFormacaoUseCase
         this.atualizarFormacaoUseCase = atualizarFormacaoUseCase
         this.deletarFormacaoUseCase = deletarFormacaoUseCase
@@ -136,7 +142,7 @@ class FormacaoController {
             @Parameter(hidden = true) @AuthenticationPrincipal Usuario usuarioAutenticado
     ) {
         Candidato candidato = candidatoRepository.findByUsuarioEmail(usuarioAutenticado.getUsername())
-                .orElseThrow(() -> new RuntimeException("Candidato não encontrado"))
+                .orElseThrow { new RuntimeException("Candidato não encontrado") }
         
         FormacaoResponseDTO responseDTO = cadastrarFormacaoUseCase.executar(requestDTO, candidato.getId())
         return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponseDTO.sucesso(responseDTO, "Formação cadastrada com sucesso", HttpStatus.CREATED.value()))
@@ -261,7 +267,7 @@ class FormacaoController {
             @Parameter(hidden = true) @AuthenticationPrincipal Usuario usuarioAutenticado
     ) {
         Candidato candidato = candidatoRepository.findByUsuarioEmail(usuarioAutenticado.getUsername())
-                .orElseThrow(() -> new RuntimeException("Candidato não encontrado"))
+                .orElseThrow { new RuntimeException("Candidato não encontrado") }
 
         FormacaoResponseDTO responseDTO = atualizarFormacaoUseCase.executar(id, requestDTO, candidato.getId())
         return ResponseEntity.ok(ApiResponseDTO.sucesso(responseDTO, "Formação atualizada com sucesso"))
@@ -355,9 +361,10 @@ class FormacaoController {
             @Parameter(hidden = true) @AuthenticationPrincipal Usuario usuarioAutenticado
     ) {
         Candidato candidato = candidatoRepository.findByUsuarioEmail(usuarioAutenticado.getUsername())
-                .orElseThrow(() -> new RuntimeException("Candidato não encontrado"))
+                .orElseThrow { new RuntimeException("Candidato não encontrado") }
 
         deletarFormacaoUseCase.executar(id, candidato.getId())
         return ResponseEntity.ok(ApiResponseDTO.sucesso("Formação deletada com sucesso", HttpStatus.OK.value()))
     }
+
 }

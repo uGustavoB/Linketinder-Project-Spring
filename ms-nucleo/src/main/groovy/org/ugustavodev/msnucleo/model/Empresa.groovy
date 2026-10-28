@@ -7,6 +7,7 @@ import jakarta.persistence.Table
 @Entity
 @Table(name = "empresas")
 class Empresa extends Pessoa {
+
     @Column(nullable = false, unique = true, length = 14)
     String cnpj
 
@@ -22,4 +23,5 @@ class Empresa extends Pessoa {
             this.usuario.senha = senhaCriptografada
         }
     }
+
 }

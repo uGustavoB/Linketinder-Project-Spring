@@ -12,6 +12,7 @@ import org.ugustavodev.msnucleo.usecase.interfaces.matches.IListarCandidatosInte
 
 @Service
 class ListarCandidatosInteressadosUseCase implements IListarCandidatosInteressadosUseCase {
+
     private final CandidatoRepository candidatoRepository
     private final VagaRepository vagaRepository
     private final CandidatoMapper candidatoMapper
@@ -25,7 +26,7 @@ class ListarCandidatosInteressadosUseCase implements IListarCandidatosInteressad
     @Override
     List<CandidatoPublicoResponseDTO> executar(Long vagaId, Long empresaId) {
         Vaga vaga = vagaRepository.findById(vagaId)
-                .orElseThrow(() -> new NoSuchElementException("Vaga não encontrada para o ID: ${vagaId}"))
+                .orElseThrow { new NoSuchElementException("Vaga não encontrada para o ID: ${vagaId}") }
 
         if (vaga.empresa == null || vaga.empresa.id != empresaId) {
             throw new AccessDeniedException("A vaga informada não pertence à empresa autenticada")
@@ -37,4 +38,5 @@ class ListarCandidatosInteressadosUseCase implements IListarCandidatosInteressad
                 .map(candidatoMapper::toPublicoResponseDTO)
                 .toList()
     }
+
 }

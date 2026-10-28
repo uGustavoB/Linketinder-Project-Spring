@@ -1,6 +1,5 @@
 package org.ugustavodev.msnucleo.usecase.impl.candidatos
 
-
 import org.springframework.stereotype.Service
 import org.ugustavodev.msnucleo.dto.request.CandidatoRequestDTO
 import org.ugustavodev.msnucleo.dto.response.CandidatoResponseDTO
@@ -13,13 +12,14 @@ import org.ugustavodev.msnucleo.usecase.interfaces.candidatos.ICadastrarCandidat
 import org.springframework.security.crypto.password.PasswordEncoder
 
 @Service
-class CadastrarCandidatoUseCase implements ICadastrarCandidatoUseCase{
+class CadastrarCandidatoUseCase implements ICadastrarCandidatoUseCase {
+
     private final CandidatoRepository candidatoRepository
     private final PasswordEncoder codificadorSenha
     private final CandidatoMapper candidatoMapper
     private final UsuarioRepository usuarioRepository
 
-    CadastrarCandidatoUseCase (CandidatoRepository candidatoRepository, PasswordEncoder codificadorSenha, CandidatoMapper candidatoMapper, UsuarioRepository usuarioRepository) {
+    CadastrarCandidatoUseCase(CandidatoRepository candidatoRepository, PasswordEncoder codificadorSenha, CandidatoMapper candidatoMapper, UsuarioRepository usuarioRepository) {
         this.candidatoRepository = candidatoRepository
         this.codificadorSenha = codificadorSenha
         this.candidatoMapper = candidatoMapper

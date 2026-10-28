@@ -13,6 +13,7 @@ import org.ugustavodev.msnucleo.domain.enums.Role
 
 @Service
 class ListarEmpresasUseCase implements IListarEmpresasUseCase {
+
     private final EmpresaRepository empresaRepository
     private final EmpresaMapper empresaMapper
 
@@ -36,4 +37,5 @@ class ListarEmpresasUseCase implements IListarEmpresasUseCase {
         return empresaRepository.findAll()
                 .collect { empresaMapper.toPublicoResponseDTO(it) }
     }
+
 }

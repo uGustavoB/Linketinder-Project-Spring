@@ -44,4 +44,5 @@ class ObterDadosLoginUseCase implements IObterDadosLoginUseCase {
 
         return loginResponseDTO
     }
+
 }

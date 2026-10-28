@@ -9,6 +9,7 @@ import org.ugustavodev.msnucleo.usecase.interfaces.vagas.IDeletarVagaUseCase
 
 @Service
 class DeletarVagaUseCase implements IDeletarVagaUseCase {
+
     private final VagaRepository vagaRepository
     private final CurtidaRepository curtidaRepository
 
@@ -37,4 +38,5 @@ class DeletarVagaUseCase implements IDeletarVagaUseCase {
         curtidaRepository.deleteByVagaId(vagaId)
         vagaRepository.deleteById(vagaId)
     }
+
 }

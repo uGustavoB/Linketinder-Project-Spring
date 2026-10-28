@@ -42,4 +42,5 @@ class VagaMapper {
         vaga.empresa = empresa
         return vaga
     }
+
 }

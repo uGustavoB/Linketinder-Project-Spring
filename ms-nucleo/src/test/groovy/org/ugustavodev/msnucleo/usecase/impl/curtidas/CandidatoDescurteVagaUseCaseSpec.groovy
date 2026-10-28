@@ -61,4 +61,5 @@ class CandidatoDescurteVagaUseCaseSpec extends Specification {
         1 * curtidaRepository.save(curtida)
         0 * curtidaRepository.delete(_)
     }
+
 }

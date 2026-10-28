@@ -12,7 +12,15 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.security.core.annotation.AuthenticationPrincipal
-import org.springframework.web.bind.annotation.*
+import org.springframework.web.bind.annotation.DeleteMapping
+import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PathVariable
+import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.PutMapping
+import org.springframework.web.bind.annotation.RequestBody
+import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RequestParam
+import org.springframework.web.bind.annotation.RestController
 import org.ugustavodev.msnucleo.domain.Usuario
 import org.ugustavodev.msnucleo.dto.request.VagaRequestDTO
 import org.ugustavodev.msnucleo.dto.response.CurtidaResponseDTO
@@ -43,6 +51,7 @@ import org.ugustavodev.msnucleo.dto.response.CandidatoPublicoResponseDTO
 @RequestMapping("/api/vaga")
 @Tag(name = "6. Vagas, Curtidas e Matches", description = "CRUD de vagas, listagens de sugestões e interessados, registro de curtidas e consulta de matches por vaga")
 class VagaController {
+
     private final ICadastrarVagaUseCase cadastrarVagaUseCase
     private final IBuscarVagaPorIdUseCase buscarVagaPorIdUseCase
     private final IListarVagasUseCase listarVagasUseCase
@@ -74,8 +83,7 @@ class VagaController {
             IEmpresaDescurteCandidatoUseCase empresaDescurteCandidatoUseCase,
             IListarMatchesVagaUseCase listarMatchesVagaUseCase,
             CandidatoRepository candidatoRepository,
-            EmpresaRepository empresaRepository
-    ) {
+            EmpresaRepository empresaRepository) {
         this.cadastrarVagaUseCase = cadastrarVagaUseCase
         this.buscarVagaPorIdUseCase = buscarVagaPorIdUseCase
         this.listarVagasUseCase = listarVagasUseCase
@@ -185,7 +193,7 @@ class VagaController {
             @Parameter(hidden = true) @AuthenticationPrincipal Usuario usuarioAutenticado
     ) {
         Empresa empresa = empresaRepository.findByUsuarioEmail(usuarioAutenticado.getUsername())
-                .orElseThrow(() -> new RuntimeException("Empresa não encontrada"))
+                .orElseThrow { new RuntimeException("Empresa não encontrada") }
         
         VagaResponseDTO responseDTO = cadastrarVagaUseCase.executar(requestDTO, empresa.getId())
         return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponseDTO.sucesso(responseDTO, "Vaga cadastrada com sucesso", HttpStatus.CREATED.value()))
@@ -248,7 +256,8 @@ class VagaController {
 
     @Operation(
             summary = "Busca detalhes de uma vaga por ID (Anonimato Condicional)",
-            description = "Retorna `VagaResponseDTO`. Os campos `empresaId` e `empresaNome` são preenchidos apenas para a empresa autora da vaga ou para candidatos que já possuam Match na vaga; caso contrário, retornam `null`."
+            description = "Retorna `VagaResponseDTO`. Os campos `empresaId` e `empresaNome` são preenchidos apenas para a empresa autora da vaga " +
+                    "ou para candidatos que já possuam Match na vaga; caso contrário, retornam `null`."
     )
     @ApiResponses([
             @ApiResponse(
@@ -439,7 +448,7 @@ class VagaController {
             @Parameter(hidden = true) @AuthenticationPrincipal Usuario usuarioAutenticado
     ) {
         Empresa empresa = empresaRepository.findByUsuarioEmail(usuarioAutenticado.getUsername())
-                .orElseThrow(() -> new RuntimeException("Empresa não encontrada"))
+                .orElseThrow { new RuntimeException("Empresa não encontrada") }
                 
         VagaResponseDTO responseDTO = atualizarVagaUseCase.executar(id, requestDTO, empresa.getId())
         return ResponseEntity.ok(ApiResponseDTO.sucesso(responseDTO, "Vaga atualizada com sucesso"))
@@ -533,7 +542,7 @@ class VagaController {
             @Parameter(hidden = true) @AuthenticationPrincipal Usuario usuarioAutenticado
     ) {
         Empresa empresa = empresaRepository.findByUsuarioEmail(usuarioAutenticado.getUsername())
-                .orElseThrow(() -> new RuntimeException("Empresa não encontrada"))
+                .orElseThrow { new RuntimeException("Empresa não encontrada") }
 
         deletarVagaUseCase.executar(id, empresa.getId())
         return ResponseEntity.ok(ApiResponseDTO.sucesso("Vaga deletada com sucesso", HttpStatus.OK.value()))
@@ -640,7 +649,7 @@ class VagaController {
             @Parameter(hidden = true) @AuthenticationPrincipal Usuario usuarioAutenticado
     ) {
         Candidato candidato = candidatoRepository.findByUsuarioEmail(usuarioAutenticado.getUsername())
-                .orElseThrow(() -> new RuntimeException("Candidato não encontrado"))
+                .orElseThrow { new RuntimeException("Candidato não encontrado") }
         Long idCandidato = candidato.getId()
 
         CurtidaResponseDTO curtidaResponse = candidatoCurteVagaUseCase.executar(idCandidato, idVaga)
@@ -720,7 +729,7 @@ class VagaController {
             @Parameter(hidden = true) @AuthenticationPrincipal Usuario usuarioAutenticado
     ) {
         Candidato candidato = candidatoRepository.findByUsuarioEmail(usuarioAutenticado.getUsername())
-                .orElseThrow(() -> new RuntimeException("Candidato não encontrado"))
+                .orElseThrow { new RuntimeException("Candidato não encontrado") }
         Long idCandidato = candidato.getId()
 
         candidatoDescurteVagaUseCase.executar(idCandidato, idVaga)
@@ -729,7 +738,8 @@ class VagaController {
 
     @Operation(
             summary = "Empresa curte um candidato para uma vaga",
-            description = "Registra o interesse da empresa autenticada em um candidato para uma vaga específica de sua propriedade. Caso o candidato já tenha curtido a vaga, consolida o Match (`match: true`)."
+            description = "Registra o interesse da empresa autenticada em um candidato para uma vaga específica de sua propriedade. " +
+                    "Caso o candidato já tenha curtido a vaga, consolida o Match (`match: true`)."
     )
     @ApiResponses([
             @ApiResponse(
@@ -829,7 +839,7 @@ class VagaController {
             @Parameter(hidden = true) @AuthenticationPrincipal Usuario usuarioAutenticado
     ) {
         Empresa empresa = empresaRepository.findByUsuarioEmail(usuarioAutenticado.getUsername())
-                .orElseThrow(() -> new RuntimeException("Empresa não encontrada"))
+                .orElseThrow { new RuntimeException("Empresa não encontrada") }
         Long idEmpresa = empresa.getId()
 
         CurtidaResponseDTO curtidaResponse = empresaCurteCandidatoUseCase.executar(idEmpresa, idCandidato, idVaga)
@@ -910,7 +920,7 @@ class VagaController {
             @Parameter(hidden = true) @AuthenticationPrincipal Usuario usuarioAutenticado
     ) {
         Empresa empresa = empresaRepository.findByUsuarioEmail(usuarioAutenticado.getUsername())
-                .orElseThrow(() -> new RuntimeException("Empresa não encontrada"))
+                .orElseThrow { new RuntimeException("Empresa não encontrada") }
         Long idEmpresa = empresa.getId()
 
         empresaDescurteCandidatoUseCase.executar(idEmpresa, idCandidato, idVaga)
@@ -919,7 +929,8 @@ class VagaController {
 
     @Operation(
             summary = "Lista os matches consolidados de uma vaga (Pós-Match)",
-            description = "Retorna `MatchVagaResponseDTO` para todos os candidatos com interesse mútuo na vaga, revelando `candidatoNome` e `candidatoEmail` para a empresa autora (mantendo CPF, CEP e data de nascimento ocultos)."
+            description = "Retorna `MatchVagaResponseDTO` para todos os candidatos com interesse mútuo na vaga, revelando `candidatoNome` " +
+                    "e `candidatoEmail` para a empresa autora (mantendo CPF, CEP e data de nascimento ocultos)."
     )
     @ApiResponses([
             @ApiResponse(
@@ -1014,7 +1025,7 @@ class VagaController {
             @Parameter(hidden = true) @AuthenticationPrincipal Usuario usuarioAutenticado
     ) {
         Empresa empresa = empresaRepository.findByUsuarioEmail(usuarioAutenticado.getUsername())
-                .orElseThrow(() -> new RuntimeException("Empresa não encontrada"))
+                .orElseThrow { new RuntimeException("Empresa não encontrada") }
         Long idEmpresa = empresa.getId()
         
         List<MatchVagaResponseDTO> matches = listarMatchesVagaUseCase.executar(idVaga, idEmpresa)
@@ -1088,7 +1099,7 @@ class VagaController {
             @Parameter(hidden = true) @AuthenticationPrincipal Usuario usuarioAutenticado
     ) {
         Candidato candidato = candidatoRepository.findByUsuarioEmail(usuarioAutenticado.getUsername())
-                .orElseThrow(() -> new RuntimeException("Candidato não encontrado"))
+                .orElseThrow { new RuntimeException("Candidato não encontrado") }
         
         List<VagaPublicoResponseDTO> vagas = listarVagasSugeridasUseCase.executar(candidato.getId())
         return ResponseEntity.ok(ApiResponseDTO.sucesso(vagas))
@@ -1186,7 +1197,7 @@ class VagaController {
             @Parameter(hidden = true) @AuthenticationPrincipal Usuario usuarioAutenticado
     ) {
         Empresa empresa = empresaRepository.findByUsuarioEmail(usuarioAutenticado.getUsername())
-                .orElseThrow(() -> new RuntimeException("Empresa não encontrada"))
+                .orElseThrow { new RuntimeException("Empresa não encontrada") }
         
         List<CandidatoPublicoResponseDTO> candidatos = listarCandidatosSugeridosUseCase.executar(idVaga, empresa.getId())
         return ResponseEntity.ok(ApiResponseDTO.sucesso(candidatos))
@@ -1284,9 +1295,10 @@ class VagaController {
             @Parameter(hidden = true) @AuthenticationPrincipal Usuario usuarioAutenticado
     ) {
         Empresa empresa = empresaRepository.findByUsuarioEmail(usuarioAutenticado.getUsername())
-                .orElseThrow(() -> new RuntimeException("Empresa não encontrada"))
+                .orElseThrow { new RuntimeException("Empresa não encontrada") }
         
         List<CandidatoPublicoResponseDTO> candidatos = listarCandidatosInteressadosUseCase.executar(idVaga, empresa.getId())
         return ResponseEntity.ok(ApiResponseDTO.sucesso(candidatos))
     }
+
 }

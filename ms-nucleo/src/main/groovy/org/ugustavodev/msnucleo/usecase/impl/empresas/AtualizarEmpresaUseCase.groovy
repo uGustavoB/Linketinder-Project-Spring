@@ -19,6 +19,7 @@ import org.ugustavodev.msnucleo.domain.enums.Role
 
 @Service
 class AtualizarEmpresaUseCase implements IAtualizarEmpresaUseCase {
+
     private final EmpresaRepository empresaRepository
     private final PasswordEncoder passwordEncoder
     private final EmpresaMapper empresaMapper
@@ -40,7 +41,7 @@ class AtualizarEmpresaUseCase implements IAtualizarEmpresaUseCase {
         }
 
         Empresa empresaExistente = empresaRepository.findById(id)
-                .orElseThrow(() -> new NoSuchElementException("Empresa não encontrada."))
+                .orElseThrow { new NoSuchElementException("Empresa não encontrada.") }
 
         Authentication auth = SecurityContextHolder.getContext().getAuthentication()
         if (auth != null && auth.getPrincipal() instanceof Usuario) {
@@ -87,5 +88,5 @@ class AtualizarEmpresaUseCase implements IAtualizarEmpresaUseCase {
         Empresa empresaAtualizada = empresaRepository.save(empresaExistente)
         return empresaMapper.toResponseDTO(empresaAtualizada)
     }
-}
 
+}

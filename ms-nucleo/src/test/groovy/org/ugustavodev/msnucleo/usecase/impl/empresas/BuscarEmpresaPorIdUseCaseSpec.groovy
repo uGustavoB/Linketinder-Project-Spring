@@ -119,4 +119,5 @@ class BuscarEmpresaPorIdUseCaseSpec extends Specification {
         then: "Retorna o EmpresaResponseDTO completo"
         resultado == esperado
     }
+
 }

@@ -10,6 +10,7 @@ import org.ugustavodev.msnucleo.usecase.interfaces.curtidas.IEmpresaDescurteCand
 
 @Service
 class EmpresaDescurteCandidatoUseCase implements IEmpresaDescurteCandidatoUseCase {
+
     private final CurtidaRepository curtidaRepository
     private final VagaRepository vagaRepository
 
@@ -31,14 +32,14 @@ class EmpresaDescurteCandidatoUseCase implements IEmpresaDescurteCandidatoUseCas
         }
 
         Vaga vaga = vagaRepository.findById(idVaga)
-                .orElseThrow(() -> new NoSuchElementException("Vaga não encontrada."))
+                .orElseThrow { new NoSuchElementException("Vaga não encontrada.") }
 
         if (vaga.getEmpresa().getId() != idEmpresa) {
             throw new AccessDeniedException("Esta vaga não pertence à sua empresa.")
         }
 
         Curtida curtida = curtidaRepository.findByCandidatoIdAndVagaId(idCandidato, idVaga)
-                .orElseThrow(() -> new NoSuchElementException("Curtida não encontrada."))
+                .orElseThrow { new NoSuchElementException("Curtida não encontrada.") }
 
         if (curtida.getEmpresaCurtiuEm() == null) {
             throw new IllegalStateException("A empresa não curtiu este candidato para esta vaga.")
@@ -51,4 +52,5 @@ class EmpresaDescurteCandidatoUseCase implements IEmpresaDescurteCandidatoUseCas
             curtidaRepository.delete(curtida)
         }
     }
+
 }

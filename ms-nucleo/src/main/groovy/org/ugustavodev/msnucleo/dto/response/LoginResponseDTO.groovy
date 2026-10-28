@@ -6,6 +6,7 @@ import io.swagger.v3.oas.annotations.media.Schema
 @Canonical
 @Schema(description = "Dados de identificação retornados após login bem-sucedido (o token JWT é enviado em paralelo via cookie HTTP-only auth_token)")
 class LoginResponseDTO {
+
     @Schema(description = "ID do perfil (Candidato ou Empresa)", example = "1")
     Long id
 
@@ -20,4 +21,5 @@ class LoginResponseDTO {
 
     @Schema(description = "E-mail autenticado", example = "joao.silva@email.com")
     String email
+
 }

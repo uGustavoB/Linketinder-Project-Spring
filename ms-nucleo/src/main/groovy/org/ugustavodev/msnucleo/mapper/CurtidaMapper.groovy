@@ -24,4 +24,5 @@ class CurtidaMapper {
         if (curtidas == null) return []
         return curtidas.collect { toResponseDTO(it) }
     }
+
 }

@@ -10,8 +10,10 @@ import jakarta.validation.constraints.Size
 import java.time.LocalDate
 
 @Canonical
-@Schema(description = "Dados de entrada para cadastro ou atualização de Candidato. Campos de texto sofrem trim(), e-mail é convertido para minúsculas e CPF/CEP têm caracteres não numéricos removidos automaticamente.")
+@Schema(description = "Dados de entrada para cadastro ou atualização de Candidato. Campos de texto sofrem trim(), " +
+        "e-mail é convertido para minúsculas e CPF/CEP têm caracteres não numéricos removidos automaticamente.")
 class CandidatoRequestDTO {
+
     @Schema(description = "Primeiro nome do candidato", example = "João", requiredMode = Schema.RequiredMode.REQUIRED)
     @NotBlank(message = "O campo nome é obrigatório")
     String nome

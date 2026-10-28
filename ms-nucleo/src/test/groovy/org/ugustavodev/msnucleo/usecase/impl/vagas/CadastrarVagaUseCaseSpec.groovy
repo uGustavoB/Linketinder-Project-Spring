@@ -84,4 +84,5 @@ class CadastrarVagaUseCaseSpec extends Specification {
         then: "Retorna o VagaResponseDTO esperado"
         resultado == esperado
     }
+
 }

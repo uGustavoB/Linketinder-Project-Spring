@@ -64,4 +64,5 @@ class ObterPerfilUseCase implements IObterPerfilUseCase {
         
         return null
     }
+
 }

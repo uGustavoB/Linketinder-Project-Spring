@@ -105,4 +105,5 @@ class ObterPerfilUseCaseSpec extends Specification {
         then: "Retorna nulo"
         resultado == null
     }
+
 }

@@ -75,4 +75,5 @@ class EmpresaDescurteCandidatoUseCaseSpec extends Specification {
         1 * curtidaRepository.delete(curtida)
         0 * curtidaRepository.save(_)
     }
+
 }

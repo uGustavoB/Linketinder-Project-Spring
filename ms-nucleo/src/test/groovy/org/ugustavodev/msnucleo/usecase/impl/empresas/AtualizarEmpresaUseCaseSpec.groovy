@@ -141,4 +141,5 @@ class AtualizarEmpresaUseCaseSpec extends Specification {
         empresaExistente.usuario.senha == "old_hash"
         resultado == esperado
     }
+
 }

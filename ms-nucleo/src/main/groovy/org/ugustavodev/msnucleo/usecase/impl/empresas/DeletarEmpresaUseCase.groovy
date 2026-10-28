@@ -15,6 +15,7 @@ import org.ugustavodev.msnucleo.usecase.interfaces.empresas.IDeletarEmpresaUseCa
 
 @Service
 class DeletarEmpresaUseCase implements IDeletarEmpresaUseCase {
+
     private final EmpresaRepository empresaRepository
     private final CurtidaRepository curtidaRepository
     private final VagaRepository vagaRepository
@@ -33,7 +34,7 @@ class DeletarEmpresaUseCase implements IDeletarEmpresaUseCase {
         }
 
         Empresa empresa = empresaRepository.findById(id)
-                .orElseThrow(() -> new NoSuchElementException("Empresa não encontrada."))
+                .orElseThrow { new NoSuchElementException("Empresa não encontrada.") }
 
         Authentication auth = SecurityContextHolder.getContext().getAuthentication()
         if (auth != null && auth.getPrincipal() instanceof Usuario) {
@@ -50,4 +51,5 @@ class DeletarEmpresaUseCase implements IDeletarEmpresaUseCase {
         vagaRepository.deleteByEmpresaId(id)
         empresaRepository.delete(empresa)
     }
+
 }

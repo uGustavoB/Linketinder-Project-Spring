@@ -121,4 +121,5 @@ class BuscarCandidatoPorIdUseCaseSpec extends Specification {
         then: "Retorna o CandidatoResponseDTO completo"
         resultado == esperado
     }
+
 }

@@ -15,6 +15,7 @@ import org.ugustavodev.msnucleo.domain.enums.Role
 
 @Service
 class BuscarEmpresaPorIdUseCase implements IBuscarEmpresaPorIdUseCase {
+
     private final EmpresaRepository empresaRepository
     private final EmpresaMapper empresaMapper
 
@@ -23,7 +24,6 @@ class BuscarEmpresaPorIdUseCase implements IBuscarEmpresaPorIdUseCase {
         this.empresaMapper = empresaMapper
     }
 
-
     @Override
     EmpresaResponseDTO executar(Long id) {
         if (id == null) {
@@ -31,7 +31,7 @@ class BuscarEmpresaPorIdUseCase implements IBuscarEmpresaPorIdUseCase {
         }
 
         Empresa empresa = empresaRepository.findById(id)
-                .orElseThrow(() -> new NoSuchElementException("Empresa não encontrada."))
+                .orElseThrow { new NoSuchElementException("Empresa não encontrada.") }
 
         Authentication auth = SecurityContextHolder.getContext().getAuthentication()
         if (auth != null && auth.getPrincipal() instanceof Usuario) {
@@ -46,4 +46,5 @@ class BuscarEmpresaPorIdUseCase implements IBuscarEmpresaPorIdUseCase {
 
         return empresaMapper.toResponseDTO(empresa)
     }
+
 }

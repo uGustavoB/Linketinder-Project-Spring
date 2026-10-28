@@ -8,6 +8,7 @@ import java.time.LocalDate
 @Canonical
 @Schema(description = "Dados de entrada para cadastro ou atualização de Formação Acadêmica do candidato autenticado")
 class FormacaoRequestDTO {
+
     @Schema(description = "Nome da instituição de ensino", example = "Universidade de São Paulo (USP)", requiredMode = Schema.RequiredMode.REQUIRED)
     @NotBlank(message = "Instituição é obrigatória")
     String instituicao
@@ -29,4 +30,5 @@ class FormacaoRequestDTO {
 
     @Schema(description = "Data de conclusão ou previsão de término (AAAA-MM-DD)", example = "2023-12-15")
     LocalDate dataConclusao
+
 }

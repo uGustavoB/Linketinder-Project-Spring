@@ -7,8 +7,10 @@ import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.Size
 
 @Canonical
-@Schema(description = "Dados de entrada para cadastro ou atualização de Empresa. Campos de texto sofrem trim(), e-mail é convertido para minúsculas e CNPJ/CEP têm caracteres não numéricos removidos automaticamente.")
+@Schema(description = "Dados de entrada para cadastro ou atualização de Empresa. Campos de texto sofrem trim(), " +
+        "e-mail é convertido para minúsculas e CNPJ/CEP têm caracteres não numéricos removidos automaticamente.")
 class EmpresaRequestDTO {
+
     @Schema(description = "Razão social ou nome fantasia da empresa", example = "Tech Solutions Ltda", requiredMode = Schema.RequiredMode.REQUIRED)
     @NotBlank(message = "O campo nome é obrigatório")
     String nome

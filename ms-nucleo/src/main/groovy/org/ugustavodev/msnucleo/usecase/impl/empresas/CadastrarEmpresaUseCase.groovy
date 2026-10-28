@@ -13,6 +13,7 @@ import org.springframework.security.crypto.password.PasswordEncoder
 
 @Service
 class CadastrarEmpresaUseCase implements ICadastrarEmpresaUseCase {
+
     private final EmpresaRepository empresaRepository
     private final PasswordEncoder passwordEncoder
     private final EmpresaMapper empresaMapper
@@ -49,6 +50,5 @@ class CadastrarEmpresaUseCase implements ICadastrarEmpresaUseCase {
         Empresa savedEmpresa = empresaRepository.save(empresa)
         return empresaMapper.toResponseDTO(savedEmpresa)
     }
+
 }
-
-

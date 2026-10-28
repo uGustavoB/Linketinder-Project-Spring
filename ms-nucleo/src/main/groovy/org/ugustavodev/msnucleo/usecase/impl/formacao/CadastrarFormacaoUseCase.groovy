@@ -12,6 +12,7 @@ import org.ugustavodev.msnucleo.usecase.interfaces.formacao.ICadastrarFormacaoUs
 
 @Service
 class CadastrarFormacaoUseCase implements ICadastrarFormacaoUseCase {
+
     private final FormacaoRepository formacaoRepository
     private final CandidatoRepository candidatoRepository
     private final FormacaoMapper formacaoMapper
@@ -29,11 +30,12 @@ class CadastrarFormacaoUseCase implements ICadastrarFormacaoUseCase {
         }
 
         Candidato candidato = candidatoRepository.findById(candidatoId)
-                .orElseThrow(() -> new NoSuchElementException("Candidato não encontrado para o ID: ${candidatoId}"))
+                .orElseThrow { new NoSuchElementException("Candidato não encontrado para o ID: ${candidatoId}") }
 
         Formacao formacao = formacaoMapper.fromRequestDTOToEntity(requestDTO, candidato)
         Formacao savedFormacao = formacaoRepository.save(formacao)
         
         return formacaoMapper.toResponseDTO(savedFormacao)
     }
+
 }

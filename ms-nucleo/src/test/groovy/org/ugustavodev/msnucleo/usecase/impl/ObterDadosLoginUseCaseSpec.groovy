@@ -59,4 +59,5 @@ class ObterDadosLoginUseCaseSpec extends Specification {
         resultado.email == "rh@techsolutions.com.br"
         resultado.tipoUsuario == "EMPRESA"
     }
+
 }

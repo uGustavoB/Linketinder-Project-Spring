@@ -16,7 +16,8 @@ import org.ugustavodev.msnucleo.usecase.interfaces.curtidas.IEmpresaCurteCandida
 import java.time.LocalDateTime
 
 @Service
-class EmpresaCurteCandidatoUseCase implements IEmpresaCurteCandidatoUseCase{
+class EmpresaCurteCandidatoUseCase implements IEmpresaCurteCandidatoUseCase {
+
     private final CurtidaRepository curtidaRepository
     private final CandidatoRepository candidatoRepository
     private final VagaRepository vagaRepository
@@ -43,10 +44,10 @@ class EmpresaCurteCandidatoUseCase implements IEmpresaCurteCandidatoUseCase{
         }
 
         Candidato candidato = candidatoRepository.findById(idCandidato)
-                .orElseThrow(() -> new NoSuchElementException("Candidato não encontrado para o ID: ${idCandidato}"))
+                .orElseThrow { new NoSuchElementException("Candidato não encontrado para o ID: ${idCandidato}") }
 
         Vaga vaga = vagaRepository.findById(idVaga)
-                .orElseThrow(() -> new NoSuchElementException("Vaga não encontrada para o ID: ${idVaga}"))
+                .orElseThrow { new NoSuchElementException("Vaga não encontrada para o ID: ${idVaga}") }
 
         if (vaga.getEmpresa().getId() != idEmpresa) {
             throw new AccessDeniedException("Esta vaga não pertence à sua empresa.")
@@ -73,4 +74,5 @@ class EmpresaCurteCandidatoUseCase implements IEmpresaCurteCandidatoUseCase{
         curtida = curtidaRepository.save(curtida)
         return curtidaMapper.toResponseDTO(curtida)
     }
+
 }

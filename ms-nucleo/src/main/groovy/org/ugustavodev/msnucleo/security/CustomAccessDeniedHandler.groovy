@@ -8,8 +8,6 @@ import org.springframework.security.access.AccessDeniedException
 import org.springframework.security.web.access.AccessDeniedHandler
 import org.springframework.stereotype.Component
 
-import java.io.IOException
-
 @Component
 class CustomAccessDeniedHandler implements AccessDeniedHandler {
 
@@ -26,4 +24,5 @@ class CustomAccessDeniedHandler implements AccessDeniedHandler {
 
         response.getWriter().write(json)
     }
+
 }

@@ -63,4 +63,5 @@ class ListarMatchesCandidatoUseCaseSpec extends Specification {
         resultado[0].empresaEmail() == "rh@techsolutions.com.br"
         resultado[0].dataMatch() == dataCandidato
     }
+
 }

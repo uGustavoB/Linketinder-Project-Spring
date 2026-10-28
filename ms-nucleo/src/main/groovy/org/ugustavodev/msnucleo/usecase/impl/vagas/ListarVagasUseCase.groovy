@@ -8,6 +8,7 @@ import org.ugustavodev.msnucleo.usecase.interfaces.vagas.IListarVagasUseCase
 
 @Service
 class ListarVagasUseCase implements IListarVagasUseCase {
+
     private final VagaRepository vagaRepository
     private final VagaMapper vagaMapper
 
@@ -25,4 +26,5 @@ class ListarVagasUseCase implements IListarVagasUseCase {
         return vagaRepository.findAll()
                 .collect { vagaMapper.toPublicoResponseDTO(it) }
     }
+
 }

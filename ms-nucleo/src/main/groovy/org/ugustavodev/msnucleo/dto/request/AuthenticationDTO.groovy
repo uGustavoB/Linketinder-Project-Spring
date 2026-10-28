@@ -8,6 +8,7 @@ import jakarta.validation.constraints.NotBlank
 @Canonical
 @Schema(description = "Credenciais de entrada para autenticação de Candidato ou Empresa")
 class AuthenticationDTO {
+
     @Schema(description = "E-mail cadastrado do usuário (convertido automaticamente para minúsculas)", example = "candidato@email.com", requiredMode = Schema.RequiredMode.REQUIRED)
     @NotBlank(message = "O campo email é obrigatório")
     @Email(message = "Formato de email inválido")
@@ -20,4 +21,5 @@ class AuthenticationDTO {
     void setEmail(String email) {
         this.email = email?.trim()?.toLowerCase()
     }
+
 }

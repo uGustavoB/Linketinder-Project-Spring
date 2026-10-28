@@ -129,4 +129,5 @@ class CadastrarCandidatoUseCaseSpec extends Specification {
         resultado.id() == 1L
         resultado.email() == "sucesso@teste.com"
     }
+
 }

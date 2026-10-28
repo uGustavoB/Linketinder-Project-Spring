@@ -96,4 +96,5 @@ class DeletarVagaUseCaseSpec extends Specification {
         and: "Em seguida deve deletar a vaga pelo ID"
         1 * vagaRepository.deleteById(vagaId)
     }
+
 }

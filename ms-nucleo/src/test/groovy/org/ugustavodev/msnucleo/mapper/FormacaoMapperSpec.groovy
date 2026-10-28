@@ -67,4 +67,5 @@ class FormacaoMapperSpec extends Specification {
         formacao.dataConclusao == conclusao
         formacao.candidato == candidato
     }
+
 }

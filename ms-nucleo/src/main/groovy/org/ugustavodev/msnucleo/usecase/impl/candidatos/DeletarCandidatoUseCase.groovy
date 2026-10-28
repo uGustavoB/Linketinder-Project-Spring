@@ -14,6 +14,7 @@ import org.ugustavodev.msnucleo.usecase.interfaces.candidatos.IDeletarCandidatoU
 
 @Service
 class DeletarCandidatoUseCase implements IDeletarCandidatoUseCase {
+
     private final CandidatoRepository candidatoRepository
     private final CurtidaRepository curtidaRepository
 
@@ -30,7 +31,7 @@ class DeletarCandidatoUseCase implements IDeletarCandidatoUseCase {
         }
 
         Candidato candidato = candidatoRepository.findById(id)
-            .orElseThrow(() -> new NoSuchElementException("Candidato não encontrado."))
+                .orElseThrow { new NoSuchElementException("Candidato não encontrado.") }
 
         Authentication auth = SecurityContextHolder.getContext().getAuthentication()
         if (auth != null && auth.getPrincipal() instanceof Usuario) {
@@ -46,4 +47,5 @@ class DeletarCandidatoUseCase implements IDeletarCandidatoUseCase {
         curtidaRepository.deleteByCandidatoId(id)
         candidatoRepository.delete(candidato)
     }
+
 }

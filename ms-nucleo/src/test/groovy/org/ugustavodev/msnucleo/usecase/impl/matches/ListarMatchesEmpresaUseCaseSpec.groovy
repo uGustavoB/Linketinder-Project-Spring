@@ -110,4 +110,5 @@ class ListarMatchesEmpresaUseCaseSpec extends Specification {
         resultado[0].candidatoEmail() == "joao.silva@email.com"
         resultado[0].dataMatch() == empresaCurtiu
     }
+
 }

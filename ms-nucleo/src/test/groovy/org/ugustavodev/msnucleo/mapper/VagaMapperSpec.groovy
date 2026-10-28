@@ -63,4 +63,5 @@ class VagaMapperSpec extends Specification {
         vaga.nivel == "Pleno"
         vaga.empresa == empresa
     }
+
 }

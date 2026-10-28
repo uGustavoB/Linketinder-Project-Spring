@@ -16,12 +16,13 @@ import java.time.LocalDateTime
 
 @Service
 class CandidatoCurteVagaUseCase implements ICandidatoCurteVagaUseCase {
+
     private final CurtidaRepository curtidaRepository
     private final CandidatoRepository candidatoRepository
     private final VagaRepository vagaRepository
     private final CurtidaMapper curtidaMapper
 
-    CandidatoCurteVagaUseCase (CurtidaRepository curtidaRepository, CandidatoRepository candidatoRepository, VagaRepository vagaRepository, CurtidaMapper curtidaMapper) {
+    CandidatoCurteVagaUseCase(CurtidaRepository curtidaRepository, CandidatoRepository candidatoRepository, VagaRepository vagaRepository, CurtidaMapper curtidaMapper) {
         this.curtidaRepository = curtidaRepository
         this.candidatoRepository = candidatoRepository
         this.vagaRepository = vagaRepository
@@ -40,10 +41,10 @@ class CandidatoCurteVagaUseCase implements ICandidatoCurteVagaUseCase {
         }
 
         Candidato candidato = candidatoRepository.findById(idCandidato)
-                .orElseThrow(() -> new NoSuchElementException("Candidato não encontrado para o ID: ${idCandidato}"))
+                .orElseThrow { new NoSuchElementException("Candidato não encontrado para o ID: ${idCandidato}") }
 
         Vaga vaga = vagaRepository.findById(idVaga)
-                .orElseThrow(() -> new NoSuchElementException("Vaga não encontrada para o ID: ${idVaga}"))
+                .orElseThrow { new NoSuchElementException("Vaga não encontrada para o ID: ${idVaga}") }
 
         Optional<Curtida> optionalCurtida = curtidaRepository.findByCandidatoIdAndVagaId(idCandidato, idVaga)
 
@@ -66,4 +67,5 @@ class CandidatoCurteVagaUseCase implements ICandidatoCurteVagaUseCase {
         curtida = curtidaRepository.save(curtida)
         return curtidaMapper.toResponseDTO(curtida)
     }
+
 }

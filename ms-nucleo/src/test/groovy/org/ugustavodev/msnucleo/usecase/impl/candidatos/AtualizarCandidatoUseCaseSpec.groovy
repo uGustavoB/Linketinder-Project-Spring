@@ -163,4 +163,5 @@ class AtualizarCandidatoUseCaseSpec extends Specification {
         candidatoExistente.usuario.senha == "novo_hash"
         resultado == esperado
     }
+
 }

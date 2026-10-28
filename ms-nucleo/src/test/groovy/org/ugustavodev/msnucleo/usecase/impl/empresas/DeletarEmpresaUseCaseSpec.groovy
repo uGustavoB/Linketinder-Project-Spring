@@ -98,4 +98,5 @@ class DeletarEmpresaUseCaseSpec extends Specification {
         1 * vagaRepository.deleteByEmpresaId(id)
         1 * empresaRepository.delete(empresa)
     }
+
 }

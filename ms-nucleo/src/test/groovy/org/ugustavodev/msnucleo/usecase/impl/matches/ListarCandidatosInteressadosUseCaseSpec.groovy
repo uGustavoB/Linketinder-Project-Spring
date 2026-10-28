@@ -58,4 +58,5 @@ class ListarCandidatosInteressadosUseCaseSpec extends Specification {
         resultado.size() == 1
         resultado[0] == dto
     }
+
 }

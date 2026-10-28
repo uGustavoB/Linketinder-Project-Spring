@@ -32,4 +32,5 @@ class FormacaoMapper {
         formacao.candidato = candidato
         return formacao
     }
+
 }

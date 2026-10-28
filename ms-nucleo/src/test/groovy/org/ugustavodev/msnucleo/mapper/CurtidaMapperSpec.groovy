@@ -48,4 +48,5 @@ class CurtidaMapperSpec extends Specification {
         then: "Retorna nulo"
         dto == null
     }
+
 }

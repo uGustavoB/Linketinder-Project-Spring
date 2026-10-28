@@ -7,6 +7,7 @@ import org.ugustavodev.msnucleo.usecase.interfaces.curtidas.ICandidatoDescurteVa
 
 @Service
 class CandidatoDescurteVagaUseCase implements ICandidatoDescurteVagaUseCase {
+
     private final CurtidaRepository curtidaRepository
 
     CandidatoDescurteVagaUseCase(CurtidaRepository curtidaRepository) {
@@ -23,7 +24,7 @@ class CandidatoDescurteVagaUseCase implements ICandidatoDescurteVagaUseCase {
         }
 
         Curtida curtida = curtidaRepository.findByCandidatoIdAndVagaId(idCandidato, idVaga)
-                .orElseThrow(() -> new NoSuchElementException("Curtida não encontrada."))
+                .orElseThrow { new NoSuchElementException("Curtida não encontrada.") }
 
         if (curtida.getCandidatoCurtiuEm() == null) {
             throw new IllegalStateException("O candidato não curtiu esta vaga.")
@@ -36,4 +37,5 @@ class CandidatoDescurteVagaUseCase implements ICandidatoDescurteVagaUseCase {
             curtidaRepository.delete(curtida)
         }
     }
+
 }

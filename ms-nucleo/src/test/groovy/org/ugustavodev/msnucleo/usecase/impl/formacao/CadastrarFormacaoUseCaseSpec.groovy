@@ -77,4 +77,5 @@ class CadastrarFormacaoUseCaseSpec extends Specification {
         then: "Retorna o FormacaoResponseDTO esperado"
         resultado == esperado
     }
+
 }

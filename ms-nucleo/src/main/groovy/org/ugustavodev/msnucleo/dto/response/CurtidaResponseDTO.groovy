@@ -7,6 +7,7 @@ import java.time.LocalDateTime
 
 @Schema(description = "Representa o estado de uma curtida entre um Candidato e uma Vaga, indicando se houve Match recíproco.")
 class CurtidaResponseDTO {
+
     @Schema(description = "ID único do registro de curtida", example = "10")
     Long idCurtida
 
@@ -25,4 +26,5 @@ class CurtidaResponseDTO {
     @Schema(description = "Indica se ocorreu um Match mútuo (true quando candidatoCurtiuEm e empresaCurtiuEm são ambos não nulos)", example = "true")
     @JsonProperty("match")
     boolean match
+
 }

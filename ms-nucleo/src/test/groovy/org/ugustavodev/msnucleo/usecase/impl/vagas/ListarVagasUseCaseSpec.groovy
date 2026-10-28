@@ -52,4 +52,5 @@ class ListarVagasUseCaseSpec extends Specification {
         resultado.size() == 2
         resultado == [dto1, dto2]
     }
+
 }

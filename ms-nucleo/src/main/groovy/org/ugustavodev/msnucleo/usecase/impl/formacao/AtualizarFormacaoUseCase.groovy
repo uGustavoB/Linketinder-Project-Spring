@@ -10,6 +10,7 @@ import org.ugustavodev.msnucleo.usecase.interfaces.formacao.IAtualizarFormacaoUs
 
 @Service
 class AtualizarFormacaoUseCase implements IAtualizarFormacaoUseCase {
+
     private final FormacaoRepository formacaoRepository
     private final FormacaoMapper formacaoMapper
 
@@ -25,7 +26,7 @@ class AtualizarFormacaoUseCase implements IAtualizarFormacaoUseCase {
         }
 
         Formacao formacaoExistente = formacaoRepository.findById(id)
-                .orElseThrow(() -> new NoSuchElementException("Formação não encontrada para o ID: ${id}"))
+                .orElseThrow { new NoSuchElementException("Formação não encontrada para o ID: ${id}") }
 
         if (formacaoExistente.candidato == null || formacaoExistente.candidato.id != candidatoId) {
             throw new IllegalArgumentException("Você não tem permissão para editar esta formação.")
@@ -41,4 +42,5 @@ class AtualizarFormacaoUseCase implements IAtualizarFormacaoUseCase {
         Formacao formacaoAtualizada = formacaoRepository.save(formacaoExistente)
         return formacaoMapper.toResponseDTO(formacaoAtualizada)
     }
+
 }

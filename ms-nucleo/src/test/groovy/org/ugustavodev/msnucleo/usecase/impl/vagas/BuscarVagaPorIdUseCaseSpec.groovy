@@ -149,4 +149,5 @@ class BuscarVagaPorIdUseCaseSpec extends Specification {
         then: "Retorna o DTO completo"
         resultado == dtoCompleto
     }
+
 }
