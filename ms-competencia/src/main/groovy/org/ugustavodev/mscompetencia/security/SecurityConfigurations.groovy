@@ -1,8 +1,8 @@
 package org.ugustavodev.mscompetencia.security
 
-import org.springframework.http.HttpMethod
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.http.HttpMethod
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
@@ -19,9 +19,16 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource
 class SecurityConfigurations {
 
     private final SecurityFilter securityFilter
+    private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint
+    private final CustomAccessDeniedHandler customAccessDeniedHandler
 
-    SecurityConfigurations(SecurityFilter securityFilter) {
+    SecurityConfigurations(
+            SecurityFilter securityFilter,
+            CustomAuthenticationEntryPoint customAuthenticationEntryPoint,
+            CustomAccessDeniedHandler customAccessDeniedHandler) {
         this.securityFilter = securityFilter
+        this.customAuthenticationEntryPoint = customAuthenticationEntryPoint
+        this.customAccessDeniedHandler = customAccessDeniedHandler
     }
 
     @Bean
@@ -31,9 +38,13 @@ class SecurityConfigurations {
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers(HttpMethod.GET, "/api/competencias/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/competencias").permitAll()
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .anyRequest().authenticated()
+                )
+                .exceptionHandling(excecoes -> excecoes
+                        .authenticationEntryPoint(customAuthenticationEntryPoint)
+                        .accessDeniedHandler(customAccessDeniedHandler)
                 )
                 .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class)
                 .build()
@@ -51,4 +62,5 @@ class SecurityConfigurations {
         source.registerCorsConfiguration("/**", config)
         return source
     }
+
 }
