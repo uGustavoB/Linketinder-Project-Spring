@@ -40,6 +40,15 @@ class SecurityConfigurations {
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers(HttpMethod.GET, "/api/competencias").permitAll()
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                        .requestMatchers(
+                                "/api/docs",
+                                "/api/docs/**",
+                                "/api/swagger-ui/**",
+                                "/swagger-ui/**",
+                                "/swagger-ui.html",
+                                "/api/v3/api-docs",
+                                "/api/v3/api-docs/**"
+                        ).permitAll()
                         .anyRequest().authenticated()
                 )
                 .exceptionHandling(excecoes -> excecoes
