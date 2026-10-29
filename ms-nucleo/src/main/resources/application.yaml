@@ -25,7 +25,7 @@ spring:
 api:
   security:
     token:
-      secret: LinketinderSecretKey
+      secret: ${JWT_SECRET:LinketinderSecretKey}
 
 springdoc:
   api-docs:

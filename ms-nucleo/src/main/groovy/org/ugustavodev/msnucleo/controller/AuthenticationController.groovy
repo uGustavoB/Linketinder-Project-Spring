@@ -135,7 +135,8 @@ class AuthenticationController {
         Authentication autenticacao = gerenciadorAutenticacao.authenticate(tokenAutenticacao)
 
         Usuario usuario = (Usuario) autenticacao.getPrincipal()
-        String tokenJWT = servicoToken.gerarToken(usuario)
+        LoginResponseDTO loginResponseDTO = obterDadosLoginUseCase.executar(usuario)
+        String tokenJWT = servicoToken.gerarToken(usuario, loginResponseDTO.id)
 
         ResponseCookie cookie = ResponseCookie.from("auth_token", tokenJWT)
                 .httpOnly(true)
@@ -143,8 +144,6 @@ class AuthenticationController {
                 .path("/")
                 .maxAge(3600)
                 .build()
-
-        LoginResponseDTO loginResponseDTO = obterDadosLoginUseCase.executar(usuario)
 
         return ResponseEntity.ok()
                 .header(HttpHeaders.SET_COOKIE, cookie.toString())
