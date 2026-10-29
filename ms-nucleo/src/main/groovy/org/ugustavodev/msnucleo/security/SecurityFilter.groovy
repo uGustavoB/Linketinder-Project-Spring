@@ -54,4 +54,5 @@ class SecurityFilter extends OncePerRequestFilter {
         }
         return cabecalhoAutenticacao.replace("Bearer ", "")
     }
+
 }

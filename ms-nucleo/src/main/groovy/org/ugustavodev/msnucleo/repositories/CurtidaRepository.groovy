@@ -4,7 +4,6 @@ import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Query
 import org.springframework.data.repository.query.Param
 import org.ugustavodev.msnucleo.model.Curtida
-import java.util.Optional
 
 interface CurtidaRepository extends JpaRepository<Curtida, Long> {
 

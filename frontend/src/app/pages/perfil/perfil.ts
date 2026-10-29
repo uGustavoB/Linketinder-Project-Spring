@@ -46,6 +46,7 @@ export class Perfil implements OnInit {
   // Formações Acadêmicas
   public formacoesCandidato = signal<Formacao[]>([]);
   public isAddingFormacao = signal(false);
+  public editingFormacaoId = signal<number | null>(null);
 
   public competenciaForm = this.fb.nonNullable.group({
     competenciaId: [0, [Validators.required, Validators.min(1)]],
@@ -289,6 +290,30 @@ export class Perfil implements OnInit {
     });
   }
 
+  protected onEditFormacao(formacao: Formacao): void {
+    this.editingFormacaoId.set(formacao.id);
+    this.formacaoForm.patchValue({
+      instituicao: formacao.instituicao,
+      curso: formacao.curso,
+      nivel: formacao.nivel,
+      status: formacao.status,
+      dataInicio: formacao.dataInicio || '',
+      dataConclusao: formacao.dataConclusao || '',
+    });
+  }
+
+  protected cancelEditFormacao(): void {
+    this.editingFormacaoId.set(null);
+    this.formacaoForm.reset({
+      instituicao: '',
+      curso: '',
+      nivel: 'Graduação',
+      status: 'Em Andamento',
+      dataInicio: '',
+      dataConclusao: '',
+    });
+  }
+
   protected addFormacao(): void {
     if (this.formacaoForm.invalid) {
       this.formacaoForm.markAllAsTouched();
@@ -306,20 +331,35 @@ export class Perfil implements OnInit {
       dataConclusao: val.dataConclusao || null,
     };
 
+    const editId = this.editingFormacaoId();
+    if (editId !== null) {
+      this.candidatoService.atualizarFormacao(editId, payload).subscribe({
+        next: (res) => {
+          const atualizada = res.dados;
+          if (atualizada) {
+            this.formacoesCandidato.update((list) =>
+              list.map((f) => (f.id === editId ? atualizada : f))
+            );
+          }
+          this.cancelEditFormacao();
+          this.isAddingFormacao.set(false);
+          toast.success('Formação acadêmica atualizada!');
+        },
+        error: (err) => {
+          this.isAddingFormacao.set(false);
+          toast.error(err.error?.mensagem || 'Erro ao atualizar formação.');
+        },
+      });
+      return;
+    }
+
     this.candidatoService.adicionarFormacao(payload).subscribe({
       next: (res) => {
         const nova = res.dados;
         if (nova) {
           this.formacoesCandidato.update((list) => [...list, nova]);
         }
-        this.formacaoForm.reset({
-          instituicao: '',
-          curso: '',
-          nivel: 'Graduação',
-          status: 'Em Andamento',
-          dataInicio: '',
-          dataConclusao: '',
-        });
+        this.cancelEditFormacao();
         this.isAddingFormacao.set(false);
         toast.success('Formação acadêmica adicionada!');
       },
@@ -334,6 +374,9 @@ export class Perfil implements OnInit {
     this.candidatoService.removerFormacao(id).subscribe({
       next: () => {
         this.formacoesCandidato.update((list) => list.filter((f) => f.id !== id));
+        if (this.editingFormacaoId() === id) {
+          this.cancelEditFormacao();
+        }
         toast.success('Formação removida!');
       },
       error: (err) => {

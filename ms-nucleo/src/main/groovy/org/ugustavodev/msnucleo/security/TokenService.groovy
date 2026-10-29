@@ -1,6 +1,7 @@
 package org.ugustavodev.msnucleo.security
 
 import com.auth0.jwt.JWT
+import com.auth0.jwt.JWTCreator
 import com.auth0.jwt.algorithms.Algorithm
 import com.auth0.jwt.exceptions.JWTCreationException
 import com.auth0.jwt.exceptions.JWTVerificationException
@@ -19,15 +20,25 @@ class TokenService {
     String chaveSecreta
 
     String gerarToken(Usuario usuario) {
+        return gerarToken(usuario, null)
+    }
+
+    @SuppressWarnings('ThrowRuntimeException')
+    String gerarToken(Usuario usuario, Long perfilId) {
         try {
             Algorithm algoritmo = Algorithm.HMAC256(chaveSecreta)
 
-            return JWT.create()
+            JWTCreator.Builder builder = JWT.create()
                     .withIssuer("ms-nucleo")
                     .withSubject(usuario.email)
                     .withClaim("role", usuario.role.name())
                     .withExpiresAt(gerarDataExpiracao())
-                    .sign(algoritmo)
+
+            if (perfilId != null) {
+                builder.withClaim("perfilId", perfilId)
+            }
+
+            return builder.sign(algoritmo)
         } catch (JWTCreationException excecao) {
             throw new RuntimeException("Erro ao gerar token", excecao)
         }
@@ -50,4 +61,5 @@ class TokenService {
     private static Instant gerarDataExpiracao() {
         return LocalDateTime.now().plusHours(24).toInstant(ZoneOffset.of("-03:00"))
     }
+
 }

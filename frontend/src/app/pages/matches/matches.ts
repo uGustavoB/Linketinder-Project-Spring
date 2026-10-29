@@ -5,10 +5,9 @@ import { ZardButtonComponent } from '@/shared/components/button/button.component
 import { ZardCardImports } from '@/shared/components/card/card.imports';
 import { ZardDialogService } from '@/shared/components/dialog/dialog.service';
 import { toast } from 'ngx-sonner';
-import { forkJoin, of, catchError } from 'rxjs';
 
 import { AuthService } from '@/core/services/auth.service';
-import { VagaService } from '@/core/services/vaga.service';
+import { EmpresaService } from '@/core/services/empresa.service';
 import { CandidatoService } from '@/core/services/candidato.service';
 import { MatchCandidato, MatchEmpresa } from '@/core/models/match.model';
 import { CandidatoProfile } from '@/core/models/candidato.model';
@@ -26,7 +25,7 @@ import { CandidatoCompetenciasDialog } from '../candidatos/components/candidato-
 })
 export class Matches implements OnInit {
   public authService = inject(AuthService);
-  private vagaService = inject(VagaService);
+  private empresaService = inject(EmpresaService);
   private candidatoService = inject(CandidatoService);
   private dialogService = inject(ZardDialogService);
 
@@ -55,47 +54,14 @@ export class Matches implements OnInit {
         },
       });
     } else if (user?.tipoUsuario === 'EMPRESA') {
-      const empresaId = user.id;
-      this.vagaService.getVagas(empresaId).subscribe({
+      this.empresaService.getMatchesDaEmpresa().subscribe({
         next: (res) => {
-          const vagas = res.dados || [];
-          if (vagas.length === 0) {
-            this.matchesEmpresa.set([]);
-            this.isLoading.set(false);
-            return;
-          }
-
-          const requests$ = vagas.map((v) =>
-            this.vagaService.getMatchesDaVaga(v.id).pipe(
-              catchError(() => of({ dados: [] as MatchEmpresa[] }))
-            )
-          );
-
-          forkJoin(requests$).subscribe({
-            next: (results) => {
-              const allMatches: MatchEmpresa[] = [];
-              results.forEach((r, index) => {
-                const list = r?.dados || [];
-                const vaga = vagas[index];
-                list.forEach((item) => {
-                  allMatches.push({
-                    ...item,
-                    vagaId: vaga.id,
-                    vagaNome: vaga.nome,
-                  });
-                });
-              });
-              this.matchesEmpresa.set(allMatches);
-              this.isLoading.set(false);
-            },
-            error: () => {
-              toast.error('Erro ao buscar matches das vagas.');
-              this.isLoading.set(false);
-            },
-          });
+          const dados = res.dados || [];
+          this.matchesEmpresa.set(dados);
+          this.isLoading.set(false);
         },
         error: () => {
-          toast.error('Erro ao carregar vagas da empresa.');
+          toast.error('Erro ao buscar os matches da empresa.');
           this.isLoading.set(false);
         },
       });

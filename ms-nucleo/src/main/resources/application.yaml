@@ -25,4 +25,16 @@ spring:
 api:
   security:
     token:
-      secret: LinketinderSecretKey
+      secret: ${JWT_SECRET:LinketinderSecretKey}
+
+springdoc:
+  api-docs:
+    enabled: true
+    path: /api/v3/api-docs
+  swagger-ui:
+    enabled: true
+    path: /api/docs
+    operations-sorter: method
+    tags-sorter: alpha
+    try-it-out-enabled: true
+    persist-authorization: true

@@ -42,6 +42,15 @@ class SecurityConfigurations {
                         .requestMatchers(HttpMethod.POST, "/api/auth/login").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/candidato").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/empresa").permitAll()
+                        .requestMatchers(
+                                "/api/docs",
+                                "/api/docs/**",
+                                "/api/swagger-ui/**",
+                                "/swagger-ui/**",
+                                "/swagger-ui.html",
+                                "/api/v3/api-docs",
+                                "/api/v3/api-docs/**"
+                        ).permitAll()
                         .anyRequest().authenticated()
                 )
                 .exceptionHandling(excecoes -> excecoes
@@ -74,4 +83,5 @@ class SecurityConfigurations {
         source.registerCorsConfiguration("/**", configuracao)
         return source
     }
+
 }

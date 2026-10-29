@@ -7,13 +7,13 @@ import jakarta.persistence.Table
 import jakarta.persistence.OneToMany
 import jakarta.persistence.CascadeType
 import jakarta.persistence.FetchType
-import org.ugustavodev.msnucleo.dto.request.CandidatoRequestDTO
 
 import java.time.LocalDate
 
 @Entity
 @Table(name = "candidatos")
 class Candidato extends Pessoa {
+
     @Column(nullable = false)
     String sobrenome
 
@@ -40,4 +40,5 @@ class Candidato extends Pessoa {
             this.usuario.senha = senhaCriptografada
         }
     }
+
 }

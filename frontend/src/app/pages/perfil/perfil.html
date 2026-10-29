@@ -202,6 +202,8 @@
                   <label class="text-xs font-medium">Grau / Nível</label>
                   <select formControlName="nivel" class="border-input bg-background flex h-9 w-full rounded-md border px-3 py-1 text-sm focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none">
                     <option value="Graduação">Graduação</option>
+                    <option value="Bacharelado">Bacharelado</option>
+                    <option value="Tecnólogo">Tecnólogo</option>
                     <option value="Pós-Graduação">Pós-Graduação</option>
                     <option value="Mestrado">Mestrado</option>
                     <option value="Doutorado">Doutorado</option>
@@ -230,9 +232,14 @@
                 </div>
               </div>
 
-              <div class="flex justify-end pt-2">
+              <div class="flex justify-end gap-2 pt-2">
+                @if (editingFormacaoId() !== null) {
+                  <button z-button type="button" zType="outline" zSize="sm" (click)="cancelEditFormacao()">
+                    Cancelar
+                  </button>
+                }
                 <button z-button type="submit" zSize="sm" [zDisabled]="formacaoForm.invalid || isAddingFormacao()" [zLoading]="isAddingFormacao()">
-                  Adicionar Formação
+                  {{ editingFormacaoId() !== null ? 'Atualizar Formação' : 'Adicionar Formação' }}
                 </button>
               </div>
             </form>
@@ -243,7 +250,7 @@
               } @else {
                 <div class="space-y-2">
                   @for (formacao of formacoesCandidato(); track formacao.id) {
-                    <div class="flex justify-between items-center p-3 border rounded-md">
+                    <div class="flex justify-between items-center p-3 border rounded-md" [class.border-primary]="editingFormacaoId() === formacao.id">
                       <div>
                         <p class="font-medium text-sm">{{ formacao.curso }} - <span class="text-muted-foreground font-normal">{{ formacao.instituicao }}</span></p>
                         <p class="text-xs text-muted-foreground">
@@ -253,9 +260,14 @@
                           }
                         </p>
                       </div>
-                      <button type="button" class="text-red-500 hover:text-red-700 text-sm font-medium" (click)="removeFormacao(formacao.id)">
-                        Remover
-                      </button>
+                      <div class="flex items-center gap-3">
+                        <button type="button" class="text-primary hover:underline text-sm font-medium" (click)="onEditFormacao(formacao)">
+                          Editar
+                        </button>
+                        <button type="button" class="text-red-500 hover:text-red-700 text-sm font-medium" (click)="removeFormacao(formacao.id)">
+                          Remover
+                        </button>
+                      </div>
                     </div>
                   }
                 </div>

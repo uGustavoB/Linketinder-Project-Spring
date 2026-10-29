@@ -25,6 +25,10 @@ export class CandidatoService {
     return this.http.post<ApiResponse<Formacao>>(`${this.apiUrl}/formacoes`, dados);
   }
 
+  atualizarFormacao(id: number, dados: any): Observable<ApiResponse<Formacao>> {
+    return this.http.put<ApiResponse<Formacao>>(`${this.apiUrl}/formacoes/${id}`, dados);
+  }
+
   removerFormacao(id: number): Observable<ApiResponse<void>> {
     return this.http.delete<ApiResponse<void>>(`${this.apiUrl}/formacoes/${id}`);
   }

@@ -1,2 +1,7 @@
 package org.ugustavodev.mscompetencia.usecase.interfaces
-interface IDesvincularCompetenciaEmpresaUseCase { void executar(Long vinculoId) }
+
+interface IDesvincularCompetenciaEmpresaUseCase {
+
+    void executar(Long vinculoId, Long empresaAutenticadaId)
+
+}

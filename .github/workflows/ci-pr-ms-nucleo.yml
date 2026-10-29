@@ -1,0 +1,130 @@
+name: Validação e Auto-Aprovação de PR (ms-nucleo)
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  test-and-codenarc:
+    name: Testes Unitários e CodeNarc
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ms-nucleo
+
+    steps:
+      - name: Checkout do repositório
+        uses: actions/checkout@v4
+
+      - name: Configurar JDK 21
+        uses: actions/setup-java@v5
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+          cache: 'gradle'
+
+      - name: Garantir permissão de execução no Gradle Wrapper
+        run: chmod +x gradlew
+
+      - name: Executar análise estática com CodeNarc
+        run: ./gradlew codenarcMain codenarcTest
+
+      - name: Executar suíte de testes unitários
+        id: run_tests
+        continue-on-error: true
+        run: ./gradlew test --continue
+
+      - name: Avaliar taxa de aprovação dos testes (mínimo 80%)
+        id: check_rate
+        run: |
+          python3 - << 'EOF'
+          import glob
+          import os
+          import sys
+          import xml.etree.ElementTree as ET
+
+          xml_files = glob.glob("build/test-results/test/TEST-*.xml")
+          if not xml_files:
+              print("::error::Nenhum relatório XML de teste foi encontrado em build/test-results/test/.")
+              sys.exit(1)
+
+          total = 0
+          failures = 0
+          errors = 0
+          skipped = 0
+
+          for xml_file in xml_files:
+              tree = ET.parse(xml_file)
+              root = tree.getroot()
+              suites = [root] if root.tag == "testsuite" else root.findall("testsuite")
+              for suite in suites:
+                  total += int(suite.attrib.get("tests", 0))
+                  failures += int(suite.attrib.get("failures", 0))
+                  errors += int(suite.attrib.get("errors", 0))
+                  skipped += int(suite.attrib.get("skipped", 0))
+
+          if total == 0:
+              print("::error::Nenhum teste foi executado (total = 0).")
+              sys.exit(1)
+
+          passed = total - failures - errors - skipped
+          rate = (passed / total) * 100.0
+          approved = rate >= 80.0
+
+          summary = (
+              f"### Resultado da Validação (`ms-nucleo`)\n"
+              f"- **CodeNarc**: Aprovado (0 violações)\n"
+              f"- **Total de testes**: {total}\n"
+              f"- **Aprovados**: {passed}\n"
+              f"- **Falhas / Erros**: {failures + errors}\n"
+              f"- **Ignorados**: {skipped}\n"
+              f"- **Taxa de aprovação**: **{rate:.2f}%** (mínimo exigido: **80.00%**)\n"
+          )
+          print(summary)
+
+          step_summary_path = os.environ.get("GITHUB_STEP_SUMMARY")
+          if step_summary_path:
+              with open(step_summary_path, "a", encoding="utf-8") as f:
+                  f.write(summary)
+
+          github_output_path = os.environ.get("GITHUB_OUTPUT")
+          if github_output_path:
+              with open(github_output_path, "a", encoding="utf-8") as f:
+                  f.write(f"total={total}\n")
+                  f.write(f"passed={passed}\n")
+                  f.write(f"rate={rate:.2f}\n")
+                  f.write(f"approved={'true' if approved else 'false'}\n")
+
+          if not approved:
+              print(f"::error::Taxa de aprovação ({rate:.2f}%) ficou abaixo do mínimo exigido de 80%.")
+              sys.exit(1)
+          EOF
+
+      - name: Publicar relatórios do CodeNarc e de Testes
+        if: always() && !env.ACT
+        uses: actions/upload-artifact@v4
+        with:
+          name: relatorios-ms-nucleo
+          path: |
+            ms-nucleo/build/reports/codenarc/
+            ms-nucleo/build/reports/tests/
+
+      - name: Aprovar Pull Request automaticamente (>= 80% de aprovação)
+        if: steps.check_rate.outputs.approved == 'true' && github.event_name == 'pull_request'
+        env:
+          GH_TOKEN: ${{ secrets.PAT_TOKEN || secrets.GITHUB_TOKEN }}
+        run: |
+          if [ "$ACT" = "true" ]; then
+            echo "✅ [Simulação Local via act] Pull Request aprovado! Taxa de aprovação: ${{ steps.check_rate.outputs.rate }}% (${{ steps.check_rate.outputs.passed }}/${{ steps.check_rate.outputs.total }} testes)."
+            exit 0
+          fi
+          gh pr review ${{ github.event.pull_request.number }} \
+            --repo ${{ github.repository }} \
+            --approve \
+            --body "✅ **Pull Request aprovado automaticamente pela pipeline!**
+          - **CodeNarc**: Sem violações
+          - **Taxa de aprovação nos testes**: **${{ steps.check_rate.outputs.rate }}%** (${{ steps.check_rate.outputs.passed }}/${{ steps.check_rate.outputs.total }} testes aprovados — mínimo exigido: 80%)"

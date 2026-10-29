@@ -52,7 +52,7 @@ class ExceptionHandlerController {
     }
 
     @ExceptionHandler(AuthenticationException.class)
-    ResponseEntity<ApiResponseDTO<Object>> handleAuthenticationException(AuthenticationException ex) {
+    ResponseEntity<ApiResponseDTO<Object>> handleAuthenticationException(AuthenticationException ignored) {
         ApiResponseDTO<Object> resposta = new ApiResponseDTO<>(
                 codigo: HttpStatus.UNAUTHORIZED.value(),
                 mensagem: "Credenciais inválidas ou usuário não encontrado.",
@@ -62,7 +62,7 @@ class ExceptionHandlerController {
     }
 
     @ExceptionHandler(AccessDeniedException.class)
-    ResponseEntity<ApiResponseDTO<Object>> handleAccessDeniedException(AccessDeniedException ex) {
+    ResponseEntity<ApiResponseDTO<Object>> handleAccessDeniedException(AccessDeniedException ignored) {
         ApiResponseDTO<Object> resposta = new ApiResponseDTO<>(
                 codigo: HttpStatus.FORBIDDEN.value(),
                 mensagem: "Você não tem permissão para acessar este recurso.",
@@ -72,7 +72,7 @@ class ExceptionHandlerController {
     }
 
     @ExceptionHandler(Exception)
-    ResponseEntity<ApiResponseDTO<Object>> handleException(Exception ex) {
+    ResponseEntity<ApiResponseDTO<Object>> handleException(Exception ignored) {
         ApiResponseDTO<Object> resposta = new ApiResponseDTO<>(
                 codigo: HttpStatus.INTERNAL_SERVER_ERROR.value(),
                 mensagem: "Ocorreu um erro interno no servidor.",
@@ -80,4 +80,5 @@ class ExceptionHandlerController {
         )
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(resposta)
     }
+
 }

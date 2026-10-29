@@ -1,6 +1,7 @@
 package org.ugustavodev.msnucleo.domain.enums
 
 enum Role {
+
     CANDIDATO("ROLE_CANDIDATO"),
     EMPRESA("ROLE_EMPRESA")
 
@@ -13,4 +14,5 @@ enum Role {
     String getRole() {
         return role
     }
+
 }

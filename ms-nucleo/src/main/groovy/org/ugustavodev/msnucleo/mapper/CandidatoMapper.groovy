@@ -9,8 +9,6 @@ import org.ugustavodev.msnucleo.dto.response.CandidatoPublicoResponseDTO
 import org.ugustavodev.msnucleo.model.Candidato
 import org.ugustavodev.msnucleo.dto.response.FormacaoResponseDTO
 
-import java.time.LocalDate
-
 @Component
 class CandidatoMapper {
 
@@ -82,4 +80,5 @@ class CandidatoMapper {
         candidato.cep = dto.cep
         return candidato
     }
+
 }

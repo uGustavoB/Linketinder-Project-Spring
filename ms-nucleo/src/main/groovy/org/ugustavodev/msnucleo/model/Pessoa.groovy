@@ -1,6 +1,13 @@
 package org.ugustavodev.msnucleo.model
 
-import jakarta.persistence.*
+import jakarta.persistence.CascadeType
+import jakarta.persistence.Column
+import jakarta.persistence.GeneratedValue
+import jakarta.persistence.GenerationType
+import jakarta.persistence.Id
+import jakarta.persistence.JoinColumn
+import jakarta.persistence.MappedSuperclass
+import jakarta.persistence.OneToOne
 import org.ugustavodev.msnucleo.domain.Usuario
 
 @MappedSuperclass
@@ -28,4 +35,5 @@ class Pessoa {
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "usuario_id", referencedColumnName = "id")
     Usuario usuario
+
 }

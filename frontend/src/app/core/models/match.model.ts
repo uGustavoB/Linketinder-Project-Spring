@@ -21,10 +21,9 @@ export interface MatchCandidato {
 }
 
 export interface MatchEmpresa {
+  vaga: Vaga;
   candidato: CandidatoProfile;
   candidatoNome: string;
   candidatoEmail: string;
   dataMatch: string;
-  vagaId?: number;
-  vagaNome?: string;
 }
