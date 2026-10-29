@@ -55,7 +55,18 @@ class PerfilController {
                                                     "pais": "Brasil",
                                                     "estado": "SP",
                                                     "cep": "01001000",
-                                                    "descricao": "Desenvolvedor Backend com foco em Java, Groovy e Spring Boot."
+                                                    "descricao": "Desenvolvedor Backend com foco em Java, Groovy e Spring Boot.",
+                                                    "formacoes": [
+                                                        {
+                                                            "id": 1,
+                                                            "instituicao": "Universidade de São Paulo (USP)",
+                                                            "curso": "Ciência da Computação",
+                                                            "nivel": "Bacharelado",
+                                                            "status": "Concluído",
+                                                            "dataInicio": "2017-02-01",
+                                                            "dataConclusao": "2020-12-15"
+                                                        }
+                                                    ]
                                                 }
                                             }"""
                                     ),

@@ -36,5 +36,8 @@ record PerfilCandidatoDTO(
         String cep,
 
         @Schema(description = "Resumo profissional do candidato", example = "Desenvolvedor Backend com foco em Java, Groovy e Spring Boot.")
-        String descricao
+        String descricao,
+
+        @Schema(description = "Lista de formações acadêmicas cadastradas pelo candidato")
+        List<FormacaoResponseDTO> formacoes
 ) {}

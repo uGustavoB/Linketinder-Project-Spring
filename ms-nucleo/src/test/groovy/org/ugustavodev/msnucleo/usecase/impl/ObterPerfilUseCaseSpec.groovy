@@ -4,8 +4,10 @@ import org.ugustavodev.msnucleo.domain.Usuario
 import org.ugustavodev.msnucleo.domain.enums.Role
 import org.ugustavodev.msnucleo.dto.response.PerfilCandidatoDTO
 import org.ugustavodev.msnucleo.dto.response.PerfilEmpresaDTO
+import org.ugustavodev.msnucleo.mapper.FormacaoMapper
 import org.ugustavodev.msnucleo.model.Candidato
 import org.ugustavodev.msnucleo.model.Empresa
+import org.ugustavodev.msnucleo.model.Formacao
 import org.ugustavodev.msnucleo.repositories.CandidatoRepository
 import org.ugustavodev.msnucleo.repositories.EmpresaRepository
 import spock.lang.Specification
@@ -17,14 +19,22 @@ class ObterPerfilUseCaseSpec extends Specification {
 
     CandidatoRepository candidatoRepository = Mock(CandidatoRepository)
     EmpresaRepository empresaRepository = Mock(EmpresaRepository)
+    FormacaoMapper formacaoMapper = new FormacaoMapper()
 
     @Subject
-    ObterPerfilUseCase useCase = new ObterPerfilUseCase(candidatoRepository, empresaRepository)
+    ObterPerfilUseCase useCase = new ObterPerfilUseCase(candidatoRepository, empresaRepository, formacaoMapper)
 
     void "Deve retornar PerfilCandidatoDTO quando o usuario autenticado for CANDIDATO"() {
         given: "Um usuario autenticado com papel CANDIDATO"
         LocalDate dataNascimento = LocalDate.of(1998, 5, 15)
         Usuario usuario = new Usuario(id: 1L, email: "joao.silva@email.com", role: Role.CANDIDATO)
+        Formacao formacao = new Formacao(
+                id: 5L,
+                instituicao: "USP",
+                curso: "Ciência da Computação",
+                nivel: "Bacharelado",
+                status: "Concluído"
+        )
         Candidato candidato = new Candidato(
                 id: 10L,
                 nome: "João",
@@ -35,7 +45,8 @@ class ObterPerfilUseCaseSpec extends Specification {
                 estado: "SP",
                 cep: "01001000",
                 descricao: "Desenvolvedor Backend",
-                usuario: usuario
+                usuario: usuario,
+                formacoes: [formacao]
         )
 
         and: "O repositorio de candidatos retorna o candidato"
@@ -58,6 +69,10 @@ class ObterPerfilUseCaseSpec extends Specification {
         perfil.estado == "SP"
         perfil.cep == "01001000"
         perfil.descricao == "Desenvolvedor Backend"
+        perfil.formacoes.size() == 1
+        perfil.formacoes[0].id == 5L
+        perfil.formacoes[0].instituicao == "USP"
+        perfil.formacoes[0].curso == "Ciência da Computação"
     }
 
     void "Deve retornar PerfilEmpresaDTO quando o usuario autenticado for EMPRESA"() {
