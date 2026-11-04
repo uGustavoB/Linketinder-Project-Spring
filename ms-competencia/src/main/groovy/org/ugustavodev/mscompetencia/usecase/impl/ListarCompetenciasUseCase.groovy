@@ -1,5 +1,7 @@
 package org.ugustavodev.mscompetencia.usecase.impl
+
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 import org.ugustavodev.mscompetencia.dto.response.CompetenciaResponseDTO
 import org.ugustavodev.mscompetencia.mapper.CompetenciaMapper
 import org.ugustavodev.mscompetencia.repositories.CompetenciaRepository
@@ -11,10 +13,12 @@ class ListarCompetenciasUseCase implements IListarCompetenciasUseCase {
     private final CompetenciaMapper mapper
 
     ListarCompetenciasUseCase(CompetenciaRepository repository, CompetenciaMapper mapper) {
-        this.repository = repository; this.mapper = mapper
+        this.repository = repository
+        this.mapper = mapper
     }
 
     @Override
+    @Transactional(readOnly = true)
     List<CompetenciaResponseDTO> executar() {
         return repository.findAll().stream().map(mapper::toResponseDTO).toList()
     }

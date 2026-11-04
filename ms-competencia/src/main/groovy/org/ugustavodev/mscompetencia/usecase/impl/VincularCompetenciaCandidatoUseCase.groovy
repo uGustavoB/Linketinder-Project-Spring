@@ -1,7 +1,7 @@
 package org.ugustavodev.mscompetencia.usecase.impl
 
-import jakarta.transaction.Transactional
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 import org.ugustavodev.mscompetencia.dto.request.VincularCompetenciaRequestDTO
 import org.ugustavodev.mscompetencia.dto.response.CompetenciaVinculoResponseDTO
 import org.ugustavodev.mscompetencia.mapper.CompetenciaVinculoMapper
@@ -37,6 +37,18 @@ class VincularCompetenciaCandidatoUseCase implements IVincularCompetenciaCandida
         List<CompetenciaVinculoResponseDTO> result = new ArrayList<>()
 
         for (VincularCompetenciaRequestDTO requestDTO : requestDTOs) {
+            if (requestDTO == null) {
+                throw new IllegalArgumentException("Os dados de vinculação da competência não podem ser nulos.")
+            }
+
+            if (requestDTO.competenciaId == null) {
+                throw new IllegalArgumentException("O ID da competência é obrigatório.")
+            }
+
+            if (requestDTO.nivel == null) {
+                throw new IllegalArgumentException("O nível da competência é obrigatório.")
+            }
+
             Optional<CompetenciaCandidato> vinculoExistente = competenciaCandidatoRepository.findByCandidatoIdAndCompetenciaId(candidatoId, requestDTO.competenciaId)
 
             CompetenciaCandidato vinculo
