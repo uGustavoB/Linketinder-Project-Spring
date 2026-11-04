@@ -12,6 +12,7 @@ import org.ugustavodev.msnucleo.dto.response.EmpresaResponseDTO
 import org.ugustavodev.msnucleo.mapper.EmpresaMapper
 import org.ugustavodev.msnucleo.model.Empresa
 import org.ugustavodev.msnucleo.repositories.EmpresaRepository
+import org.ugustavodev.msnucleo.repositories.UsuarioRepository
 import spock.lang.Specification
 import spock.lang.Subject
 
@@ -20,9 +21,15 @@ class AtualizarEmpresaUseCaseSpec extends Specification {
     EmpresaRepository empresaRepository = Mock(EmpresaRepository)
     PasswordEncoder passwordEncoder = Mock(PasswordEncoder)
     EmpresaMapper empresaMapper = Mock(EmpresaMapper)
+    UsuarioRepository usuarioRepository = Mock(UsuarioRepository)
 
     @Subject
-    AtualizarEmpresaUseCase useCase = new AtualizarEmpresaUseCase(empresaRepository, passwordEncoder, empresaMapper)
+    AtualizarEmpresaUseCase useCase = new AtualizarEmpresaUseCase(
+            empresaRepository,
+            passwordEncoder,
+            empresaMapper,
+            usuarioRepository
+    )
 
     void cleanup() {
         SecurityContextHolder.clearContext()
@@ -75,6 +82,29 @@ class AtualizarEmpresaUseCaseSpec extends Specification {
         then: "Lanca AccessDeniedException"
         AccessDeniedException ex = thrown(AccessDeniedException)
         ex.message == "Você não tem permissão para modificar o perfil de outra empresa."
+    }
+
+    void "Deve lancar excecao quando o novo email ja pertencer a um candidato"() {
+        given: "Uma empresa tentando alterar o email para um ja utilizado por um candidato"
+        Long id = 1L
+        Empresa empresaExistente = new Empresa(
+                id: id,
+                cnpj: "12345678000199",
+                usuario: new Usuario(id: 10L, email: "rh@empresa1.com", role: Role.EMPRESA)
+        )
+        Usuario usuarioCandidato = new Usuario(id: 20L, email: "candidato@email.com", role: Role.CANDIDATO)
+        EmpresaRequestDTO request = new EmpresaRequestDTO(email: "candidato@email.com", cnpj: "12345678000199")
+
+        1 * empresaRepository.findById(id) >> Optional.of(empresaExistente)
+        1 * empresaRepository.findByUsuarioEmail("candidato@email.com") >> Optional.empty()
+        1 * usuarioRepository.findByEmail("candidato@email.com") >> Optional.of(usuarioCandidato)
+
+        when: "Executa a atualizacao"
+        useCase.executar(id, request)
+
+        then: "Lanca IllegalArgumentException"
+        IllegalArgumentException ex = thrown(IllegalArgumentException)
+        ex.message == "Já existe outro usuário cadastrado com o email informado"
     }
 
     void "Deve lancar excecao quando o novo CNPJ ja pertencer a outra empresa"() {

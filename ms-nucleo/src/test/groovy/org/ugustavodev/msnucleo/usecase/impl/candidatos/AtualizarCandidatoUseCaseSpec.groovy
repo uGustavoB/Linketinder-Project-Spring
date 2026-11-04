@@ -12,6 +12,7 @@ import org.ugustavodev.msnucleo.dto.response.CandidatoResponseDTO
 import org.ugustavodev.msnucleo.mapper.CandidatoMapper
 import org.ugustavodev.msnucleo.model.Candidato
 import org.ugustavodev.msnucleo.repositories.CandidatoRepository
+import org.ugustavodev.msnucleo.repositories.UsuarioRepository
 import spock.lang.Specification
 import spock.lang.Subject
 
@@ -22,9 +23,15 @@ class AtualizarCandidatoUseCaseSpec extends Specification {
     CandidatoRepository candidatoRepository = Mock(CandidatoRepository)
     PasswordEncoder passwordEncoder = Mock(PasswordEncoder)
     CandidatoMapper candidatoMapper = Mock(CandidatoMapper)
+    UsuarioRepository usuarioRepository = Mock(UsuarioRepository)
 
     @Subject
-    AtualizarCandidatoUseCase useCase = new AtualizarCandidatoUseCase(candidatoRepository, passwordEncoder, candidatoMapper)
+    AtualizarCandidatoUseCase useCase = new AtualizarCandidatoUseCase(
+            candidatoRepository,
+            passwordEncoder,
+            candidatoMapper,
+            usuarioRepository
+    )
 
     void cleanup() {
         SecurityContextHolder.clearContext()
@@ -113,6 +120,29 @@ class AtualizarCandidatoUseCaseSpec extends Specification {
         then: "Lanca IllegalArgumentException"
         IllegalArgumentException ex = thrown(IllegalArgumentException)
         ex.message == "Já existe outro candidato cadastrado com o email informado"
+    }
+
+    void "Deve lancar excecao quando o novo email ja pertencer a uma empresa"() {
+        given: "Um candidato tentando alterar o email para um ja utilizado por uma empresa"
+        Long id = 1L
+        Candidato candidatoExistente = new Candidato(
+                id: id,
+                cpf: "12345678901",
+                usuario: new Usuario(id: 10L, email: "joao@email.com", role: Role.CANDIDATO)
+        )
+        Usuario usuarioEmpresa = new Usuario(id: 20L, email: "contato@empresa.com", role: Role.EMPRESA)
+        CandidatoRequestDTO request = new CandidatoRequestDTO(email: "contato@empresa.com", cpf: "12345678901")
+
+        1 * candidatoRepository.findById(id) >> Optional.of(candidatoExistente)
+        1 * candidatoRepository.findByUsuarioEmail("contato@empresa.com") >> Optional.empty()
+        1 * usuarioRepository.findByEmail("contato@empresa.com") >> Optional.of(usuarioEmpresa)
+
+        when: "Executa a atualizacao"
+        useCase.executar(id, request)
+
+        then: "Lanca IllegalArgumentException"
+        IllegalArgumentException ex = thrown(IllegalArgumentException)
+        ex.message == "Já existe outro usuário cadastrado com o email informado"
     }
 
     void "Deve atualizar os dados e a senha do candidato com sucesso"() {
