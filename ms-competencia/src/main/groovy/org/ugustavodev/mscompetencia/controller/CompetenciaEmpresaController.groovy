@@ -13,6 +13,7 @@ import org.springframework.http.ResponseEntity
 import org.springframework.security.access.AccessDeniedException
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.security.core.annotation.AuthenticationPrincipal
+import org.springframework.validation.annotation.Validated
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
@@ -28,6 +29,7 @@ import org.ugustavodev.mscompetencia.usecase.interfaces.IDesvincularCompetenciaE
 import org.ugustavodev.mscompetencia.usecase.interfaces.IListarCompetenciasEmpresaUseCase
 import org.ugustavodev.mscompetencia.usecase.interfaces.IVincularCompetenciaEmpresaUseCase
 
+@Validated
 @RestController
 @RequestMapping("/api/competencias/empresa")
 @Tag(name = "3. Competências da Empresa", description = "Vinculação em lote, listagem e remoção de competências associadas ao perfil de empresas")

@@ -11,6 +11,7 @@ import jakarta.validation.Valid
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.security.access.prepost.PreAuthorize
+import org.springframework.validation.annotation.Validated
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
@@ -25,6 +26,7 @@ import org.ugustavodev.mscompetencia.usecase.interfaces.IDesvincularCompetenciaV
 import org.ugustavodev.mscompetencia.usecase.interfaces.IListarCompetenciasVagaUseCase
 import org.ugustavodev.mscompetencia.usecase.interfaces.IVincularCompetenciaVagaUseCase
 
+@Validated
 @RestController
 @RequestMapping("/api/competencias/vaga")
 @Tag(name = "4. Competências da Vaga", description = "Vinculação em lote, listagem e remoção de competências exigidas em vagas de emprego")
