@@ -1,6 +1,7 @@
 package org.ugustavodev.msnucleo.usecase.impl.formacao
 
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 import org.ugustavodev.msnucleo.dto.request.FormacaoRequestDTO
 import org.ugustavodev.msnucleo.dto.response.FormacaoResponseDTO
 import org.ugustavodev.msnucleo.mapper.FormacaoMapper
@@ -20,7 +21,11 @@ class AtualizarFormacaoUseCase implements IAtualizarFormacaoUseCase {
     }
 
     @Override
+    @Transactional
     FormacaoResponseDTO executar(Long id, FormacaoRequestDTO requestDTO, Long candidatoId) {
+        if (id == null) {
+            throw new IllegalArgumentException("O ID da formação não pode ser nulo.")
+        }
         if (requestDTO == null) {
             throw new IllegalArgumentException("O objeto FormacaoRequestDTO não pode ser nulo.")
         }

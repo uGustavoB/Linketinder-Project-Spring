@@ -1,6 +1,7 @@
 package org.ugustavodev.msnucleo.usecase.impl.formacao
 
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 import org.ugustavodev.msnucleo.model.Formacao
 import org.ugustavodev.msnucleo.repositories.FormacaoRepository
 import org.ugustavodev.msnucleo.usecase.interfaces.formacao.IDeletarFormacaoUseCase
@@ -15,7 +16,12 @@ class DeletarFormacaoUseCase implements IDeletarFormacaoUseCase {
     }
 
     @Override
+    @Transactional
     void executar(Long id, Long candidatoId) {
+        if (id == null) {
+            throw new IllegalArgumentException("O ID da formação não pode ser nulo.")
+        }
+
         Formacao formacaoExistente = formacaoRepository.findById(id)
                 .orElseThrow { new NoSuchElementException("Formação não encontrada para o ID: ${id}") }
 

@@ -1,6 +1,8 @@
 package org.ugustavodev.msnucleo.usecase.impl.candidatos
 
+import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 import org.ugustavodev.msnucleo.dto.request.CandidatoRequestDTO
 import org.ugustavodev.msnucleo.dto.response.CandidatoResponseDTO
 import org.ugustavodev.msnucleo.mapper.CandidatoMapper
@@ -8,8 +10,6 @@ import org.ugustavodev.msnucleo.model.Candidato
 import org.ugustavodev.msnucleo.repositories.CandidatoRepository
 import org.ugustavodev.msnucleo.repositories.UsuarioRepository
 import org.ugustavodev.msnucleo.usecase.interfaces.candidatos.ICadastrarCandidatoUseCase
-
-import org.springframework.security.crypto.password.PasswordEncoder
 
 @Service
 class CadastrarCandidatoUseCase implements ICadastrarCandidatoUseCase {
@@ -27,6 +27,7 @@ class CadastrarCandidatoUseCase implements ICadastrarCandidatoUseCase {
     }
 
     @Override
+    @Transactional
     CandidatoResponseDTO executar(CandidatoRequestDTO requestDTO) {
         if (requestDTO == null) {
             throw new IllegalArgumentException("O objeto CandidatoRequestDTO não pode ser nulo.")
@@ -46,7 +47,7 @@ class CadastrarCandidatoUseCase implements ICadastrarCandidatoUseCase {
 
         Candidato candidato = candidatoMapper.fromRequestDTOToEntity(requestDTO)
         candidato.usuario.senha = codificadorSenha.encode(candidato.usuario.senha)
-        
+
         Candidato savedCandidato = candidatoRepository.save(candidato)
         return candidatoMapper.toResponseDTO(savedCandidato)
     }

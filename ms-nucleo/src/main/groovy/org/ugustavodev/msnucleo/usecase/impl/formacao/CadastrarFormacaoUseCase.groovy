@@ -1,6 +1,7 @@
 package org.ugustavodev.msnucleo.usecase.impl.formacao
 
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 import org.ugustavodev.msnucleo.dto.request.FormacaoRequestDTO
 import org.ugustavodev.msnucleo.dto.response.FormacaoResponseDTO
 import org.ugustavodev.msnucleo.mapper.FormacaoMapper
@@ -24,9 +25,13 @@ class CadastrarFormacaoUseCase implements ICadastrarFormacaoUseCase {
     }
 
     @Override
+    @Transactional
     FormacaoResponseDTO executar(FormacaoRequestDTO requestDTO, Long candidatoId) {
         if (requestDTO == null) {
             throw new IllegalArgumentException("O objeto FormacaoRequestDTO não pode ser nulo.")
+        }
+        if (candidatoId == null) {
+            throw new IllegalArgumentException("O ID do candidato não pode ser nulo.")
         }
 
         Candidato candidato = candidatoRepository.findById(candidatoId)
@@ -34,7 +39,7 @@ class CadastrarFormacaoUseCase implements ICadastrarFormacaoUseCase {
 
         Formacao formacao = formacaoMapper.fromRequestDTOToEntity(requestDTO, candidato)
         Formacao savedFormacao = formacaoRepository.save(formacao)
-        
+
         return formacaoMapper.toResponseDTO(savedFormacao)
     }
 

@@ -1,6 +1,7 @@
 package org.ugustavodev.msnucleo.usecase.impl.matches
 
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 import org.ugustavodev.msnucleo.dto.response.MatchEmpresaResponseDTO
 import org.ugustavodev.msnucleo.mapper.CandidatoMapper
 import org.ugustavodev.msnucleo.mapper.VagaMapper
@@ -25,6 +26,7 @@ class ListarMatchesEmpresaUseCase implements IListarMatchesEmpresaUseCase {
     }
 
     @Override
+    @Transactional(readOnly = true)
     List<MatchEmpresaResponseDTO> executar(Long idEmpresa) {
         if (idEmpresa == null) {
             throw new IllegalArgumentException("O ID da empresa não pode ser nulo.")

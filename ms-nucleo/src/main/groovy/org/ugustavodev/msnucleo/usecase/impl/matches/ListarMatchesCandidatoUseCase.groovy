@@ -1,6 +1,7 @@
 package org.ugustavodev.msnucleo.usecase.impl.matches
 
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 import org.ugustavodev.msnucleo.dto.response.MatchCandidatoResponseDTO
 import org.ugustavodev.msnucleo.mapper.VagaMapper
 import org.ugustavodev.msnucleo.model.Curtida
@@ -19,6 +20,7 @@ class ListarMatchesCandidatoUseCase implements IListarMatchesCandidatoUseCase {
     }
 
     @Override
+    @Transactional(readOnly = true)
     List<MatchCandidatoResponseDTO> executar(Long idCandidato) {
         if (idCandidato == null) {
             throw new IllegalArgumentException("O ID do candidato não pode ser nulo.")

@@ -2,6 +2,7 @@ package org.ugustavodev.msnucleo.usecase.impl.vagas
 
 import org.springframework.security.access.AccessDeniedException
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 import org.ugustavodev.msnucleo.dto.request.VagaRequestDTO
 import org.ugustavodev.msnucleo.dto.response.VagaResponseDTO
 import org.ugustavodev.msnucleo.mapper.VagaMapper
@@ -24,6 +25,7 @@ class AtualizarVagaUseCase implements IAtualizarVagaUseCase {
     }
 
     @Override
+    @Transactional
     VagaResponseDTO executar(Long id, VagaRequestDTO requestDTO, Long empresaId) {
         if (id == null) {
             throw new IllegalArgumentException("O ID da vaga não pode ser nulo.")
