@@ -29,6 +29,7 @@ import org.ugustavodev.msnucleo.dto.response.MatchEmpresaResponseDTO
 import org.ugustavodev.msnucleo.dto.ApiResponseDTO
 import org.ugustavodev.msnucleo.model.Empresa
 import org.ugustavodev.msnucleo.repositories.EmpresaRepository
+import org.ugustavodev.msnucleo.security.RenovarSessao
 import org.ugustavodev.msnucleo.usecase.interfaces.empresas.IAtualizarEmpresaUseCase
 import org.ugustavodev.msnucleo.usecase.interfaces.empresas.IBuscarEmpresaPorIdUseCase
 import org.ugustavodev.msnucleo.usecase.interfaces.empresas.ICadastrarEmpresaUseCase
@@ -400,6 +401,7 @@ class EmpresaController {
                     )
             )
     ])
+    @RenovarSessao
     @PutMapping("/{id}")
     ResponseEntity<ApiResponseDTO<EmpresaResponseDTO>> atualizarEmpresa(
             @Parameter(description = "ID da empresa", example = "1") @PathVariable("id") Long id,

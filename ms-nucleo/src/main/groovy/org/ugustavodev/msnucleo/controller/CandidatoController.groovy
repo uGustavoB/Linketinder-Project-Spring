@@ -29,6 +29,7 @@ import org.ugustavodev.msnucleo.dto.response.MatchCandidatoResponseDTO
 import org.ugustavodev.msnucleo.dto.ApiResponseDTO
 import org.ugustavodev.msnucleo.model.Candidato
 import org.ugustavodev.msnucleo.repositories.CandidatoRepository
+import org.ugustavodev.msnucleo.security.RenovarSessao
 import org.ugustavodev.msnucleo.usecase.interfaces.candidatos.IAtualizarCandidatoUseCase
 import org.ugustavodev.msnucleo.usecase.interfaces.candidatos.IBuscarCandidatoPorIdUseCase
 import org.ugustavodev.msnucleo.usecase.interfaces.candidatos.ICadastrarCandidatoUseCase
@@ -431,6 +432,7 @@ class CandidatoController {
                     )
             )
     ])
+    @RenovarSessao
     @PutMapping("/{id}")
     ResponseEntity<ApiResponseDTO<CandidatoResponseDTO>> atualizarCandidato(
             @Parameter(description = "ID do candidato", example = "1") @PathVariable("id") Long id,
