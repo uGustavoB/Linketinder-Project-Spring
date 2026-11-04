@@ -167,6 +167,11 @@ export class Perfil implements OnInit {
     request$.subscribe({
       next: (res: any) => {
         toast.success(res.mensagem || 'Perfil atualizado com sucesso!');
+        this.authService.updateUserData({
+          email: dados['email'] ?? user.email,
+          nome: dados['nome'] ?? user.nome,
+          sobrenome: isCandidato ? (dados['sobrenome'] ?? user.sobrenome) : null,
+        });
         this.isLoading.set(false);
       },
       error: (err: any) => {
