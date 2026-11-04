@@ -1,12 +1,18 @@
 package org.ugustavodev.msnucleo.exception.handler
 
+import org.springframework.dao.DataIntegrityViolationException
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import org.springframework.http.converter.HttpMessageNotReadableException
 import org.springframework.security.access.AccessDeniedException
 import org.springframework.security.core.AuthenticationException
+import org.springframework.web.HttpRequestMethodNotSupportedException
 import org.springframework.web.bind.MethodArgumentNotValidException
+import org.springframework.web.bind.MissingServletRequestParameterException
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.RestControllerAdvice
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException
+import org.springframework.web.servlet.resource.NoResourceFoundException
 import org.ugustavodev.msnucleo.dto.ApiResponseDTO
 import org.ugustavodev.msnucleo.dto.exception.UnprocessableEntityExceptionDTO
 
@@ -41,14 +47,58 @@ class ExceptionHandlerController {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(resposta)
     }
 
-    @ExceptionHandler(IllegalArgumentException)
-    ResponseEntity<ApiResponseDTO<Object>> handleIllegalArgumentException(IllegalArgumentException ex) {
+    @ExceptionHandler([IllegalArgumentException, IllegalStateException])
+    ResponseEntity<ApiResponseDTO<Object>> handleBadRequestExceptions(RuntimeException ex) {
         ApiResponseDTO<Object> resposta = new ApiResponseDTO<>(
                 codigo: HttpStatus.BAD_REQUEST.value(),
                 mensagem: ex.message,
                 tipo: "Requisição Inválida"
         )
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(resposta)
+    }
+
+    @ExceptionHandler([
+            HttpMessageNotReadableException,
+            MethodArgumentTypeMismatchException,
+            MissingServletRequestParameterException
+    ])
+    ResponseEntity<ApiResponseDTO<Object>> handleInvalidRequestFormat(Exception ignored) {
+        ApiResponseDTO<Object> resposta = new ApiResponseDTO<>(
+                codigo: HttpStatus.BAD_REQUEST.value(),
+                mensagem: "Formato da requisição inválido ou parâmetro incompatível.",
+                tipo: "Requisição Inválida"
+        )
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(resposta)
+    }
+
+    @ExceptionHandler(HttpRequestMethodNotSupportedException)
+    ResponseEntity<ApiResponseDTO<Object>> handleMethodNotSupported(HttpRequestMethodNotSupportedException ignored) {
+        ApiResponseDTO<Object> resposta = new ApiResponseDTO<>(
+                codigo: HttpStatus.METHOD_NOT_ALLOWED.value(),
+                mensagem: "Método HTTP não suportado para este endpoint.",
+                tipo: "Método Não Permitido"
+        )
+        return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED).body(resposta)
+    }
+
+    @ExceptionHandler(NoResourceFoundException)
+    ResponseEntity<ApiResponseDTO<Object>> handleNoResourceFoundException(NoResourceFoundException ignored) {
+        ApiResponseDTO<Object> resposta = new ApiResponseDTO<>(
+                codigo: HttpStatus.NOT_FOUND.value(),
+                mensagem: "Recurso ou rota não encontrada.",
+                tipo: "Recurso Não Encontrado"
+        )
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(resposta)
+    }
+
+    @ExceptionHandler(DataIntegrityViolationException)
+    ResponseEntity<ApiResponseDTO<Object>> handleDataIntegrityViolationException(DataIntegrityViolationException ignored) {
+        ApiResponseDTO<Object> resposta = new ApiResponseDTO<>(
+                codigo: HttpStatus.CONFLICT.value(),
+                mensagem: "Conflito de integridade de dados. O registro já existe ou viola restrições.",
+                tipo: "Conflito"
+        )
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(resposta)
     }
 
     @ExceptionHandler(AuthenticationException.class)
