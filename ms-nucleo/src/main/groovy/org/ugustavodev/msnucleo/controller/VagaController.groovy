@@ -193,7 +193,7 @@ class VagaController {
             @Parameter(hidden = true) @AuthenticationPrincipal Usuario usuarioAutenticado
     ) {
         Empresa empresa = empresaRepository.findByUsuarioEmail(usuarioAutenticado.getUsername())
-                .orElseThrow { new RuntimeException("Empresa não encontrada") }
+                .orElseThrow { new NoSuchElementException("Empresa não encontrada") }
         
         VagaResponseDTO responseDTO = cadastrarVagaUseCase.executar(requestDTO, empresa.getId())
         return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponseDTO.sucesso(responseDTO, "Vaga cadastrada com sucesso", HttpStatus.CREATED.value()))
@@ -448,7 +448,7 @@ class VagaController {
             @Parameter(hidden = true) @AuthenticationPrincipal Usuario usuarioAutenticado
     ) {
         Empresa empresa = empresaRepository.findByUsuarioEmail(usuarioAutenticado.getUsername())
-                .orElseThrow { new RuntimeException("Empresa não encontrada") }
+                .orElseThrow { new NoSuchElementException("Empresa não encontrada") }
                 
         VagaResponseDTO responseDTO = atualizarVagaUseCase.executar(id, requestDTO, empresa.getId())
         return ResponseEntity.ok(ApiResponseDTO.sucesso(responseDTO, "Vaga atualizada com sucesso"))
@@ -542,7 +542,7 @@ class VagaController {
             @Parameter(hidden = true) @AuthenticationPrincipal Usuario usuarioAutenticado
     ) {
         Empresa empresa = empresaRepository.findByUsuarioEmail(usuarioAutenticado.getUsername())
-                .orElseThrow { new RuntimeException("Empresa não encontrada") }
+                .orElseThrow { new NoSuchElementException("Empresa não encontrada") }
 
         deletarVagaUseCase.executar(id, empresa.getId())
         return ResponseEntity.ok(ApiResponseDTO.sucesso("Vaga deletada com sucesso", HttpStatus.OK.value()))
@@ -649,7 +649,7 @@ class VagaController {
             @Parameter(hidden = true) @AuthenticationPrincipal Usuario usuarioAutenticado
     ) {
         Candidato candidato = candidatoRepository.findByUsuarioEmail(usuarioAutenticado.getUsername())
-                .orElseThrow { new RuntimeException("Candidato não encontrado") }
+                .orElseThrow { new NoSuchElementException("Candidato não encontrado") }
         Long idCandidato = candidato.getId()
 
         CurtidaResponseDTO curtidaResponse = candidatoCurteVagaUseCase.executar(idCandidato, idVaga)
@@ -729,7 +729,7 @@ class VagaController {
             @Parameter(hidden = true) @AuthenticationPrincipal Usuario usuarioAutenticado
     ) {
         Candidato candidato = candidatoRepository.findByUsuarioEmail(usuarioAutenticado.getUsername())
-                .orElseThrow { new RuntimeException("Candidato não encontrado") }
+                .orElseThrow { new NoSuchElementException("Candidato não encontrado") }
         Long idCandidato = candidato.getId()
 
         candidatoDescurteVagaUseCase.executar(idCandidato, idVaga)
@@ -839,7 +839,7 @@ class VagaController {
             @Parameter(hidden = true) @AuthenticationPrincipal Usuario usuarioAutenticado
     ) {
         Empresa empresa = empresaRepository.findByUsuarioEmail(usuarioAutenticado.getUsername())
-                .orElseThrow { new RuntimeException("Empresa não encontrada") }
+                .orElseThrow { new NoSuchElementException("Empresa não encontrada") }
         Long idEmpresa = empresa.getId()
 
         CurtidaResponseDTO curtidaResponse = empresaCurteCandidatoUseCase.executar(idEmpresa, idCandidato, idVaga)
@@ -920,7 +920,7 @@ class VagaController {
             @Parameter(hidden = true) @AuthenticationPrincipal Usuario usuarioAutenticado
     ) {
         Empresa empresa = empresaRepository.findByUsuarioEmail(usuarioAutenticado.getUsername())
-                .orElseThrow { new RuntimeException("Empresa não encontrada") }
+                .orElseThrow { new NoSuchElementException("Empresa não encontrada") }
         Long idEmpresa = empresa.getId()
 
         empresaDescurteCandidatoUseCase.executar(idEmpresa, idCandidato, idVaga)
@@ -1025,7 +1025,7 @@ class VagaController {
             @Parameter(hidden = true) @AuthenticationPrincipal Usuario usuarioAutenticado
     ) {
         Empresa empresa = empresaRepository.findByUsuarioEmail(usuarioAutenticado.getUsername())
-                .orElseThrow { new RuntimeException("Empresa não encontrada") }
+                .orElseThrow { new NoSuchElementException("Empresa não encontrada") }
         Long idEmpresa = empresa.getId()
         
         List<MatchVagaResponseDTO> matches = listarMatchesVagaUseCase.executar(idVaga, idEmpresa)
@@ -1099,7 +1099,7 @@ class VagaController {
             @Parameter(hidden = true) @AuthenticationPrincipal Usuario usuarioAutenticado
     ) {
         Candidato candidato = candidatoRepository.findByUsuarioEmail(usuarioAutenticado.getUsername())
-                .orElseThrow { new RuntimeException("Candidato não encontrado") }
+                .orElseThrow { new NoSuchElementException("Candidato não encontrado") }
         
         List<VagaPublicoResponseDTO> vagas = listarVagasSugeridasUseCase.executar(candidato.getId())
         return ResponseEntity.ok(ApiResponseDTO.sucesso(vagas))
@@ -1197,7 +1197,7 @@ class VagaController {
             @Parameter(hidden = true) @AuthenticationPrincipal Usuario usuarioAutenticado
     ) {
         Empresa empresa = empresaRepository.findByUsuarioEmail(usuarioAutenticado.getUsername())
-                .orElseThrow { new RuntimeException("Empresa não encontrada") }
+                .orElseThrow { new NoSuchElementException("Empresa não encontrada") }
         
         List<CandidatoPublicoResponseDTO> candidatos = listarCandidatosSugeridosUseCase.executar(idVaga, empresa.getId())
         return ResponseEntity.ok(ApiResponseDTO.sucesso(candidatos))
@@ -1295,7 +1295,7 @@ class VagaController {
             @Parameter(hidden = true) @AuthenticationPrincipal Usuario usuarioAutenticado
     ) {
         Empresa empresa = empresaRepository.findByUsuarioEmail(usuarioAutenticado.getUsername())
-                .orElseThrow { new RuntimeException("Empresa não encontrada") }
+                .orElseThrow { new NoSuchElementException("Empresa não encontrada") }
         
         List<CandidatoPublicoResponseDTO> candidatos = listarCandidatosInteressadosUseCase.executar(idVaga, empresa.getId())
         return ResponseEntity.ok(ApiResponseDTO.sucesso(candidatos))

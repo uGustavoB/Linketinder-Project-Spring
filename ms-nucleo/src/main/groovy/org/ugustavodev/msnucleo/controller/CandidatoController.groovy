@@ -590,7 +590,7 @@ class CandidatoController {
             @Parameter(hidden = true) @AuthenticationPrincipal Usuario usuarioAutenticado
     ) {
         Candidato candidato = candidatoRepository.findByUsuarioEmail(usuarioAutenticado.getUsername())
-                .orElseThrow { new RuntimeException("Candidato não encontrado") }
+                .orElseThrow { new NoSuchElementException("Candidato não encontrado") }
         Long idCandidato = candidato.getId()
         
         List<MatchCandidatoResponseDTO> matches = listarMatchesCandidatoUseCase.executar(idCandidato)

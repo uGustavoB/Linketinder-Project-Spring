@@ -573,7 +573,7 @@ class EmpresaController {
             @Parameter(hidden = true) @AuthenticationPrincipal Usuario usuarioAutenticado
     ) {
         Empresa empresa = empresaRepository.findByUsuarioEmail(usuarioAutenticado.getUsername())
-                .orElseThrow { new RuntimeException("Empresa não encontrada") }
+                .orElseThrow { new NoSuchElementException("Empresa não encontrada") }
         Long idEmpresa = empresa.getId()
 
         List<MatchEmpresaResponseDTO> matches = listarMatchesEmpresaUseCase.executar(idEmpresa)
