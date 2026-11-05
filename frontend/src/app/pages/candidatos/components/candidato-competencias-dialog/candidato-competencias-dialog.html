@@ -33,7 +33,7 @@
               <span>•</span>
               <span>
                 {{ formacao.dataInicio ? (formacao.dataInicio | date:'yyyy') : '' }} 
-                {{ formacao.dataConclusao ? '- ' + (formacao.dataConclusao | date:'yyyy') : (formacao.status === 'Cursando' ? '- o momento' : '') }}
+                {{ formacao.dataConclusao ? '- ' + (formacao.dataConclusao | date:'yyyy') : ((formacao.status === 'Em Andamento' || formacao.status === 'Cursando') ? '- o momento' : '') }}
               </span>
             </div>
           </div>
