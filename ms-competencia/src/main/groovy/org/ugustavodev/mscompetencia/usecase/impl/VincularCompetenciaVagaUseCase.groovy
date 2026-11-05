@@ -1,5 +1,6 @@
 package org.ugustavodev.mscompetencia.usecase.impl
 
+import org.springframework.security.access.AccessDeniedException
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import org.ugustavodev.mscompetencia.dto.request.VincularCompetenciaVagaRequestDTO
@@ -25,12 +26,20 @@ class VincularCompetenciaVagaUseCase implements IVincularCompetenciaVagaUseCase 
 
     @Override
     @Transactional
-    List<CompetenciaVagaVinculoResponseDTO> executar(Long vagaId, List<VincularCompetenciaVagaRequestDTO> requestDTOs) {
+    List<CompetenciaVagaVinculoResponseDTO> executar(Long vagaId, Long empresaId, List<VincularCompetenciaVagaRequestDTO> requestDTOs) {
         if (vagaId == null) {
             throw new IllegalArgumentException("O ID da vaga não pode ser nulo.")
         }
+        if (empresaId == null) {
+            throw new AccessDeniedException("Você não tem permissão para vincular competências a esta vaga.")
+        }
         if (requestDTOs == null) {
             return Collections.emptyList()
+        }
+
+        List<CompetenciaVaga> vinculosExistentes = repository.findByVagaId(vagaId)
+        if (!vinculosExistentes.isEmpty() && vinculosExistentes[0].empresaId != null && vinculosExistentes[0].empresaId != empresaId) {
+            throw new AccessDeniedException("Você não tem permissão para alterar as competências de uma vaga de outra empresa.")
         }
 
         List<CompetenciaVagaVinculoResponseDTO> result = new ArrayList<>()
@@ -53,6 +62,7 @@ class VincularCompetenciaVagaUseCase implements IVincularCompetenciaVagaUseCase 
 
             CompetenciaVaga vinculo = new CompetenciaVaga()
             vinculo.vagaId = vagaId
+            vinculo.empresaId = empresaId
             vinculo.competencia = competencia
 
             vinculo = repository.save(vinculo)

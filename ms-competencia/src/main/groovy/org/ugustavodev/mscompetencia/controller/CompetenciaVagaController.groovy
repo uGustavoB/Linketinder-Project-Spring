@@ -10,7 +10,9 @@ import io.swagger.v3.oas.annotations.tags.Tag
 import jakarta.validation.Valid
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import org.springframework.security.access.AccessDeniedException
 import org.springframework.security.access.prepost.PreAuthorize
+import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.validation.annotation.Validated
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
@@ -22,6 +24,7 @@ import org.springframework.web.bind.annotation.RestController
 import org.ugustavodev.mscompetencia.dto.ApiResponseDTO
 import org.ugustavodev.mscompetencia.dto.request.VincularCompetenciaVagaRequestDTO
 import org.ugustavodev.mscompetencia.dto.response.CompetenciaVagaVinculoResponseDTO
+import org.ugustavodev.mscompetencia.security.UsuarioAutenticado
 import org.ugustavodev.mscompetencia.usecase.interfaces.IDesvincularCompetenciaVagaUseCase
 import org.ugustavodev.mscompetencia.usecase.interfaces.IListarCompetenciasVagaUseCase
 import org.ugustavodev.mscompetencia.usecase.interfaces.IVincularCompetenciaVagaUseCase
@@ -157,9 +160,13 @@ class CompetenciaVagaController {
     @PreAuthorize("hasRole('EMPRESA')")
     ResponseEntity<ApiResponseDTO<List<CompetenciaVagaVinculoResponseDTO>>> vincularCompetencia(
             @Parameter(description = "ID da vaga de emprego", example = "5") @PathVariable("vagaId") Long vagaId,
-            @Valid @RequestBody List<VincularCompetenciaVagaRequestDTO> requestDTOs
+            @Valid @RequestBody List<VincularCompetenciaVagaRequestDTO> requestDTOs,
+            @Parameter(hidden = true) @AuthenticationPrincipal UsuarioAutenticado usuarioAutenticado
     ) {
-        List<CompetenciaVagaVinculoResponseDTO> responseDTOs = vincularUseCase.executar(vagaId, requestDTOs)
+        if (usuarioAutenticado?.perfilId == null) {
+            throw new AccessDeniedException("Você não tem permissão para vincular competências a esta vaga.")
+        }
+        List<CompetenciaVagaVinculoResponseDTO> responseDTOs = vincularUseCase.executar(vagaId, usuarioAutenticado.perfilId, requestDTOs)
         return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponseDTO.sucesso(responseDTOs, "Competências vinculadas à vaga com sucesso", HttpStatus.CREATED.value()))
     }
 
@@ -291,9 +298,10 @@ class CompetenciaVagaController {
     @DeleteMapping("/vinculo/{vinculoId}")
     @PreAuthorize("hasRole('EMPRESA')")
     ResponseEntity<ApiResponseDTO<Void>> desvincularCompetencia(
-            @Parameter(description = "ID único do vínculo vaga-competência", example = "25") @PathVariable("vinculoId") Long vinculoId
+            @Parameter(description = "ID único do vínculo vaga-competência", example = "25") @PathVariable("vinculoId") Long vinculoId,
+            @Parameter(hidden = true) @AuthenticationPrincipal UsuarioAutenticado usuarioAutenticado
     ) {
-        desvincularUseCase.executar(vinculoId)
+        desvincularUseCase.executar(vinculoId, usuarioAutenticado?.perfilId)
         return ResponseEntity.ok(ApiResponseDTO.sucesso("Vínculo removido com sucesso", HttpStatus.OK.value()))
     }
 
