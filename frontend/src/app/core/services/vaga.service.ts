@@ -4,7 +4,7 @@ import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { Vaga } from '../models/vaga.model';
 import { ApiResponse } from '../models/api-response.model';
-import { CurtidaResponse, MatchEmpresa } from '../models/match.model';
+import { CurtidaResponse, MatchVaga } from '../models/match.model';
 
 @Injectable({
   providedIn: 'root',
@@ -54,8 +54,8 @@ export class VagaService {
     );
   }
 
-  getMatchesDaVaga(idVaga: number): Observable<ApiResponse<MatchEmpresa[]>> {
-    return this.http.get<ApiResponse<MatchEmpresa[]>>(`${this.apiUrl}/${idVaga}/matches`);
+  getMatchesDaVaga(idVaga: number): Observable<ApiResponse<MatchVaga[]>> {
+    return this.http.get<ApiResponse<MatchVaga[]>>(`${this.apiUrl}/${idVaga}/matches`);
   }
 
   createVaga(vaga: any): Observable<ApiResponse<Vaga>> {

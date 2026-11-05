@@ -17,7 +17,7 @@ import { CompetenciaService } from '@/core/services/competencia.service';
 import { Vaga } from '@/core/models/vaga.model';
 import { CandidatoProfile } from '@/core/models/candidato.model';
 import { Competencia, VinculoRequest, VinculoCompetencia } from '@/core/models/competencia.model';
-import { MatchEmpresa } from '@/core/models/match.model';
+import { MatchVaga } from '@/core/models/match.model';
 import { handleServerErrors, getFormValidationErrors } from '@/shared/utils/form-utils';
 import { ZardDialogService } from '@/shared/components/dialog/dialog.service';
 import { CandidatoCompetenciasDialog } from '../candidatos/components/candidato-competencias-dialog/candidato-competencias-dialog';
@@ -56,7 +56,7 @@ export class Vagas implements OnInit {
   readonly viewingCandidatosVagaId = signal<number | null>(null);
   readonly viewingCandidatosMode = signal<'INTERESSADOS' | 'SUGERIDOS' | 'MATCHES'>('INTERESSADOS');
   readonly candidatosVaga = signal<any[]>([]);
-  readonly matchesVaga = signal<MatchEmpresa[]>([]);
+  readonly matchesVaga = signal<MatchVaga[]>([]);
   readonly isLoadingCandidatos = signal<boolean>(false);
 
   // Competências

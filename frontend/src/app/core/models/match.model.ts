@@ -27,3 +27,10 @@ export interface MatchEmpresa {
   candidatoEmail: string;
   dataMatch: string;
 }
+
+export interface MatchVaga {
+  candidato: CandidatoProfile;
+  candidatoNome: string;
+  candidatoEmail: string;
+  dataMatch: string;
+}
