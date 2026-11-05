@@ -258,6 +258,8 @@ export class Vagas implements OnInit {
 
   protected onNewVaga(): void {
     this.selectedVagaId.set(null);
+    this.vagaForm.reset();
+    this.selectedCompetencias.set([]);
     this.existingVinculos.set([]);
     this.isFormOpen.set(true);
     if (this.globalCompetencias().length === 0) {
