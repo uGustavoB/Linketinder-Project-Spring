@@ -52,6 +52,21 @@ class BuscarCandidatoPorIdUseCaseSpec extends Specification {
         ex.message == "Candidato não encontrado."
     }
 
+    void "Deve lancar AccessDeniedException quando usuario nao estiver autenticado"() {
+        given: "Um candidato existente e nenhum usuario autenticado"
+        Long id = 1L
+        Candidato candidato = new Candidato(id: id, usuario: new Usuario(email: "joao@email.com", role: Role.CANDIDATO))
+
+        1 * candidatoRepository.findById(id) >> Optional.of(candidato)
+
+        when: "Tenta buscar perfil sem autenticacao"
+        useCase.executar(id)
+
+        then: "Lanca AccessDeniedException pelo padrao Fail-Closed"
+        AccessDeniedException ex = thrown(AccessDeniedException)
+        ex.message == "Usuário não autenticado ou inválido."
+    }
+
     void "Deve bloquear o acesso quando o requisitante for uma EMPRESA (Principio do Anonimato)"() {
         given: "Um candidato existente e uma empresa autenticada no contexto de seguranca"
         Long id = 1L

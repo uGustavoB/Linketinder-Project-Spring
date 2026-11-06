@@ -45,14 +45,16 @@ class AtualizarCandidatoUseCase implements IAtualizarCandidatoUseCase {
                 .orElseThrow { new NoSuchElementException("Candidato não encontrado.") }
 
         Authentication auth = SecurityContextHolder.getContext().getAuthentication()
-        if (auth != null && auth.getPrincipal() instanceof Usuario) {
-            Usuario usuarioLogado = (Usuario) auth.getPrincipal()
-            if (usuarioLogado.role == Role.EMPRESA) {
-                throw new AccessDeniedException("Empresas não têm permissão para atualizar o perfil de candidatos.")
-            }
-            if (usuarioLogado.role == Role.CANDIDATO && candidatoExistente.usuario.email != usuarioLogado.email) {
-                throw new AccessDeniedException("Você não tem permissão para modificar o perfil de outro candidato.")
-            }
+        if (auth == null || !(auth.getPrincipal() instanceof Usuario)) {
+            throw new AccessDeniedException("Usuário não autenticado ou inválido.")
+        }
+
+        Usuario usuarioLogado = (Usuario) auth.getPrincipal()
+        if (usuarioLogado.role == Role.EMPRESA) {
+            throw new AccessDeniedException("Empresas não têm permissão para atualizar o perfil de candidatos.")
+        }
+        if (usuarioLogado.role == Role.CANDIDATO && candidatoExistente.usuario.email != usuarioLogado.email) {
+            throw new AccessDeniedException("Você não tem permissão para modificar o perfil de outro candidato.")
         }
 
         if (candidatoExistente.usuario.email != requestDTO.email) {

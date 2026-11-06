@@ -49,6 +49,47 @@ class DeletarCandidatoUseCaseSpec extends Specification {
         ex.message == "Candidato não encontrado."
     }
 
+    void "Deve lancar AccessDeniedException quando usuario nao estiver autenticado"() {
+        given: "Um candidato existente e nenhum usuario autenticado"
+        Long id = 1L
+        Candidato candidato = new Candidato(id: id, usuario: new Usuario(email: "joao@email.com", role: Role.CANDIDATO))
+
+        1 * candidatoRepository.findById(id) >> Optional.of(candidato)
+
+        when: "Tenta deletar sem autenticacao"
+        useCase.executar(id)
+
+        then: "Lanca AccessDeniedException pelo padrao Fail-Closed"
+        AccessDeniedException ex = thrown(AccessDeniedException)
+        ex.message == "Usuário não autenticado ou inválido."
+        0 * curtidaRepository.deleteByCandidatoId(_)
+        0 * candidatoRepository.delete(_)
+    }
+
+    void "Deve bloquear a exclusao quando uma EMPRESA tentar deletar um candidato"() {
+        given: "Um candidato existente e uma empresa autenticada"
+        Long id = 1L
+        Candidato candidato = new Candidato(id: id, usuario: new Usuario(email: "joao@email.com", role: Role.CANDIDATO))
+        Usuario empresaLogada = new Usuario(id: 2L, email: "rh@empresa.com", role: Role.EMPRESA)
+
+        Authentication authentication = Mock(Authentication)
+        authentication.getPrincipal() >> empresaLogada
+        SecurityContext securityContext = Mock(SecurityContext)
+        securityContext.getAuthentication() >> authentication
+        SecurityContextHolder.setContext(securityContext)
+
+        1 * candidatoRepository.findById(id) >> Optional.of(candidato)
+
+        when: "A empresa tenta deletar o candidato"
+        useCase.executar(id)
+
+        then: "Lanca AccessDeniedException"
+        AccessDeniedException ex = thrown(AccessDeniedException)
+        ex.message == "Empresas não têm permissão para deletar candidatos."
+        0 * curtidaRepository.deleteByCandidatoId(_)
+        0 * candidatoRepository.delete(_)
+    }
+
     void "Deve bloquear a exclusao quando outro candidato tentar deletar conta alheia"() {
         given: "Um candidato existente e outro candidato diferente autenticado"
         Long id = 1L

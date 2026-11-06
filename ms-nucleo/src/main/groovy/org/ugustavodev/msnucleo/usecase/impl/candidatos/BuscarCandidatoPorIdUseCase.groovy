@@ -35,15 +35,16 @@ class BuscarCandidatoPorIdUseCase implements IBuscarCandidatoPorIdUseCase {
                 .orElseThrow { new NoSuchElementException("Candidato não encontrado.") }
 
         Authentication auth = SecurityContextHolder.getContext().getAuthentication()
-        if (auth != null && auth.getPrincipal() instanceof Usuario) {
-            Usuario usuarioLogado = (Usuario) auth.getPrincipal()
+        if (auth == null || !(auth.getPrincipal() instanceof Usuario)) {
+            throw new AccessDeniedException("Usuário não autenticado ou inválido.")
+        }
 
-            if (usuarioLogado.role == Role.EMPRESA) {
-                throw new AccessDeniedException("Empresas não têm permissão para visualizar os dados sensíveis dos candidatos antes do Match.")
-            }
-            if (usuarioLogado.role == Role.CANDIDATO && candidato.usuario.email != usuarioLogado.email) {
-                throw new AccessDeniedException("Você não tem permissão para visualizar o perfil de outro candidato.")
-            }
+        Usuario usuarioLogado = (Usuario) auth.getPrincipal()
+        if (usuarioLogado.role == Role.EMPRESA) {
+            throw new AccessDeniedException("Empresas não têm permissão para visualizar os dados sensíveis dos candidatos antes do Match.")
+        }
+        if (usuarioLogado.role == Role.CANDIDATO && candidato.usuario.email != usuarioLogado.email) {
+            throw new AccessDeniedException("Você não tem permissão para visualizar o perfil de outro candidato.")
         }
 
         return candidatoMapper.toResponseDTO(candidato)

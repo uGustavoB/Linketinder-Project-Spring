@@ -50,6 +50,21 @@ class BuscarEmpresaPorIdUseCaseSpec extends Specification {
         ex.message == "Empresa não encontrada."
     }
 
+    void "Deve lancar AccessDeniedException quando usuario nao estiver autenticado"() {
+        given: "Uma empresa existente e nenhum usuario autenticado"
+        Long id = 1L
+        Empresa empresa = new Empresa(id: id, usuario: new Usuario(email: "rh@empresa.com", role: Role.EMPRESA))
+
+        1 * empresaRepository.findById(id) >> Optional.of(empresa)
+
+        when: "Tenta buscar perfil de empresa sem autenticacao"
+        useCase.executar(id)
+
+        then: "Lanca AccessDeniedException pelo padrao Fail-Closed"
+        AccessDeniedException ex = thrown(AccessDeniedException)
+        ex.message == "Usuário não autenticado ou inválido."
+    }
+
     void "Deve bloquear o acesso quando um CANDIDATO tentar buscar dados completos da empresa"() {
         given: "Uma empresa existente e um candidato autenticado"
         Long id = 1L

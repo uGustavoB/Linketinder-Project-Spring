@@ -34,14 +34,16 @@ class BuscarEmpresaPorIdUseCase implements IBuscarEmpresaPorIdUseCase {
                 .orElseThrow { new NoSuchElementException("Empresa não encontrada.") }
 
         Authentication auth = SecurityContextHolder.getContext().getAuthentication()
-        if (auth != null && auth.getPrincipal() instanceof Usuario) {
-            Usuario usuarioLogado = (Usuario) auth.getPrincipal()
-            if (usuarioLogado.role == Role.CANDIDATO) {
-                throw new AccessDeniedException("Candidatos não têm permissão para visualizar os dados sensíveis das empresas antes do Match.")
-            }
-            if (usuarioLogado.role == Role.EMPRESA && empresa.usuario.email != usuarioLogado.email) {
-                throw new AccessDeniedException("Você não tem permissão para visualizar o perfil completo de outra empresa.")
-            }
+        if (auth == null || !(auth.getPrincipal() instanceof Usuario)) {
+            throw new AccessDeniedException("Usuário não autenticado ou inválido.")
+        }
+
+        Usuario usuarioLogado = (Usuario) auth.getPrincipal()
+        if (usuarioLogado.role == Role.CANDIDATO) {
+            throw new AccessDeniedException("Candidatos não têm permissão para visualizar os dados sensíveis das empresas antes do Match.")
+        }
+        if (usuarioLogado.role == Role.EMPRESA && empresa.usuario.email != usuarioLogado.email) {
+            throw new AccessDeniedException("Você não tem permissão para visualizar o perfil completo de outra empresa.")
         }
 
         return empresaMapper.toResponseDTO(empresa)

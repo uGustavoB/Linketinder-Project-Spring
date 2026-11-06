@@ -77,6 +77,22 @@ class AtualizarCandidatoUseCaseSpec extends Specification {
         ex.message == "Candidato não encontrado."
     }
 
+    void "Deve lancar AccessDeniedException quando usuario nao estiver autenticado"() {
+        given: "Um candidato existente e nenhum usuario autenticado"
+        Long id = 1L
+        Candidato candidato = new Candidato(id: id, usuario: new Usuario(email: "joao@email.com", role: Role.CANDIDATO))
+        CandidatoRequestDTO request = new CandidatoRequestDTO(email: "joao@email.com", cpf: "12345678901")
+
+        1 * candidatoRepository.findById(id) >> Optional.of(candidato)
+
+        when: "Tenta atualizar sem autenticacao"
+        useCase.executar(id, request)
+
+        then: "Lanca AccessDeniedException pelo padrao Fail-Closed"
+        AccessDeniedException ex = thrown(AccessDeniedException)
+        ex.message == "Usuário não autenticado ou inválido."
+    }
+
     void "Deve bloquear a atualizacao quando o usuario logado for uma EMPRESA"() {
         given: "Um candidato existente e uma empresa autenticada"
         Long id = 1L
@@ -111,6 +127,12 @@ class AtualizarCandidatoUseCaseSpec extends Specification {
         Candidato outroCandidato = new Candidato(id: 2L, usuario: new Usuario(email: "emuso@email.com"))
         CandidatoRequestDTO request = new CandidatoRequestDTO(email: "emuso@email.com", cpf: "12345678901")
 
+        Authentication authentication = Mock(Authentication)
+        authentication.getPrincipal() >> candidatoExistente.usuario
+        SecurityContext securityContext = Mock(SecurityContext)
+        securityContext.getAuthentication() >> authentication
+        SecurityContextHolder.setContext(securityContext)
+
         1 * candidatoRepository.findById(id) >> Optional.of(candidatoExistente)
         1 * candidatoRepository.findByUsuarioEmail("emuso@email.com") >> Optional.of(outroCandidato)
 
@@ -132,6 +154,12 @@ class AtualizarCandidatoUseCaseSpec extends Specification {
         )
         Usuario usuarioEmpresa = new Usuario(id: 20L, email: "contato@empresa.com", role: Role.EMPRESA)
         CandidatoRequestDTO request = new CandidatoRequestDTO(email: "contato@empresa.com", cpf: "12345678901")
+
+        Authentication authentication = Mock(Authentication)
+        authentication.getPrincipal() >> candidatoExistente.usuario
+        SecurityContext securityContext = Mock(SecurityContext)
+        securityContext.getAuthentication() >> authentication
+        SecurityContextHolder.setContext(securityContext)
 
         1 * candidatoRepository.findById(id) >> Optional.of(candidatoExistente)
         1 * candidatoRepository.findByUsuarioEmail("contato@empresa.com") >> Optional.empty()
