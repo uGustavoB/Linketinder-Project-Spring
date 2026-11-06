@@ -27,21 +27,22 @@ class ListarVagasSugeridasUseCaseSpec extends Specification {
         ex.message == "O ID do candidato não pode ser nulo"
     }
 
-    void "Deve retornar a lista de vagas sugeridas ainda nao curtidas pelo candidato"() {
+    void "Deve retornar a lista de vagas sugeridas ainda nao curtidas pelo candidato anonimizadas"() {
         given: "Um candidatoId valido e uma vaga sugerida"
         Long candidatoId = 10L
         Vaga vaga = new Vaga(id: 5L, nome: "Dev Groovy")
-        VagaPublicoResponseDTO dto = new VagaPublicoResponseDTO(5L, "Dev Groovy", "Desc", "Remoto", "Pleno", 1L)
+        VagaPublicoResponseDTO dto = new VagaPublicoResponseDTO(5L, "Dev Groovy", "Desc", "Remoto", "Pleno", null)
 
         1 * vagaRepository.findVagasSugeridasParaCandidato(candidatoId) >> [vaga]
-        1 * vagaMapper.toPublicoResponseDTO(vaga) >> dto
+        1 * vagaMapper.toPublicoResponseDTO(vaga, false) >> dto
 
         when: "Executa a listagem de vagas sugeridas"
         List<VagaPublicoResponseDTO> resultado = useCase.executar(candidatoId)
 
-        then: "Retorna a lista mapeada para VagaPublicoResponseDTO"
+        then: "Retorna a lista mapeada para VagaPublicoResponseDTO sem empresaId"
         resultado.size() == 1
         resultado[0] == dto
+        resultado[0].empresaId() == null
     }
 
 }

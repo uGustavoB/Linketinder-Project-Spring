@@ -201,7 +201,7 @@ class VagaController {
 
     @Operation(
             summary = "Lista vagas sem expor o nome da empresa",
-            description = "Retorna `VagaPublicoResponseDTO` para todas as vagas ou filtradas opcionalmente por `empresaId`."
+            description = "Retorna `VagaPublicoResponseDTO` para todas as vagas ou filtradas opcionalmente por `empresaId` (restrito à própria empresa dona)."
     )
     @ApiResponses([
             @ApiResponse(
@@ -222,7 +222,7 @@ class VagaController {
                                                 "descricao": "Atuação no desenvolvimento e manutenção de microsserviços RESTful com Spring Boot e PostgreSQL.",
                                                 "local": "São Paulo - SP (Remoto)",
                                                 "nivel": "Pleno",
-                                                "empresaId": 1
+                                                "empresaId": null
                                             }
                                         ]
                                     }"""
@@ -1055,7 +1055,7 @@ class VagaController {
                                                 "descricao": "Atuação no desenvolvimento e manutenção de microsserviços RESTful com Spring Boot e PostgreSQL.",
                                                 "local": "São Paulo - SP (Remoto)",
                                                 "nivel": "Pleno",
-                                                "empresaId": 1
+                                                "empresaId": null
                                             }
                                         ]
                                     }"""

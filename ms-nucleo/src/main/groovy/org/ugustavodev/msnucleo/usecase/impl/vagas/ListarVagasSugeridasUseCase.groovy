@@ -25,10 +25,8 @@ class ListarVagasSugeridasUseCase implements IListarVagasSugeridasUseCase {
         }
 
         List<Vaga> vagas = vagaRepository.findVagasSugeridasParaCandidato(candidatoId)
-        
-        return vagas.stream()
-                .map(vagaMapper::toPublicoResponseDTO)
-                .toList()
+
+        return vagas.collect { vagaMapper.toPublicoResponseDTO(it, false) }
     }
 
 }
