@@ -40,6 +40,7 @@ class SecurityConfigurations {
                 .sessionManagement(sessao -> sessao.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(autorizacao -> autorizacao
                         .requestMatchers(HttpMethod.POST, "/api/auth/login").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/auth/logout").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/candidato").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/empresa").permitAll()
                         .requestMatchers(
