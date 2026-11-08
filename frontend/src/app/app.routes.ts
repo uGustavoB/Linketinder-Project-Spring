@@ -1,5 +1,6 @@
 import { Routes } from '@angular/router';
 import { authGuard } from './core/guards/auth-guard';
+import { empresaGuard } from './core/guards/empresa-guard';
 
 export const routes: Routes = [
   {
@@ -38,6 +39,7 @@ export const routes: Routes = [
       },
       {
         path: 'candidatos',
+        canActivate: [empresaGuard],
         loadComponent: () => import('./pages/candidatos/candidatos').then((m) => m.Candidatos),
       },
     ],

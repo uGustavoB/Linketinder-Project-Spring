@@ -212,8 +212,24 @@ class CandidatoController {
                                     }"""
                             )
                     )
+            ),
+            @ApiResponse(
+                    responseCode = "403",
+                    description = "Acesso restrito a usuários com papel EMPRESA",
+                    content = @Content(
+                            mediaType = "application/json",
+                            examples = @ExampleObject(
+                                    name = "Acesso Negado",
+                                    value = """{
+                                        "codigo": 403,
+                                        "mensagem": "Você não tem permissão para acessar este recurso.",
+                                        "tipo": "Acesso Negado"
+                                    }"""
+                            )
+                    )
             )
     ])
+    @PreAuthorize("hasRole('EMPRESA')")
     @GetMapping
     ResponseEntity<ApiResponseDTO<List<CandidatoPublicoResponseDTO>>> listarCandidatos() {
         List<CandidatoPublicoResponseDTO> lista = listarCandidatosUseCase.executar()
