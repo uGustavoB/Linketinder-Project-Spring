@@ -65,20 +65,27 @@ class VincularCompetenciaEmpresaUseCaseSpec extends Specification {
         ex.message == "O nível da competência é obrigatório."
     }
 
-    void "Deve pular competencia quando a empresa ja possuir o vinculo"() {
-        given: "Empresa ja possui o vinculo"
+    void "Deve atualizar nivel de competencia existente (upsert) com sucesso"() {
+        given: "Um vinculo existente com nivel BASICO"
         Long empresaId = 1L
         Long compId = 5L
+        Competencia comp = new Competencia(id: compId, nome: "Java")
+        CompetenciaEmpresa vinculoExistente = new CompetenciaEmpresa(id: 10L, empresaId: empresaId, competencia: comp, nivel: NivelCompetencia.BASICO)
 
-        repository.existsByEmpresaIdAndCompetenciaId(empresaId, compId) >> true
+        repository.findByEmpresaIdAndCompetenciaId(empresaId, compId) >> Optional.of(vinculoExistente)
 
-        when: "Tenta vincular competencia repetida"
-        List<CompetenciaVinculoResponseDTO> result = useCase.executar(empresaId, [new VincularCompetenciaRequestDTO(competenciaId: compId, nivel: NivelCompetencia.BASICO)])
+        CompetenciaEmpresa vinculoAtualizado = new CompetenciaEmpresa(id: 10L, empresaId: empresaId, competencia: comp, nivel: NivelCompetencia.AVANCADO)
+        CompetenciaVinculoResponseDTO responseDTO = new CompetenciaVinculoResponseDTO(10L, new CompetenciaResponseDTO(compId, "Java"), NivelCompetencia.AVANCADO)
+        mapper.toResponseDTO(vinculoAtualizado) >> responseDTO
 
-        then: "Nao busca no repositorio de competencias e nao salva nada"
+        when: "Atualiza para AVANCADO"
+        List<CompetenciaVinculoResponseDTO> result = useCase.executar(empresaId, [new VincularCompetenciaRequestDTO(competenciaId: compId, nivel: NivelCompetencia.AVANCADO)])
+
+        then: "Nao busca no competenciaRepository e atualiza o vinculo existente"
         0 * competenciaRepository.findById(_)
-        0 * repository.save(_)
-        result.isEmpty()
+        1 * repository.save({ CompetenciaEmpresa e -> e.id == 10L && e.nivel == NivelCompetencia.AVANCADO }) >> vinculoAtualizado
+        result.size() == 1
+        result[0].nivel == NivelCompetencia.AVANCADO
     }
 
     void "Deve lancar NoSuchElementException quando competencia generica nao for encontrada"() {
@@ -86,7 +93,7 @@ class VincularCompetenciaEmpresaUseCaseSpec extends Specification {
         Long empresaId = 1L
         Long compId = 99L
 
-        repository.existsByEmpresaIdAndCompetenciaId(empresaId, compId) >> false
+        repository.findByEmpresaIdAndCompetenciaId(empresaId, compId) >> Optional.empty()
         competenciaRepository.findById(compId) >> Optional.empty()
 
         when: "Tenta vincular competencia inexistente"
@@ -98,13 +105,13 @@ class VincularCompetenciaEmpresaUseCaseSpec extends Specification {
         0 * repository.save(_)
     }
 
-    void "Deve vincular competencias a empresa com sucesso"() {
-        given: "Empresa e competencias validas"
+    void "Deve vincular nova competencia a empresa (insert) com sucesso"() {
+        given: "Empresa e competencias validas sem vinculo previo"
         Long empresaId = 1L
         Long compId = 2L
         Competencia comp = new Competencia(id: compId, nome: "Angular")
 
-        repository.existsByEmpresaIdAndCompetenciaId(empresaId, compId) >> false
+        repository.findByEmpresaIdAndCompetenciaId(empresaId, compId) >> Optional.empty()
         competenciaRepository.findById(compId) >> Optional.of(comp)
 
         CompetenciaEmpresa vinculoSalvo = new CompetenciaEmpresa(id: 10L, empresaId: empresaId, competencia: comp, nivel: NivelCompetencia.AVANCADO)
@@ -113,7 +120,7 @@ class VincularCompetenciaEmpresaUseCaseSpec extends Specification {
         CompetenciaVinculoResponseDTO responseDTO = new CompetenciaVinculoResponseDTO(10L, new CompetenciaResponseDTO(compId, "Angular"), NivelCompetencia.AVANCADO)
         mapper.toResponseDTO(vinculoSalvo) >> responseDTO
 
-        when: "Executa vinculacao"
+        when: "Executa vinculacao nova"
         List<CompetenciaVinculoResponseDTO> result = useCase.executar(empresaId, [new VincularCompetenciaRequestDTO(competenciaId: compId, nivel: NivelCompetencia.AVANCADO)])
 
         then: "Salva e retorna DTO mapeado"

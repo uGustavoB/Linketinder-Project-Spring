@@ -48,17 +48,21 @@ class VincularCompetenciaEmpresaUseCase implements IVincularCompetenciaEmpresaUs
                 throw new IllegalArgumentException("O nível da competência é obrigatório.")
             }
 
-            if (repository.existsByEmpresaIdAndCompetenciaId(empresaId, requestDTO.competenciaId)) {
-                continue // Pula caso a empresa já possua esta competência vinculada
+            Optional<CompetenciaEmpresa> vinculoExistente = repository.findByEmpresaIdAndCompetenciaId(empresaId, requestDTO.competenciaId)
+
+            CompetenciaEmpresa vinculo
+            if (vinculoExistente.isPresent()) {
+                vinculo = vinculoExistente.get()
+                vinculo.nivel = requestDTO.nivel
+            } else {
+                Competencia competencia = competenciaRepository.findById(requestDTO.competenciaId)
+                        .orElseThrow(() -> new NoSuchElementException("Competência genérica com ID " + requestDTO.competenciaId + " não encontrada."))
+
+                vinculo = new CompetenciaEmpresa()
+                vinculo.empresaId = empresaId
+                vinculo.competencia = competencia
+                vinculo.nivel = requestDTO.nivel
             }
-
-            Competencia competencia = competenciaRepository.findById(requestDTO.competenciaId)
-                    .orElseThrow(() -> new NoSuchElementException("Competência genérica com ID " + requestDTO.competenciaId + " não encontrada."))
-
-            CompetenciaEmpresa vinculo = new CompetenciaEmpresa()
-            vinculo.empresaId = empresaId
-            vinculo.competencia = competencia
-            vinculo.nivel = requestDTO.nivel
 
             vinculo = repository.save(vinculo)
             result.add(mapper.toResponseDTO(vinculo))
