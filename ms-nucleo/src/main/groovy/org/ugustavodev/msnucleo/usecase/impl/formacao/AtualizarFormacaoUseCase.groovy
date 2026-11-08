@@ -1,5 +1,6 @@
 package org.ugustavodev.msnucleo.usecase.impl.formacao
 
+import org.springframework.security.access.AccessDeniedException
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import org.ugustavodev.msnucleo.dto.request.FormacaoRequestDTO
@@ -34,7 +35,7 @@ class AtualizarFormacaoUseCase implements IAtualizarFormacaoUseCase {
                 .orElseThrow { new NoSuchElementException("Formação não encontrada para o ID: ${id}") }
 
         if (formacaoExistente.candidato == null || formacaoExistente.candidato.id != candidatoId) {
-            throw new IllegalArgumentException("Você não tem permissão para editar esta formação.")
+            throw new AccessDeniedException("Você não tem permissão para editar esta formação.")
         }
 
         formacaoExistente.instituicao = requestDTO.instituicao

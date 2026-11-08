@@ -1,5 +1,6 @@
 package org.ugustavodev.msnucleo.usecase.impl.formacao
 
+import org.springframework.security.access.AccessDeniedException
 import org.ugustavodev.msnucleo.model.Candidato
 import org.ugustavodev.msnucleo.model.Formacao
 import org.ugustavodev.msnucleo.repositories.FormacaoRepository
@@ -38,8 +39,8 @@ class DeletarFormacaoUseCaseSpec extends Specification {
         when: "O candidato 2 tenta deletar a formacao"
         useCase.executar(id, outroCandidatoId)
 
-        then: "Lanca IllegalArgumentException e nao deleta"
-        IllegalArgumentException ex = thrown(IllegalArgumentException)
+        then: "Lanca AccessDeniedException e nao deleta"
+        AccessDeniedException ex = thrown(AccessDeniedException)
         ex.message == "Você não tem permissão para deletar esta formação."
         0 * formacaoRepository.delete(_)
     }
