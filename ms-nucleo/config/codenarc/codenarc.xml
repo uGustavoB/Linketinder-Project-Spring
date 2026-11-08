@@ -21,6 +21,21 @@
         <rule-config name="LineLength">
             <property name="length" value="200" />
         </rule-config>
+        <rule-config name="ClassEndsWithBlankLine">
+            <property name="enabled" value="false" />
+        </rule-config>
+        <rule-config name="MissingBlankLineBeforeAnnotatedField">
+            <property name="enabled" value="false" />
+        </rule-config>
+        <rule-config name="SpaceBeforeClosingBrace">
+            <property name="enabled" value="false" />
+        </rule-config>
+        <rule-config name="SpaceAfterOpeningBrace">
+            <property name="enabled" value="false" />
+        </rule-config>
+        <rule-config name="SpaceBeforeOpeningBrace">
+            <property name="enabled" value="false" />
+        </rule-config>
     </ruleset-ref>
     <ruleset-ref path="rulesets/unused.xml"/>
 </ruleset>
