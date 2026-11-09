@@ -1,8 +1,14 @@
 pipeline {
     agent any
 
+    options {
+        buildDiscarder(logRotator(numToKeepStr: '15'))
+        disableConcurrentBuilds()
+        timestamps()
+    }
+
     stages {
-        stage('Checkout') {
+        stage('Checkout PR') {
             steps {
                 checkout scm
             }
@@ -12,7 +18,7 @@ pipeline {
             steps {
                 dir('ms-nucleo') {
                     sh 'chmod +x gradlew'
-                    sh './gradlew build'
+                    sh './gradlew clean build --no-daemon'
                 }
             }
         }
@@ -21,7 +27,7 @@ pipeline {
             steps {
                 dir('ms-competencia') {
                     sh 'chmod +x gradlew'
-                    sh './gradlew build'
+                    sh './gradlew clean build --no-daemon'
                 }
             }
         }
@@ -29,8 +35,10 @@ pipeline {
         stage('Build Frontend (Angular)') {
             steps {
                 dir('frontend') {
-                    sh 'npm install'
-                    sh 'npm run build'
+                    nodejs('Node20') {
+                        sh 'npm install'
+                        sh 'npm run build'
+                    }
                 }
             }
         }
@@ -38,13 +46,13 @@ pipeline {
 
     post {
         always {
-            echo 'Pipeline finalizado.'
+            echo 'Pipeline de validacao do PR finalizada.'
         }
         success {
-            echo 'Todos os builds e testes passaram com sucesso!'
+            echo 'Todos os builds e testes passaram com sucesso.'
         }
         failure {
-            echo 'Houve uma falha em alguma etapa do pipeline.'
+            echo 'Falha na compilacao ou nos testes de algum modulo. Verifique os logs.'
         }
     }
 }
