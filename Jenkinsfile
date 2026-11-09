@@ -35,7 +35,7 @@ pipeline {
         stage('Build Frontend (Angular)') {
             steps {
                 dir('frontend') {
-                    nodejs('Node20') {
+                    nodejs('Node26') {
                         sh 'npm install'
                         sh 'npm run build'
                     }
