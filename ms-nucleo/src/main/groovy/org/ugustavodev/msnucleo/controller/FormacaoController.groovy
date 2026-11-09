@@ -142,7 +142,7 @@ class FormacaoController {
             @Parameter(hidden = true) @AuthenticationPrincipal Usuario usuarioAutenticado
     ) {
         Candidato candidato = candidatoRepository.findByUsuarioEmail(usuarioAutenticado.getUsername())
-                .orElseThrow { new RuntimeException("Candidato não encontrado") }
+                .orElseThrow { new NoSuchElementException("Candidato não encontrado") }
         
         FormacaoResponseDTO responseDTO = cadastrarFormacaoUseCase.executar(requestDTO, candidato.getId())
         return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponseDTO.sucesso(responseDTO, "Formação cadastrada com sucesso", HttpStatus.CREATED.value()))
@@ -267,7 +267,7 @@ class FormacaoController {
             @Parameter(hidden = true) @AuthenticationPrincipal Usuario usuarioAutenticado
     ) {
         Candidato candidato = candidatoRepository.findByUsuarioEmail(usuarioAutenticado.getUsername())
-                .orElseThrow { new RuntimeException("Candidato não encontrado") }
+                .orElseThrow { new NoSuchElementException("Candidato não encontrado") }
 
         FormacaoResponseDTO responseDTO = atualizarFormacaoUseCase.executar(id, requestDTO, candidato.getId())
         return ResponseEntity.ok(ApiResponseDTO.sucesso(responseDTO, "Formação atualizada com sucesso"))
@@ -361,7 +361,7 @@ class FormacaoController {
             @Parameter(hidden = true) @AuthenticationPrincipal Usuario usuarioAutenticado
     ) {
         Candidato candidato = candidatoRepository.findByUsuarioEmail(usuarioAutenticado.getUsername())
-                .orElseThrow { new RuntimeException("Candidato não encontrado") }
+                .orElseThrow { new NoSuchElementException("Candidato não encontrado") }
 
         deletarFormacaoUseCase.executar(id, candidato.getId())
         return ResponseEntity.ok(ApiResponseDTO.sucesso("Formação deletada com sucesso", HttpStatus.OK.value()))

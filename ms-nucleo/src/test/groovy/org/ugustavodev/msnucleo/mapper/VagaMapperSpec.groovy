@@ -31,7 +31,7 @@ class VagaMapperSpec extends Specification {
         dto.empresaNome() == "Tech Solutions Ltda"
     }
 
-    void "Deve converter entidade Vaga para VagaPublicoResponseDTO sem empresaNome"() {
+    void "Deve converter entidade Vaga para VagaPublicoResponseDTO sem empresaNome e com empresaId nulo por padrao"() {
         given: "Uma entidade Vaga vinculada a uma Empresa"
         Empresa empresa = new Empresa(id: 1L, nome: "Tech Solutions Ltda")
         Vaga vaga = new Vaga(id: 5L, nome: "Dev Groovy", descricao: "Spring Boot", local: "Remoto", nivel: "Pleno", empresa: empresa)
@@ -39,12 +39,25 @@ class VagaMapperSpec extends Specification {
         when: "Converte para VagaPublicoResponseDTO"
         VagaPublicoResponseDTO dto = mapper.toPublicoResponseDTO(vaga)
 
-        then: "Mapeia os atributos publicos da vaga"
+        then: "Mapeia os atributos publicos da vaga com empresaId nulo para preservar o anonimato"
         dto.id() == 5L
         dto.nome() == "Dev Groovy"
         dto.descricao() == "Spring Boot"
         dto.local() == "Remoto"
         dto.nivel() == "Pleno"
+        dto.empresaId() == null
+    }
+
+    void "Deve converter entidade Vaga para VagaPublicoResponseDTO incluindo empresaId quando explicitamente solicitado"() {
+        given: "Uma entidade Vaga vinculada a uma Empresa"
+        Empresa empresa = new Empresa(id: 1L, nome: "Tech Solutions Ltda")
+        Vaga vaga = new Vaga(id: 5L, nome: "Dev Groovy", descricao: "Spring Boot", local: "Remoto", nivel: "Pleno", empresa: empresa)
+
+        when: "Converte para VagaPublicoResponseDTO com incluirEmpresaId = true"
+        VagaPublicoResponseDTO dto = mapper.toPublicoResponseDTO(vaga, true)
+
+        then: "Mapeia os atributos publicos da vaga incluindo o empresaId"
+        dto.id() == 5L
         dto.empresaId() == 1L
     }
 

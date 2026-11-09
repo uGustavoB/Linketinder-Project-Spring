@@ -1,6 +1,7 @@
 package org.ugustavodev.msnucleo.usecase.impl.curtidas
 
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 import org.ugustavodev.msnucleo.model.Curtida
 import org.ugustavodev.msnucleo.repositories.CurtidaRepository
 import org.ugustavodev.msnucleo.usecase.interfaces.curtidas.ICandidatoDescurteVagaUseCase
@@ -15,6 +16,7 @@ class CandidatoDescurteVagaUseCase implements ICandidatoDescurteVagaUseCase {
     }
 
     @Override
+    @Transactional
     void executar(Long idCandidato, Long idVaga) {
         if (idCandidato == null) {
             throw new IllegalArgumentException("O ID do candidato não pode ser nulo.")

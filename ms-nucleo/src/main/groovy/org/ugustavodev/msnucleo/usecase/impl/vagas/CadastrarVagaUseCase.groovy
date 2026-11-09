@@ -1,6 +1,7 @@
 package org.ugustavodev.msnucleo.usecase.impl.vagas
 
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 import org.ugustavodev.msnucleo.dto.request.VagaRequestDTO
 import org.ugustavodev.msnucleo.dto.response.VagaResponseDTO
 import org.ugustavodev.msnucleo.mapper.VagaMapper
@@ -24,6 +25,7 @@ class CadastrarVagaUseCase implements ICadastrarVagaUseCase {
     }
 
     @Override
+    @Transactional
     VagaResponseDTO executar(VagaRequestDTO requestDTO, Long empresaId) {
         if (requestDTO == null) {
             throw new IllegalArgumentException("O objeto VagaRequestDTO não pode ser nulo.")

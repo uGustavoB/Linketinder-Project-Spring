@@ -1,6 +1,7 @@
 package org.ugustavodev.msnucleo.usecase.impl
 
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 import org.ugustavodev.msnucleo.domain.Usuario
 import org.ugustavodev.msnucleo.domain.enums.Role
 import org.ugustavodev.msnucleo.dto.response.FormacaoResponseDTO
@@ -30,6 +31,7 @@ class ObterPerfilUseCase implements IObterPerfilUseCase {
     }
 
     @Override
+    @Transactional(readOnly = true)
     Object executar(Usuario usuario) {
         if (usuario.role == Role.CANDIDATO) {
             Optional<Candidato> candidatoOpt = candidatoRepository.findByUsuarioEmail(usuario.email)
@@ -73,7 +75,7 @@ class ObterPerfilUseCase implements IObterPerfilUseCase {
                 )
             }
         }
-        
+
         return null
     }
 

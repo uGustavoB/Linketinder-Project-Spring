@@ -23,13 +23,17 @@ class VagaMapper {
     }
 
     VagaPublicoResponseDTO toPublicoResponseDTO(Vaga vaga) {
+        return toPublicoResponseDTO(vaga, false)
+    }
+
+    VagaPublicoResponseDTO toPublicoResponseDTO(Vaga vaga, boolean incluirEmpresaId) {
         return new VagaPublicoResponseDTO(
                 vaga.id,
                 vaga.nome,
                 vaga.descricao,
                 vaga.local,
                 vaga.nivel,
-                vaga.empresa?.id
+                incluirEmpresaId ? vaga.empresa?.id : null
         )
     }
 

@@ -38,6 +38,10 @@ export class AuthService {
     );
   }
 
+  updateUserData(data: Partial<UserData>): void {
+    this.currentUser.update((user) => (user ? { ...user, ...data } : null));
+  }
+
   checkSession(): Observable<boolean> {
     if (this.isAuthenticated() && this.currentUser()) {
       return of(true);

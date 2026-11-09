@@ -29,6 +29,7 @@ import org.ugustavodev.msnucleo.dto.response.MatchCandidatoResponseDTO
 import org.ugustavodev.msnucleo.dto.ApiResponseDTO
 import org.ugustavodev.msnucleo.model.Candidato
 import org.ugustavodev.msnucleo.repositories.CandidatoRepository
+import org.ugustavodev.msnucleo.security.RenovarSessao
 import org.ugustavodev.msnucleo.usecase.interfaces.candidatos.IAtualizarCandidatoUseCase
 import org.ugustavodev.msnucleo.usecase.interfaces.candidatos.IBuscarCandidatoPorIdUseCase
 import org.ugustavodev.msnucleo.usecase.interfaces.candidatos.ICadastrarCandidatoUseCase
@@ -211,8 +212,24 @@ class CandidatoController {
                                     }"""
                             )
                     )
+            ),
+            @ApiResponse(
+                    responseCode = "403",
+                    description = "Acesso restrito a usuários com papel EMPRESA",
+                    content = @Content(
+                            mediaType = "application/json",
+                            examples = @ExampleObject(
+                                    name = "Acesso Negado",
+                                    value = """{
+                                        "codigo": 403,
+                                        "mensagem": "Você não tem permissão para acessar este recurso.",
+                                        "tipo": "Acesso Negado"
+                                    }"""
+                            )
+                    )
             )
     ])
+    @PreAuthorize("hasRole('EMPRESA')")
     @GetMapping
     ResponseEntity<ApiResponseDTO<List<CandidatoPublicoResponseDTO>>> listarCandidatos() {
         List<CandidatoPublicoResponseDTO> lista = listarCandidatosUseCase.executar()
@@ -431,6 +448,7 @@ class CandidatoController {
                     )
             )
     ])
+    @RenovarSessao
     @PutMapping("/{id}")
     ResponseEntity<ApiResponseDTO<CandidatoResponseDTO>> atualizarCandidato(
             @Parameter(description = "ID do candidato", example = "1") @PathVariable("id") Long id,
@@ -590,7 +608,7 @@ class CandidatoController {
             @Parameter(hidden = true) @AuthenticationPrincipal Usuario usuarioAutenticado
     ) {
         Candidato candidato = candidatoRepository.findByUsuarioEmail(usuarioAutenticado.getUsername())
-                .orElseThrow { new RuntimeException("Candidato não encontrado") }
+                .orElseThrow { new NoSuchElementException("Candidato não encontrado") }
         Long idCandidato = candidato.getId()
         
         List<MatchCandidatoResponseDTO> matches = listarMatchesCandidatoUseCase.executar(idCandidato)

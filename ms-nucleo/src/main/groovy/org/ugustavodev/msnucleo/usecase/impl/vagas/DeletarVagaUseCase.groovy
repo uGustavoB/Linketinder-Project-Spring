@@ -1,7 +1,8 @@
 package org.ugustavodev.msnucleo.usecase.impl.vagas
 
-import jakarta.transaction.Transactional
+import org.springframework.security.access.AccessDeniedException
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 import org.ugustavodev.msnucleo.model.Vaga
 import org.ugustavodev.msnucleo.repositories.CurtidaRepository
 import org.ugustavodev.msnucleo.repositories.VagaRepository
@@ -25,14 +26,14 @@ class DeletarVagaUseCase implements IDeletarVagaUseCase {
             throw new IllegalArgumentException("O ID da vaga não pode ser nulo.")
         }
 
-        Optional<Vaga> vagaExistente = vagaRepository.findById(vagaId);
+        Optional<Vaga> vagaExistente = vagaRepository.findById(vagaId)
 
         if (vagaExistente.isEmpty()) {
             throw new NoSuchElementException("Vaga não encontrada para o ID: ${vagaId}")
         }
 
-        if (vagaExistente.get().empresa.id != empresaId) {
-            throw new IllegalArgumentException("Você não tem permissão para deletar esta vaga.")
+        if (vagaExistente.get().empresa == null || vagaExistente.get().empresa.id != empresaId) {
+            throw new AccessDeniedException("Você não tem permissão para deletar esta vaga.")
         }
 
         curtidaRepository.deleteByVagaId(vagaId)

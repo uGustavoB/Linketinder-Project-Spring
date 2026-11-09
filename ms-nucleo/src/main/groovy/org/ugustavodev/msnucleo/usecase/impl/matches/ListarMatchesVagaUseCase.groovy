@@ -2,6 +2,7 @@ package org.ugustavodev.msnucleo.usecase.impl.matches
 
 import org.springframework.security.access.AccessDeniedException
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 import org.ugustavodev.msnucleo.dto.response.MatchVagaResponseDTO
 import org.ugustavodev.msnucleo.mapper.CandidatoMapper
 import org.ugustavodev.msnucleo.model.Curtida
@@ -24,6 +25,7 @@ class ListarMatchesVagaUseCase implements IListarMatchesVagaUseCase {
     }
 
     @Override
+    @Transactional(readOnly = true)
     List<MatchVagaResponseDTO> executar(Long idVaga, Long idEmpresaLogada) {
         if (idVaga == null || idEmpresaLogada == null) {
             throw new IllegalArgumentException("IDs não podem ser nulos.")

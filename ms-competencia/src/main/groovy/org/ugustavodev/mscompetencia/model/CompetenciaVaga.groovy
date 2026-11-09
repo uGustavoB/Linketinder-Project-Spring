@@ -17,6 +17,9 @@ class CompetenciaVaga {
     @Column(name = "vaga_id", nullable = false)
     Long vagaId
 
+    @Column(name = "empresa_id", nullable = false)
+    Long empresaId
+
     @ManyToOne(optional = false)
     @JoinColumn(name = "competencia_id", nullable = false)
     Competencia competencia

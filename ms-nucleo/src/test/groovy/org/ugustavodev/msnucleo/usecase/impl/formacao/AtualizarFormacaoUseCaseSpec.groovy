@@ -1,5 +1,6 @@
 package org.ugustavodev.msnucleo.usecase.impl.formacao
 
+import org.springframework.security.access.AccessDeniedException
 import org.ugustavodev.msnucleo.dto.request.FormacaoRequestDTO
 import org.ugustavodev.msnucleo.dto.response.FormacaoResponseDTO
 import org.ugustavodev.msnucleo.mapper.FormacaoMapper
@@ -60,8 +61,8 @@ class AtualizarFormacaoUseCaseSpec extends Specification {
         when: "Outro candidato tenta editar a formacao"
         useCase.executar(id, request, outroCandidatoId)
 
-        then: "Lanca IllegalArgumentException"
-        IllegalArgumentException ex = thrown(IllegalArgumentException)
+        then: "Lanca AccessDeniedException"
+        AccessDeniedException ex = thrown(AccessDeniedException)
         ex.message == "Você não tem permissão para editar esta formação."
     }
 

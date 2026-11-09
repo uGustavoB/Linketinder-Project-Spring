@@ -19,6 +19,6 @@ record VagaPublicoResponseDTO(
     @Schema(description = "Nível de senioridade da vaga", example = "Pleno")
     String nivel,
 
-    @Schema(description = "ID da empresa responsável pela vaga", example = "1")
+    @Schema(description = "ID da empresa responsável pela vaga (nulo para candidatos e listagens anônimas)", example = "1")
     Long empresaId
 ) {}

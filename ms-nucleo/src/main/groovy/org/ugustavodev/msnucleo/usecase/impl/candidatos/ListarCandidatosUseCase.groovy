@@ -1,15 +1,15 @@
 package org.ugustavodev.msnucleo.usecase.impl.candidatos
 
+import org.springframework.security.core.Authentication
+import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
+import org.ugustavodev.msnucleo.domain.Usuario
+import org.ugustavodev.msnucleo.domain.enums.Role
 import org.ugustavodev.msnucleo.dto.response.CandidatoPublicoResponseDTO
 import org.ugustavodev.msnucleo.mapper.CandidatoMapper
 import org.ugustavodev.msnucleo.repositories.CandidatoRepository
 import org.ugustavodev.msnucleo.usecase.interfaces.candidatos.IListarCandidatosUseCase
-
-import org.springframework.security.core.Authentication
-import org.springframework.security.core.context.SecurityContextHolder
-import org.ugustavodev.msnucleo.domain.Usuario
-import org.ugustavodev.msnucleo.domain.enums.Role
 
 @Service
 class ListarCandidatosUseCase implements IListarCandidatosUseCase {
@@ -23,6 +23,7 @@ class ListarCandidatosUseCase implements IListarCandidatosUseCase {
     }
 
     @Override
+    @Transactional(readOnly = true)
     List<CandidatoPublicoResponseDTO> executar() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication()
         if (auth != null && auth.getPrincipal() instanceof Usuario) {

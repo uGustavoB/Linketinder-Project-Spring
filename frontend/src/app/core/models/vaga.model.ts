@@ -6,7 +6,7 @@ export interface Vaga {
   descricao: string;
   local: string;
   nivel: string;
-  empresaId: number;
+  empresaId?: number | null;
   competenciaIds: number[];
   competencias?: Competencia[];
 }

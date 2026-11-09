@@ -2,6 +2,7 @@ package org.ugustavodev.msnucleo.usecase.impl.matches
 
 import org.springframework.security.access.AccessDeniedException
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 import org.ugustavodev.msnucleo.dto.response.CandidatoPublicoResponseDTO
 import org.ugustavodev.msnucleo.mapper.CandidatoMapper
 import org.ugustavodev.msnucleo.model.Candidato
@@ -24,7 +25,12 @@ class ListarCandidatosSugeridosUseCase implements IListarCandidatosSugeridosUseC
     }
 
     @Override
+    @Transactional(readOnly = true)
     List<CandidatoPublicoResponseDTO> executar(Long vagaId, Long empresaId) {
+        if (vagaId == null || empresaId == null) {
+            throw new IllegalArgumentException("IDs não podem ser nulos.")
+        }
+
         Vaga vaga = vagaRepository.findById(vagaId)
                 .orElseThrow { new NoSuchElementException("Vaga não encontrada para o ID: ${vagaId}") }
 

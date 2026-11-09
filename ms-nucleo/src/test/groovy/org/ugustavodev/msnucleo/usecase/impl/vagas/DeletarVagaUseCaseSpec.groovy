@@ -1,5 +1,6 @@
 package org.ugustavodev.msnucleo.usecase.impl.vagas
 
+import org.springframework.security.access.AccessDeniedException
 import org.ugustavodev.msnucleo.model.Empresa
 import org.ugustavodev.msnucleo.model.Vaga
 import org.ugustavodev.msnucleo.repositories.CurtidaRepository
@@ -67,8 +68,8 @@ class DeletarVagaUseCaseSpec extends Specification {
         when: "Uma empresa diferente tenta deletar a vaga"
         useCase.executar(vagaId, outraEmpresaId)
 
-        then: "Lanca IllegalArgumentException de violacao de permissao"
-        IllegalArgumentException ex = thrown(IllegalArgumentException)
+        then: "Lanca AccessDeniedException de violacao de permissao"
+        AccessDeniedException ex = thrown(AccessDeniedException)
         ex.message == "Você não tem permissão para deletar esta vaga."
 
         and: "Nenhum metodo de remocao deve ser chamado"

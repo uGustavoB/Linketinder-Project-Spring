@@ -18,9 +18,9 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource
 @EnableMethodSecurity
 class SecurityConfigurations {
 
-    private final SecurityFilter securityFilter
-    private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint
-    private final CustomAccessDeniedHandler customAccessDeniedHandler
+    final SecurityFilter securityFilter
+    final CustomAuthenticationEntryPoint customAuthenticationEntryPoint
+    final CustomAccessDeniedHandler customAccessDeniedHandler
 
     SecurityConfigurations(
             SecurityFilter securityFilter,

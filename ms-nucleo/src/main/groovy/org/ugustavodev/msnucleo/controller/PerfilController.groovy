@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
 import io.swagger.v3.oas.annotations.tags.Tag
 import org.springframework.http.ResponseEntity
+import org.springframework.security.access.AccessDeniedException
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestMapping
@@ -126,10 +127,14 @@ class PerfilController {
     ])
     @GetMapping
     ResponseEntity<ApiResponseDTO<Object>> getPerfil() {
-        Usuario usuario = (Usuario) SecurityContextHolder.getContext().getAuthentication().getPrincipal()
+        Object principal = SecurityContextHolder.getContext().getAuthentication()?.getPrincipal()
+        if (!(principal instanceof Usuario)) {
+            throw new AccessDeniedException("Usuário não autenticado.")
+        }
+        Usuario usuario = (Usuario) principal
 
         Object dto = obterPerfilUseCase.executar(usuario)
-        
+
         if (dto != null) {
             return ResponseEntity.ok(ApiResponseDTO.sucesso(dto, "Perfil obtido com sucesso"))
         }

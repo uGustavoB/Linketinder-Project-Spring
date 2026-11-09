@@ -51,6 +51,49 @@ class DeletarEmpresaUseCaseSpec extends Specification {
         ex.message == "Empresa não encontrada."
     }
 
+    void "Deve lancar AccessDeniedException quando usuario nao estiver autenticado"() {
+        given: "Uma empresa existente e nenhum usuario autenticado"
+        Long id = 1L
+        Empresa empresa = new Empresa(id: id, usuario: new Usuario(email: "rh@empresa.com", role: Role.EMPRESA))
+
+        1 * empresaRepository.findById(id) >> Optional.of(empresa)
+
+        when: "Tenta deletar sem autenticacao"
+        useCase.executar(id)
+
+        then: "Lanca AccessDeniedException pelo padrao Fail-Closed"
+        AccessDeniedException ex = thrown(AccessDeniedException)
+        ex.message == "Usuário não autenticado ou inválido."
+        0 * curtidaRepository.deleteByVagaEmpresaId(_)
+        0 * vagaRepository.deleteByEmpresaId(_)
+        0 * empresaRepository.delete(_)
+    }
+
+    void "Deve bloquear a exclusao quando um CANDIDATO tentar deletar uma empresa"() {
+        given: "Uma empresa existente e um candidato autenticado"
+        Long id = 1L
+        Empresa empresa = new Empresa(id: id, usuario: new Usuario(email: "rh@empresa.com", role: Role.EMPRESA))
+        Usuario candidatoLogado = new Usuario(id: 10L, email: "candidato@email.com", role: Role.CANDIDATO)
+
+        Authentication authentication = Mock(Authentication)
+        authentication.getPrincipal() >> candidatoLogado
+        SecurityContext securityContext = Mock(SecurityContext)
+        securityContext.getAuthentication() >> authentication
+        SecurityContextHolder.setContext(securityContext)
+
+        1 * empresaRepository.findById(id) >> Optional.of(empresa)
+
+        when: "O candidato tenta deletar a empresa"
+        useCase.executar(id)
+
+        then: "Lanca AccessDeniedException"
+        AccessDeniedException ex = thrown(AccessDeniedException)
+        ex.message == "Candidatos não têm permissão para deletar empresas."
+        0 * curtidaRepository.deleteByVagaEmpresaId(_)
+        0 * vagaRepository.deleteByEmpresaId(_)
+        0 * empresaRepository.delete(_)
+    }
+
     void "Deve bloquear a exclusao quando outra empresa tentar deletar conta alheia"() {
         given: "Uma empresa existente e outra empresa autenticada"
         Long id = 1L

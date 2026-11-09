@@ -70,8 +70,8 @@ class AuthenticationController {
                                             }"""
                                     ),
                                     @ExampleObject(
-                                            name = "Login de Empresaa",
-                                            summary = "Retorno ao autenticar uma empresaaaa",
+                                            name = "Login de Empresa",
+                                            summary = "Retorno ao autenticar uma empresa",
                                             value = """{
                                                 "codigo": 200,
                                                 "mensagem": "Login realizado com sucesso",

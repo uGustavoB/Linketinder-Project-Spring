@@ -2,6 +2,7 @@ package org.ugustavodev.msnucleo.usecase.impl.curtidas
 
 import org.springframework.security.access.AccessDeniedException
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 import org.ugustavodev.msnucleo.model.Curtida
 import org.ugustavodev.msnucleo.model.Vaga
 import org.ugustavodev.msnucleo.repositories.CurtidaRepository
@@ -20,6 +21,7 @@ class EmpresaDescurteCandidatoUseCase implements IEmpresaDescurteCandidatoUseCas
     }
 
     @Override
+    @Transactional
     void executar(Long idEmpresa, Long idCandidato, Long idVaga) {
         if (idEmpresa == null) {
             throw new IllegalArgumentException("O ID da empresa não pode ser nulo.")

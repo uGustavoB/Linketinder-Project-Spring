@@ -1,21 +1,20 @@
 package org.ugustavodev.msnucleo.usecase.impl.candidatos
 
-import jakarta.transaction.Transactional
+import org.springframework.security.access.AccessDeniedException
+import org.springframework.security.core.Authentication
+import org.springframework.security.core.context.SecurityContextHolder
+import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
+import org.ugustavodev.msnucleo.domain.Usuario
+import org.ugustavodev.msnucleo.domain.enums.Role
 import org.ugustavodev.msnucleo.dto.request.CandidatoRequestDTO
 import org.ugustavodev.msnucleo.dto.response.CandidatoResponseDTO
 import org.ugustavodev.msnucleo.mapper.CandidatoMapper
 import org.ugustavodev.msnucleo.model.Candidato
 import org.ugustavodev.msnucleo.repositories.CandidatoRepository
+import org.ugustavodev.msnucleo.repositories.UsuarioRepository
 import org.ugustavodev.msnucleo.usecase.interfaces.candidatos.IAtualizarCandidatoUseCase
-
-import org.springframework.security.crypto.password.PasswordEncoder
-
-import org.springframework.security.access.AccessDeniedException
-import org.springframework.security.core.Authentication
-import org.springframework.security.core.context.SecurityContextHolder
-import org.ugustavodev.msnucleo.domain.Usuario
-import org.ugustavodev.msnucleo.domain.enums.Role
 
 @Service
 class AtualizarCandidatoUseCase implements IAtualizarCandidatoUseCase {
@@ -23,11 +22,13 @@ class AtualizarCandidatoUseCase implements IAtualizarCandidatoUseCase {
     private final CandidatoRepository candidatoRepository
     private final PasswordEncoder passwordEncoder
     private final CandidatoMapper candidatoMapper
+    private final UsuarioRepository usuarioRepository
 
-    AtualizarCandidatoUseCase(CandidatoRepository candidatoRepository, PasswordEncoder passwordEncoder, CandidatoMapper candidatoMapper) {
+    AtualizarCandidatoUseCase(CandidatoRepository candidatoRepository, PasswordEncoder passwordEncoder, CandidatoMapper candidatoMapper, UsuarioRepository usuarioRepository) {
         this.candidatoRepository = candidatoRepository
         this.passwordEncoder = passwordEncoder
         this.candidatoMapper = candidatoMapper
+        this.usuarioRepository = usuarioRepository
     }
 
     @Override
@@ -44,20 +45,26 @@ class AtualizarCandidatoUseCase implements IAtualizarCandidatoUseCase {
                 .orElseThrow { new NoSuchElementException("Candidato não encontrado.") }
 
         Authentication auth = SecurityContextHolder.getContext().getAuthentication()
-        if (auth != null && auth.getPrincipal() instanceof Usuario) {
-            Usuario usuarioLogado = (Usuario) auth.getPrincipal()
-            if (usuarioLogado.role == Role.EMPRESA) {
-                throw new AccessDeniedException("Empresas não têm permissão para atualizar o perfil de candidatos.")
-            }
-            if (usuarioLogado.role == Role.CANDIDATO && candidatoExistente.usuario.email != usuarioLogado.email) {
-                throw new AccessDeniedException("Você não tem permissão para modificar o perfil de outro candidato.")
-            }
+        if (auth == null || !(auth.getPrincipal() instanceof Usuario)) {
+            throw new AccessDeniedException("Usuário não autenticado ou inválido.")
+        }
+
+        Usuario usuarioLogado = (Usuario) auth.getPrincipal()
+        if (usuarioLogado.role == Role.EMPRESA) {
+            throw new AccessDeniedException("Empresas não têm permissão para atualizar o perfil de candidatos.")
+        }
+        if (usuarioLogado.role == Role.CANDIDATO && candidatoExistente.usuario.email != usuarioLogado.email) {
+            throw new AccessDeniedException("Você não tem permissão para modificar o perfil de outro candidato.")
         }
 
         if (candidatoExistente.usuario.email != requestDTO.email) {
             Optional<Candidato> comMesmoEmail = candidatoRepository.findByUsuarioEmail(requestDTO.email)
             if (comMesmoEmail.isPresent() && comMesmoEmail.get().id != id) {
                 throw new IllegalArgumentException("Já existe outro candidato cadastrado com o email informado")
+            }
+            Optional<Usuario> usuarioComMesmoEmail = usuarioRepository.findByEmail(requestDTO.email)
+            if (usuarioComMesmoEmail.isPresent() && (candidatoExistente.usuario.id == null || usuarioComMesmoEmail.get().id != candidatoExistente.usuario.id)) {
+                throw new IllegalArgumentException("Já existe outro usuário cadastrado com o email informado")
             }
         }
 
@@ -73,7 +80,7 @@ class AtualizarCandidatoUseCase implements IAtualizarCandidatoUseCase {
         }
 
         String senhaCriptografada = requestDTO.senha ? passwordEncoder.encode(requestDTO.senha) : null
-        
+
         candidatoExistente.atualizarDados(
                 requestDTO.nome,
                 requestDTO.sobrenome,

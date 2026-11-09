@@ -1,21 +1,20 @@
 package org.ugustavodev.msnucleo.usecase.impl.empresas
 
-import jakarta.transaction.Transactional
+import org.springframework.security.access.AccessDeniedException
+import org.springframework.security.core.Authentication
+import org.springframework.security.core.context.SecurityContextHolder
+import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
+import org.ugustavodev.msnucleo.domain.Usuario
+import org.ugustavodev.msnucleo.domain.enums.Role
 import org.ugustavodev.msnucleo.dto.request.EmpresaRequestDTO
 import org.ugustavodev.msnucleo.dto.response.EmpresaResponseDTO
 import org.ugustavodev.msnucleo.mapper.EmpresaMapper
 import org.ugustavodev.msnucleo.model.Empresa
 import org.ugustavodev.msnucleo.repositories.EmpresaRepository
+import org.ugustavodev.msnucleo.repositories.UsuarioRepository
 import org.ugustavodev.msnucleo.usecase.interfaces.empresas.IAtualizarEmpresaUseCase
-
-import org.springframework.security.crypto.password.PasswordEncoder
-
-import org.springframework.security.access.AccessDeniedException
-import org.springframework.security.core.Authentication
-import org.springframework.security.core.context.SecurityContextHolder
-import org.ugustavodev.msnucleo.domain.Usuario
-import org.ugustavodev.msnucleo.domain.enums.Role
 
 @Service
 class AtualizarEmpresaUseCase implements IAtualizarEmpresaUseCase {
@@ -23,11 +22,13 @@ class AtualizarEmpresaUseCase implements IAtualizarEmpresaUseCase {
     private final EmpresaRepository empresaRepository
     private final PasswordEncoder passwordEncoder
     private final EmpresaMapper empresaMapper
+    private final UsuarioRepository usuarioRepository
 
-    AtualizarEmpresaUseCase(EmpresaRepository empresaRepository, PasswordEncoder passwordEncoder, EmpresaMapper empresaMapper) {
+    AtualizarEmpresaUseCase(EmpresaRepository empresaRepository, PasswordEncoder passwordEncoder, EmpresaMapper empresaMapper, UsuarioRepository usuarioRepository) {
         this.empresaRepository = empresaRepository
         this.passwordEncoder = passwordEncoder
         this.empresaMapper = empresaMapper
+        this.usuarioRepository = usuarioRepository
     }
 
     @Override
@@ -44,20 +45,26 @@ class AtualizarEmpresaUseCase implements IAtualizarEmpresaUseCase {
                 .orElseThrow { new NoSuchElementException("Empresa não encontrada.") }
 
         Authentication auth = SecurityContextHolder.getContext().getAuthentication()
-        if (auth != null && auth.getPrincipal() instanceof Usuario) {
-            Usuario usuarioLogado = (Usuario) auth.getPrincipal()
-            if (usuarioLogado.role == Role.CANDIDATO) {
-                throw new AccessDeniedException("Candidatos não têm permissão para atualizar dados de empresas.")
-            }
-            if (usuarioLogado.role == Role.EMPRESA && empresaExistente.usuario.email != usuarioLogado.email) {
-                throw new AccessDeniedException("Você não tem permissão para modificar o perfil de outra empresa.")
-            }
+        if (auth == null || !(auth.getPrincipal() instanceof Usuario)) {
+            throw new AccessDeniedException("Usuário não autenticado ou inválido.")
+        }
+
+        Usuario usuarioLogado = (Usuario) auth.getPrincipal()
+        if (usuarioLogado.role == Role.CANDIDATO) {
+            throw new AccessDeniedException("Candidatos não têm permissão para atualizar dados de empresas.")
+        }
+        if (usuarioLogado.role == Role.EMPRESA && empresaExistente.usuario.email != usuarioLogado.email) {
+            throw new AccessDeniedException("Você não tem permissão para modificar o perfil de outra empresa.")
         }
 
         if (empresaExistente.usuario.email != requestDTO.email) {
             Optional<Empresa> comMesmoEmail = empresaRepository.findByUsuarioEmail(requestDTO.email)
             if (comMesmoEmail.isPresent() && comMesmoEmail.get().id != id) {
                 throw new IllegalArgumentException("Já existe outra empresa cadastrada com o email informado")
+            }
+            Optional<Usuario> usuarioComMesmoEmail = usuarioRepository.findByEmail(requestDTO.email)
+            if (usuarioComMesmoEmail.isPresent() && (empresaExistente.usuario.id == null || usuarioComMesmoEmail.get().id != empresaExistente.usuario.id)) {
+                throw new IllegalArgumentException("Já existe outro usuário cadastrado com o email informado")
             }
         }
 

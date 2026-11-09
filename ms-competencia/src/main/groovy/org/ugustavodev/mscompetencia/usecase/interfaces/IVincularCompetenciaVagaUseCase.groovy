@@ -4,5 +4,5 @@ import org.ugustavodev.mscompetencia.dto.request.VincularCompetenciaVagaRequestD
 import org.ugustavodev.mscompetencia.dto.response.CompetenciaVagaVinculoResponseDTO
 
 interface IVincularCompetenciaVagaUseCase {
-    List<CompetenciaVagaVinculoResponseDTO> executar(Long vagaId, List<VincularCompetenciaVagaRequestDTO> requestDTOs)
+    List<CompetenciaVagaVinculoResponseDTO> executar(Long vagaId, Long empresaId, List<VincularCompetenciaVagaRequestDTO> requestDTOs)
 }

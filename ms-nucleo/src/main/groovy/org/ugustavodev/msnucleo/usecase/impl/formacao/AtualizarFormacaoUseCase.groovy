@@ -1,6 +1,8 @@
 package org.ugustavodev.msnucleo.usecase.impl.formacao
 
+import org.springframework.security.access.AccessDeniedException
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 import org.ugustavodev.msnucleo.dto.request.FormacaoRequestDTO
 import org.ugustavodev.msnucleo.dto.response.FormacaoResponseDTO
 import org.ugustavodev.msnucleo.mapper.FormacaoMapper
@@ -20,7 +22,11 @@ class AtualizarFormacaoUseCase implements IAtualizarFormacaoUseCase {
     }
 
     @Override
+    @Transactional
     FormacaoResponseDTO executar(Long id, FormacaoRequestDTO requestDTO, Long candidatoId) {
+        if (id == null) {
+            throw new IllegalArgumentException("O ID da formação não pode ser nulo.")
+        }
         if (requestDTO == null) {
             throw new IllegalArgumentException("O objeto FormacaoRequestDTO não pode ser nulo.")
         }
@@ -29,7 +35,7 @@ class AtualizarFormacaoUseCase implements IAtualizarFormacaoUseCase {
                 .orElseThrow { new NoSuchElementException("Formação não encontrada para o ID: ${id}") }
 
         if (formacaoExistente.candidato == null || formacaoExistente.candidato.id != candidatoId) {
-            throw new IllegalArgumentException("Você não tem permissão para editar esta formação.")
+            throw new AccessDeniedException("Você não tem permissão para editar esta formação.")
         }
 
         formacaoExistente.instituicao = requestDTO.instituicao

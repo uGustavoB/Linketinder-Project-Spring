@@ -1,6 +1,8 @@
 package org.ugustavodev.msnucleo.usecase.impl.empresas
 
+import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 import org.ugustavodev.msnucleo.dto.request.EmpresaRequestDTO
 import org.ugustavodev.msnucleo.dto.response.EmpresaResponseDTO
 import org.ugustavodev.msnucleo.mapper.EmpresaMapper
@@ -8,8 +10,6 @@ import org.ugustavodev.msnucleo.model.Empresa
 import org.ugustavodev.msnucleo.repositories.EmpresaRepository
 import org.ugustavodev.msnucleo.repositories.UsuarioRepository
 import org.ugustavodev.msnucleo.usecase.interfaces.empresas.ICadastrarEmpresaUseCase
-
-import org.springframework.security.crypto.password.PasswordEncoder
 
 @Service
 class CadastrarEmpresaUseCase implements ICadastrarEmpresaUseCase {
@@ -27,6 +27,7 @@ class CadastrarEmpresaUseCase implements ICadastrarEmpresaUseCase {
     }
 
     @Override
+    @Transactional
     EmpresaResponseDTO executar(EmpresaRequestDTO requestDTO) {
         if (requestDTO == null) {
             throw new IllegalArgumentException("O objeto EmpresaRequestDTO não pode ser nulo.")
