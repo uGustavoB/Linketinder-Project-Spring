@@ -18,23 +18,28 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import org.ugustavodev.mscompetencia.dto.ApiResponseDTO
 import org.ugustavodev.mscompetencia.dto.request.CompetenciaRequestDTO
+import org.ugustavodev.mscompetencia.dto.response.CandidatosPorCompetenciaResponseDTO
 import org.ugustavodev.mscompetencia.dto.response.CompetenciaResponseDTO
 import org.ugustavodev.mscompetencia.usecase.interfaces.ICadastrarCompetenciaUseCase
+import org.ugustavodev.mscompetencia.usecase.interfaces.IContarCandidatosPorCompetenciaUseCase
 import org.ugustavodev.mscompetencia.usecase.interfaces.IListarCompetenciasUseCase
 
 @RestController
 @RequestMapping("/api/competencias")
-@Tag(name = "1. Catálogo de Competências", description = "Cadastro e listagem do catálogo global de competências da plataforma")
+@Tag(name = "1. Catálogo de Competências", description = "Cadastro, listagem e estatísticas do catálogo global de competências da plataforma")
 class CompetenciaController {
 
     private final ICadastrarCompetenciaUseCase cadastrarCompetenciaUseCase
     private final IListarCompetenciasUseCase listarCompetenciasUseCase
+    private final IContarCandidatosPorCompetenciaUseCase contarCandidatosPorCompetenciaUseCase
 
     CompetenciaController(
             ICadastrarCompetenciaUseCase cadastrarCompetenciaUseCase,
-            IListarCompetenciasUseCase listarCompetenciasUseCase) {
+            IListarCompetenciasUseCase listarCompetenciasUseCase,
+            IContarCandidatosPorCompetenciaUseCase contarCandidatosPorCompetenciaUseCase) {
         this.cadastrarCompetenciaUseCase = cadastrarCompetenciaUseCase
         this.listarCompetenciasUseCase = listarCompetenciasUseCase
+        this.contarCandidatosPorCompetenciaUseCase = contarCandidatosPorCompetenciaUseCase
     }
 
     @Operation(
@@ -181,6 +186,84 @@ class CompetenciaController {
     ResponseEntity<ApiResponseDTO<List<CompetenciaResponseDTO>>> listarCompetencias() {
         List<CompetenciaResponseDTO> lista = listarCompetenciasUseCase.executar()
         return ResponseEntity.ok(ApiResponseDTO.sucesso(lista))
+    }
+
+    @Operation(
+            summary = "Contabiliza a quantidade de candidatos por competência",
+            description = "Retorna todas as competências do catálogo global acompanhadas do total de candidatos distintos que possuem cada competência vinculada ao perfil. Endpoint restrito a usuários com papel `ROLE_EMPRESA`."
+    )
+    @ApiResponses([
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Estatísticas de candidatos por competência retornadas com sucesso",
+                    content = @Content(
+                            mediaType = "application/json",
+                            examples = @ExampleObject(
+                                    name = "Candidatos por Competência",
+                                    value = """{
+                                        "codigo": 200,
+                                        "status": 200,
+                                        "mensagem": "Operação realizada com sucesso",
+                                        "tipo": "Sucesso",
+                                        "dados": [
+                                            {
+                                                "competenciaId": 1,
+                                                "nomeCompetencia": "Java",
+                                                "totalCandidatos": 12
+                                            },
+                                            {
+                                                "competenciaId": 2,
+                                                "nomeCompetencia": "Spring Boot",
+                                                "totalCandidatos": 9
+                                            },
+                                            {
+                                                "competenciaId": 3,
+                                                "nomeCompetencia": "PostgreSQL",
+                                                "totalCandidatos": 5
+                                            }
+                                        ]
+                                    }"""
+                            )
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "401",
+                    description = "Usuário não autenticado",
+                    content = @Content(
+                            mediaType = "application/json",
+                            examples = @ExampleObject(
+                                    name = "Não Autenticado",
+                                    value = """{
+                                        "codigo": 401,
+                                        "status": 401,
+                                        "mensagem": "Você não está autenticado. Informe um token JWT válido.",
+                                        "tipo": "Não Autorizado"
+                                    }"""
+                            )
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "403",
+                    description = "Acesso restrito a usuários com papel EMPRESA",
+                    content = @Content(
+                            mediaType = "application/json",
+                            examples = @ExampleObject(
+                                    name = "Acesso Negado",
+                                    value = """{
+                                        "codigo": 403,
+                                        "status": 403,
+                                        "mensagem": "Você não tem permissão para acessar este recurso.",
+                                        "tipo": "Acesso Negado"
+                                    }"""
+                            )
+                    )
+            )
+    ])
+    @GetMapping("/estatisticas/candidatos-por-competencia")
+    @PreAuthorize("hasRole('EMPRESA')")
+    ResponseEntity<ApiResponseDTO<List<CandidatosPorCompetenciaResponseDTO>>> contarCandidatosPorCompetencia() {
+        List<CandidatosPorCompetenciaResponseDTO> estatisticas = contarCandidatosPorCompetenciaUseCase.executar()
+        return ResponseEntity.ok(ApiResponseDTO.sucesso(estatisticas))
     }
 
 }
