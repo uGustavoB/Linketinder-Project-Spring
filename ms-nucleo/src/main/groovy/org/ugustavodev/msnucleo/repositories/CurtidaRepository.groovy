@@ -29,6 +29,18 @@ interface CurtidaRepository extends JpaRepository<Curtida, Long> {
     @Query("SELECT COUNT(c) > 0 FROM Curtida c WHERE c.candidato.id = :candidatoId AND c.vaga.empresa.id = :empresaId AND c.candidatoCurtiuEm IS NOT NULL AND c.empresaCurtiuEm IS NOT NULL")
     boolean existsMatchEntreCandidatoEEmpresa(@Param("candidatoId") Long candidatoId, @Param("empresaId") Long empresaId)
 
+    long countByCandidatoIdAndCandidatoCurtiuEmIsNotNull(Long candidatoId)
+
+    long countByCandidatoIdAndEmpresaCurtiuEmIsNotNull(Long candidatoId)
+
+    long countByCandidatoIdAndCandidatoCurtiuEmIsNotNullAndEmpresaCurtiuEmIsNotNull(Long candidatoId)
+
+    long countByVagaEmpresaIdAndCandidatoCurtiuEmIsNotNull(Long empresaId)
+
+    long countByVagaEmpresaIdAndEmpresaCurtiuEmIsNotNull(Long empresaId)
+
+    long countByVagaEmpresaIdAndCandidatoCurtiuEmIsNotNullAndEmpresaCurtiuEmIsNotNull(Long empresaId)
+
     @Modifying
     @Query("DELETE FROM Curtida c WHERE c.vaga.id = :vagaId")
     void deleteByVagaId(@Param("vagaId") Long vagaId)
