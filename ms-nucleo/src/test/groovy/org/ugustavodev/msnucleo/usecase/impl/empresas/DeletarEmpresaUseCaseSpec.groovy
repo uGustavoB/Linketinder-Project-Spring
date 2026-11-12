@@ -4,6 +4,7 @@ import org.springframework.security.access.AccessDeniedException
 import org.springframework.security.core.Authentication
 import org.springframework.security.core.context.SecurityContext
 import org.springframework.security.core.context.SecurityContextHolder
+import org.ugustavodev.msnucleo.client.CompetenciaClient
 import org.ugustavodev.msnucleo.domain.Usuario
 import org.ugustavodev.msnucleo.domain.enums.Role
 import org.ugustavodev.msnucleo.model.Empresa
@@ -18,9 +19,15 @@ class DeletarEmpresaUseCaseSpec extends Specification {
     EmpresaRepository empresaRepository = Mock(EmpresaRepository)
     CurtidaRepository curtidaRepository = Mock(CurtidaRepository)
     VagaRepository vagaRepository = Mock(VagaRepository)
+    CompetenciaClient competenciaClient = Mock(CompetenciaClient)
 
     @Subject
-    DeletarEmpresaUseCase useCase = new DeletarEmpresaUseCase(empresaRepository, curtidaRepository, vagaRepository)
+    DeletarEmpresaUseCase useCase = new DeletarEmpresaUseCase(
+            empresaRepository,
+            curtidaRepository,
+            vagaRepository,
+            competenciaClient
+    )
 
     void cleanup() {
         SecurityContextHolder.clearContext()
@@ -36,6 +43,7 @@ class DeletarEmpresaUseCaseSpec extends Specification {
         then: "Lanca IllegalArgumentException"
         IllegalArgumentException ex = thrown(IllegalArgumentException)
         ex.message == "O ID da empresa não pode ser nulo."
+        0 * competenciaClient.excluirCompetenciasEmpresa(*_)
     }
 
     void "Deve lancar excecao quando a empresa nao for encontrada"() {
@@ -49,6 +57,7 @@ class DeletarEmpresaUseCaseSpec extends Specification {
         then: "Lanca NoSuchElementException"
         NoSuchElementException ex = thrown(NoSuchElementException)
         ex.message == "Empresa não encontrada."
+        0 * competenciaClient.excluirCompetenciasEmpresa(*_)
     }
 
     void "Deve lancar AccessDeniedException quando usuario nao estiver autenticado"() {
@@ -64,6 +73,7 @@ class DeletarEmpresaUseCaseSpec extends Specification {
         then: "Lanca AccessDeniedException pelo padrao Fail-Closed"
         AccessDeniedException ex = thrown(AccessDeniedException)
         ex.message == "Usuário não autenticado ou inválido."
+        0 * competenciaClient.excluirCompetenciasEmpresa(*_)
         0 * curtidaRepository.deleteByVagaEmpresaId(_)
         0 * vagaRepository.deleteByEmpresaId(_)
         0 * empresaRepository.delete(_)
@@ -89,6 +99,7 @@ class DeletarEmpresaUseCaseSpec extends Specification {
         then: "Lanca AccessDeniedException"
         AccessDeniedException ex = thrown(AccessDeniedException)
         ex.message == "Candidatos não têm permissão para deletar empresas."
+        0 * competenciaClient.excluirCompetenciasEmpresa(*_)
         0 * curtidaRepository.deleteByVagaEmpresaId(_)
         0 * vagaRepository.deleteByEmpresaId(_)
         0 * empresaRepository.delete(_)
@@ -114,6 +125,7 @@ class DeletarEmpresaUseCaseSpec extends Specification {
         then: "Lanca AccessDeniedException e nao remove registros"
         AccessDeniedException ex = thrown(AccessDeniedException)
         ex.message == "Você não tem permissão para deletar a conta de outra empresa."
+        0 * competenciaClient.excluirCompetenciasEmpresa(*_)
         0 * curtidaRepository.deleteByVagaEmpresaId(_)
         0 * vagaRepository.deleteByEmpresaId(_)
         0 * empresaRepository.delete(_)
@@ -136,7 +148,8 @@ class DeletarEmpresaUseCaseSpec extends Specification {
         when: "Executa a exclusao da empresa"
         useCase.executar(id)
 
-        then: "Deleta curtidas das vagas, vagas da empresa e por fim a empresa"
+        then: "Deleta as competencias da empresa e em seguida em cascata curtidas das vagas, vagas e a empresa"
+        1 * competenciaClient.excluirCompetenciasEmpresa(usuarioTitular, id)
         1 * curtidaRepository.deleteByVagaEmpresaId(id)
         1 * vagaRepository.deleteByEmpresaId(id)
         1 * empresaRepository.delete(empresa)

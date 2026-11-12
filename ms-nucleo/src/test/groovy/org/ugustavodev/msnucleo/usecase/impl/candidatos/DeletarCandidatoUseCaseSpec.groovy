@@ -4,6 +4,7 @@ import org.springframework.security.access.AccessDeniedException
 import org.springframework.security.core.Authentication
 import org.springframework.security.core.context.SecurityContext
 import org.springframework.security.core.context.SecurityContextHolder
+import org.ugustavodev.msnucleo.client.CompetenciaClient
 import org.ugustavodev.msnucleo.domain.Usuario
 import org.ugustavodev.msnucleo.domain.enums.Role
 import org.ugustavodev.msnucleo.model.Candidato
@@ -16,9 +17,10 @@ class DeletarCandidatoUseCaseSpec extends Specification {
 
     CandidatoRepository candidatoRepository = Mock(CandidatoRepository)
     CurtidaRepository curtidaRepository = Mock(CurtidaRepository)
+    CompetenciaClient competenciaClient = Mock(CompetenciaClient)
 
     @Subject
-    DeletarCandidatoUseCase useCase = new DeletarCandidatoUseCase(candidatoRepository, curtidaRepository)
+    DeletarCandidatoUseCase useCase = new DeletarCandidatoUseCase(candidatoRepository, curtidaRepository, competenciaClient)
 
     void cleanup() {
         SecurityContextHolder.clearContext()
@@ -34,6 +36,7 @@ class DeletarCandidatoUseCaseSpec extends Specification {
         then: "Lanca IllegalArgumentException"
         IllegalArgumentException ex = thrown(IllegalArgumentException)
         ex.message == "O ID do candidato não pode ser nulo."
+        0 * competenciaClient.excluirCompetenciasCandidato(*_)
     }
 
     void "Deve lancar excecao quando o candidato nao for encontrado"() {
@@ -47,6 +50,7 @@ class DeletarCandidatoUseCaseSpec extends Specification {
         then: "Lanca NoSuchElementException"
         NoSuchElementException ex = thrown(NoSuchElementException)
         ex.message == "Candidato não encontrado."
+        0 * competenciaClient.excluirCompetenciasCandidato(*_)
     }
 
     void "Deve lancar AccessDeniedException quando usuario nao estiver autenticado"() {
@@ -62,6 +66,7 @@ class DeletarCandidatoUseCaseSpec extends Specification {
         then: "Lanca AccessDeniedException pelo padrao Fail-Closed"
         AccessDeniedException ex = thrown(AccessDeniedException)
         ex.message == "Usuário não autenticado ou inválido."
+        0 * competenciaClient.excluirCompetenciasCandidato(*_)
         0 * curtidaRepository.deleteByCandidatoId(_)
         0 * candidatoRepository.delete(_)
     }
@@ -86,6 +91,7 @@ class DeletarCandidatoUseCaseSpec extends Specification {
         then: "Lanca AccessDeniedException"
         AccessDeniedException ex = thrown(AccessDeniedException)
         ex.message == "Empresas não têm permissão para deletar candidatos."
+        0 * competenciaClient.excluirCompetenciasCandidato(*_)
         0 * curtidaRepository.deleteByCandidatoId(_)
         0 * candidatoRepository.delete(_)
     }
@@ -110,6 +116,7 @@ class DeletarCandidatoUseCaseSpec extends Specification {
         then: "Lanca AccessDeniedException e nao remove registros"
         AccessDeniedException ex = thrown(AccessDeniedException)
         ex.message == "Você não tem permissão para deletar a conta de outro candidato."
+        0 * competenciaClient.excluirCompetenciasCandidato(*_)
         0 * curtidaRepository.deleteByCandidatoId(_)
         0 * candidatoRepository.delete(_)
     }
@@ -131,7 +138,8 @@ class DeletarCandidatoUseCaseSpec extends Specification {
         when: "O titular deleta sua conta"
         useCase.executar(id)
 
-        then: "Deleta primeiro as curtidas e em seguida o candidato"
+        then: "Deleta as competencias, as curtidas e em seguida o candidato"
+        1 * competenciaClient.excluirCompetenciasCandidato(usuarioTitular, id)
         1 * curtidaRepository.deleteByCandidatoId(id)
         1 * candidatoRepository.delete(candidato)
     }
