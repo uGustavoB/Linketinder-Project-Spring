@@ -26,6 +26,7 @@ import org.ugustavodev.mscompetencia.dto.request.VincularCompetenciaRequestDTO
 import org.ugustavodev.mscompetencia.dto.response.CompetenciaVinculoResponseDTO
 import org.ugustavodev.mscompetencia.security.UsuarioAutenticado
 import org.ugustavodev.mscompetencia.usecase.interfaces.IDesvincularCompetenciaCandidatoUseCase
+import org.ugustavodev.mscompetencia.usecase.interfaces.IExcluirCompetenciasCandidatoUseCase
 import org.ugustavodev.mscompetencia.usecase.interfaces.IListarCompetenciasCandidatoUseCase
 import org.ugustavodev.mscompetencia.usecase.interfaces.IVincularCompetenciaCandidatoUseCase
 
@@ -38,14 +39,17 @@ class CompetenciaCandidatoController {
     private final IVincularCompetenciaCandidatoUseCase vincularUseCase
     private final IListarCompetenciasCandidatoUseCase listarUseCase
     private final IDesvincularCompetenciaCandidatoUseCase desvincularUseCase
+    private final IExcluirCompetenciasCandidatoUseCase excluirUseCase
 
     CompetenciaCandidatoController(
             IVincularCompetenciaCandidatoUseCase vincularUseCase,
             IListarCompetenciasCandidatoUseCase listarUseCase,
-            IDesvincularCompetenciaCandidatoUseCase desvincularUseCase) {
+            IDesvincularCompetenciaCandidatoUseCase desvincularUseCase,
+            IExcluirCompetenciasCandidatoUseCase excluirUseCase) {
         this.vincularUseCase = vincularUseCase
         this.listarUseCase = listarUseCase
         this.desvincularUseCase = desvincularUseCase
+        this.excluirUseCase = excluirUseCase
     }
 
     @Operation(
@@ -311,6 +315,70 @@ class CompetenciaCandidatoController {
     ) {
         desvincularUseCase.executar(vinculoId, usuarioAutenticado?.perfilId)
         return ResponseEntity.ok(ApiResponseDTO.sucesso("Vínculo removido com sucesso", HttpStatus.OK.value()))
+    }
+
+    @Operation(
+            summary = "Remove todas as competências vinculadas a um candidato",
+            description = "Exclui em massa todos os vínculos de competências do candidato informado (`candidatoId`). Operação restrita ao próprio candidato autenticado (`ROLE_CANDIDATO`) e idempotente."
+    )
+    @ApiResponses([
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Competências do candidato removidas com sucesso",
+                    content = @Content(
+                            mediaType = "application/json",
+                            examples = @ExampleObject(
+                                    name = "Competências Removidas",
+                                    value = """{
+                                        "codigo": 200,
+                                        "status": 200,
+                                        "mensagem": "Competências do candidato removidas com sucesso",
+                                        "tipo": "Sucesso"
+                                    }"""
+                            )
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "401",
+                    description = "Usuário não autenticado",
+                    content = @Content(
+                            mediaType = "application/json",
+                            examples = @ExampleObject(
+                                    name = "Não Autenticado",
+                                    value = """{
+                                        "codigo": 401,
+                                        "status": 401,
+                                        "mensagem": "Você não está autenticado. Informe um token JWT válido.",
+                                        "tipo": "Não Autorizado"
+                                    }"""
+                            )
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "403",
+                    description = "Acesso restrito ao próprio candidato autenticado (ROLE_CANDIDATO)",
+                    content = @Content(
+                            mediaType = "application/json",
+                            examples = @ExampleObject(
+                                    name = "Acesso Negado ou Outro Candidato",
+                                    value = """{
+                                        "codigo": 403,
+                                        "status": 403,
+                                        "mensagem": "Você não tem permissão para remover as competências deste candidato.",
+                                        "tipo": "Acesso Negado"
+                                    }"""
+                            )
+                    )
+            )
+    ])
+    @DeleteMapping("/{candidatoId}")
+    @PreAuthorize("hasRole('CANDIDATO')")
+    ResponseEntity<ApiResponseDTO<Void>> excluirCompetencias(
+            @Parameter(description = "ID do candidato", example = "1") @PathVariable("candidatoId") Long candidatoId,
+            @Parameter(hidden = true) @AuthenticationPrincipal UsuarioAutenticado usuarioAutenticado
+    ) {
+        excluirUseCase.executar(candidatoId, usuarioAutenticado?.perfilId)
+        return ResponseEntity.ok(ApiResponseDTO.sucesso("Competências do candidato removidas com sucesso", HttpStatus.OK.value()))
     }
 
 }

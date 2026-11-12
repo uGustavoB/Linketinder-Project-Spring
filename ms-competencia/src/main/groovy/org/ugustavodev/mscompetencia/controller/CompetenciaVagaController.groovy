@@ -26,6 +26,7 @@ import org.ugustavodev.mscompetencia.dto.request.VincularCompetenciaVagaRequestD
 import org.ugustavodev.mscompetencia.dto.response.CompetenciaVagaVinculoResponseDTO
 import org.ugustavodev.mscompetencia.security.UsuarioAutenticado
 import org.ugustavodev.mscompetencia.usecase.interfaces.IDesvincularCompetenciaVagaUseCase
+import org.ugustavodev.mscompetencia.usecase.interfaces.IExcluirCompetenciasVagaUseCase
 import org.ugustavodev.mscompetencia.usecase.interfaces.IListarCompetenciasVagaUseCase
 import org.ugustavodev.mscompetencia.usecase.interfaces.IVincularCompetenciaVagaUseCase
 
@@ -38,14 +39,17 @@ class CompetenciaVagaController {
     private final IVincularCompetenciaVagaUseCase vincularUseCase
     private final IListarCompetenciasVagaUseCase listarUseCase
     private final IDesvincularCompetenciaVagaUseCase desvincularUseCase
+    private final IExcluirCompetenciasVagaUseCase excluirUseCase
 
     CompetenciaVagaController(
             IVincularCompetenciaVagaUseCase vincularUseCase,
             IListarCompetenciasVagaUseCase listarUseCase,
-            IDesvincularCompetenciaVagaUseCase desvincularUseCase) {
+            IDesvincularCompetenciaVagaUseCase desvincularUseCase,
+            IExcluirCompetenciasVagaUseCase excluirUseCase) {
         this.vincularUseCase = vincularUseCase
         this.listarUseCase = listarUseCase
         this.desvincularUseCase = desvincularUseCase
+        this.excluirUseCase = excluirUseCase
     }
 
     @Operation(
@@ -303,6 +307,70 @@ class CompetenciaVagaController {
     ) {
         desvincularUseCase.executar(vinculoId, usuarioAutenticado?.perfilId)
         return ResponseEntity.ok(ApiResponseDTO.sucesso("Vínculo removido com sucesso", HttpStatus.OK.value()))
+    }
+
+    @Operation(
+            summary = "Remove todas as competências vinculadas a uma vaga",
+            description = "Exclui em massa todos os vínculos de competências da vaga de emprego informada (`vagaId`). Operação restrita a usuários com papel `ROLE_EMPRESA` e idempotente."
+    )
+    @ApiResponses([
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Competências da vaga removidas com sucesso",
+                    content = @Content(
+                            mediaType = "application/json",
+                            examples = @ExampleObject(
+                                    name = "Competências Removidas",
+                                    value = """{
+                                        "codigo": 200,
+                                        "status": 200,
+                                        "mensagem": "Competências da vaga removidas com sucesso",
+                                        "tipo": "Sucesso"
+                                    }"""
+                            )
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "401",
+                    description = "Usuário não autenticado",
+                    content = @Content(
+                            mediaType = "application/json",
+                            examples = @ExampleObject(
+                                    name = "Não Autenticado",
+                                    value = """{
+                                        "codigo": 401,
+                                        "status": 401,
+                                        "mensagem": "Você não está autenticado. Informe um token JWT válido.",
+                                        "tipo": "Não Autorizado"
+                                    }"""
+                            )
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "403",
+                    description = "Acesso restrito a usuários com papel EMPRESA",
+                    content = @Content(
+                            mediaType = "application/json",
+                            examples = @ExampleObject(
+                                    name = "Acesso Negado ou Vaga de Outra Empresa",
+                                    value = """{
+                                        "codigo": 403,
+                                        "status": 403,
+                                        "mensagem": "Você não tem permissão para remover competências de uma vaga que não pertence à sua empresa.",
+                                        "tipo": "Acesso Negado"
+                                    }"""
+                            )
+                    )
+            )
+    ])
+    @DeleteMapping("/{vagaId}")
+    @PreAuthorize("hasRole('EMPRESA')")
+    ResponseEntity<ApiResponseDTO<Void>> excluirCompetencias(
+            @Parameter(description = "ID da vaga de emprego", example = "5") @PathVariable("vagaId") Long vagaId,
+            @Parameter(hidden = true) @AuthenticationPrincipal UsuarioAutenticado usuarioAutenticado
+    ) {
+        excluirUseCase.executar(vagaId, usuarioAutenticado?.perfilId)
+        return ResponseEntity.ok(ApiResponseDTO.sucesso("Competências da vaga removidas com sucesso", HttpStatus.OK.value()))
     }
 
 }
