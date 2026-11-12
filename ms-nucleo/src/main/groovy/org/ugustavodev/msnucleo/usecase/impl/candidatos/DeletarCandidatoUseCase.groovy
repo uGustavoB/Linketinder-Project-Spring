@@ -1,10 +1,12 @@
 package org.ugustavodev.msnucleo.usecase.impl.candidatos
 
 import jakarta.transaction.Transactional
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.security.access.AccessDeniedException
 import org.springframework.security.core.Authentication
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.stereotype.Service
+import org.ugustavodev.msnucleo.client.CompetenciaClient
 import org.ugustavodev.msnucleo.domain.Usuario
 import org.ugustavodev.msnucleo.domain.enums.Role
 import org.ugustavodev.msnucleo.model.Candidato
@@ -17,10 +19,16 @@ class DeletarCandidatoUseCase implements IDeletarCandidatoUseCase {
 
     private final CandidatoRepository candidatoRepository
     private final CurtidaRepository curtidaRepository
+    private final CompetenciaClient competenciaClient
 
-    DeletarCandidatoUseCase(CandidatoRepository candidatoRepository, CurtidaRepository curtidaRepository) {
+    @Autowired
+    DeletarCandidatoUseCase(
+            CandidatoRepository candidatoRepository,
+            CurtidaRepository curtidaRepository,
+            CompetenciaClient competenciaClient = null) {
         this.candidatoRepository = candidatoRepository
         this.curtidaRepository = curtidaRepository
+        this.competenciaClient = competenciaClient
     }
 
     @Override
@@ -45,6 +53,8 @@ class DeletarCandidatoUseCase implements IDeletarCandidatoUseCase {
         if (usuarioLogado.role == Role.CANDIDATO && candidato.usuario.email != usuarioLogado.email) {
             throw new AccessDeniedException("Você não tem permissão para deletar a conta de outro candidato.")
         }
+
+        competenciaClient?.excluirCompetenciasCandidato(usuarioLogado, id)
 
         curtidaRepository.deleteByCandidatoId(id)
         candidatoRepository.delete(candidato)

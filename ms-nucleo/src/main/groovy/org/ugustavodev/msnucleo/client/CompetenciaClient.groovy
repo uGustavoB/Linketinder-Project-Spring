@@ -43,6 +43,57 @@ class CompetenciaClient {
         return contarVinculos("/api/competencias/empresa/{id}", usuario, empresaId)
     }
 
+    void excluirCompetenciasCandidato(Usuario usuario, Long candidatoId) {
+        if (usuario == null) {
+            throw new IllegalArgumentException("O usuário autenticado não pode ser nulo.")
+        }
+        if (candidatoId == null) {
+            throw new IllegalArgumentException("O ID do candidato não pode ser nulo.")
+        }
+
+        String token = tokenService.gerarToken(usuario, candidatoId)
+        restClient.delete()
+                .uri("/api/competencias/candidato/{id}", candidatoId)
+                .header(HttpHeaders.AUTHORIZATION, "Bearer ${token}")
+                .retrieve()
+                .toBodilessEntity()
+    }
+
+    void excluirCompetenciasVaga(Usuario usuario, Long empresaId, Long vagaId) {
+        if (usuario == null) {
+            throw new IllegalArgumentException("O usuário autenticado não pode ser nulo.")
+        }
+        if (empresaId == null) {
+            throw new IllegalArgumentException("O ID da empresa não pode ser nulo.")
+        }
+        if (vagaId == null) {
+            throw new IllegalArgumentException("O ID da vaga não pode ser nulo.")
+        }
+
+        String token = tokenService.gerarToken(usuario, empresaId)
+        restClient.delete()
+                .uri("/api/competencias/vaga/{id}", vagaId)
+                .header(HttpHeaders.AUTHORIZATION, "Bearer ${token}")
+                .retrieve()
+                .toBodilessEntity()
+    }
+
+    void excluirCompetenciasEmpresa(Usuario usuario, Long empresaId) {
+        if (usuario == null) {
+            throw new IllegalArgumentException("O usuário autenticado não pode ser nulo.")
+        }
+        if (empresaId == null) {
+            throw new IllegalArgumentException("O ID da empresa não pode ser nulo.")
+        }
+
+        String token = tokenService.gerarToken(usuario, empresaId)
+        restClient.delete()
+                .uri("/api/competencias/empresa/{id}", empresaId)
+                .header(HttpHeaders.AUTHORIZATION, "Bearer ${token}")
+                .retrieve()
+                .toBodilessEntity()
+    }
+
     List<CandidatosPorCompetenciaDTO> listarCandidatosPorCompetencia(Usuario usuario, Long empresaId) {
         if (usuario == null || empresaId == null) {
             return Collections.emptyList()

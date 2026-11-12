@@ -1,10 +1,12 @@
 package org.ugustavodev.msnucleo.usecase.impl.empresas
 
 import jakarta.transaction.Transactional
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.security.access.AccessDeniedException
 import org.springframework.security.core.Authentication
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.stereotype.Service
+import org.ugustavodev.msnucleo.client.CompetenciaClient
 import org.ugustavodev.msnucleo.domain.Usuario
 import org.ugustavodev.msnucleo.domain.enums.Role
 import org.ugustavodev.msnucleo.model.Empresa
@@ -19,11 +21,18 @@ class DeletarEmpresaUseCase implements IDeletarEmpresaUseCase {
     private final EmpresaRepository empresaRepository
     private final CurtidaRepository curtidaRepository
     private final VagaRepository vagaRepository
+    private final CompetenciaClient competenciaClient
 
-    DeletarEmpresaUseCase(EmpresaRepository empresaRepository, CurtidaRepository curtidaRepository, VagaRepository vagaRepository) {
+    @Autowired
+    DeletarEmpresaUseCase(
+            EmpresaRepository empresaRepository,
+            CurtidaRepository curtidaRepository,
+            VagaRepository vagaRepository,
+            CompetenciaClient competenciaClient = null) {
         this.empresaRepository = empresaRepository
         this.curtidaRepository = curtidaRepository
         this.vagaRepository = vagaRepository
+        this.competenciaClient = competenciaClient
     }
 
     @Override
@@ -48,6 +57,8 @@ class DeletarEmpresaUseCase implements IDeletarEmpresaUseCase {
         if (usuarioLogado.role == Role.EMPRESA && empresa.usuario.email != usuarioLogado.email) {
             throw new AccessDeniedException("Você não tem permissão para deletar a conta de outra empresa.")
         }
+
+        competenciaClient?.excluirCompetenciasEmpresa(usuarioLogado, id)
 
         curtidaRepository.deleteByVagaEmpresaId(id)
         vagaRepository.deleteByEmpresaId(id)
