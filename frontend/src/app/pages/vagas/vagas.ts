@@ -305,7 +305,10 @@ export class Vagas implements OnInit {
             toast.success('Vaga deletada com sucesso.');
             this.fetchVagas();
           },
-          error: () => toast.error('Falha ao deletar a vaga.'),
+          error: (err: any) => {
+            const erroMsg = err?.error?.mensagem || 'Falha ao deletar a vaga.';
+            toast.error(erroMsg);
+          },
         });
       },
     });

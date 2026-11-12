@@ -209,7 +209,7 @@ export class Perfil implements OnInit {
           },
           error: (err: any) => {
             this.isDeleting.set(false);
-            const erroMsg = err.error?.mensagem || 'Erro ao deletar conta.';
+            const erroMsg = err?.error?.mensagem || 'Erro ao deletar conta.';
             toast.error(erroMsg);
           },
         });

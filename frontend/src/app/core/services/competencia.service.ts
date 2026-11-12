@@ -79,4 +79,17 @@ export class CompetenciaService {
   removerVinculoVaga(vinculoId: number): Observable<ApiResponse<void>> {
     return this.http.delete<ApiResponse<void>>(`${this.apiUrl}/vaga/vinculo/${vinculoId}`);
   }
+
+  // 5. Exclusão em lote de competências
+  removerTodasCompetenciasCandidato(candidatoId: number): Observable<ApiResponse<void>> {
+    return this.http.delete<ApiResponse<void>>(`${this.apiUrl}/candidato/${candidatoId}`);
+  }
+
+  removerTodasCompetenciasEmpresa(empresaId: number): Observable<ApiResponse<void>> {
+    return this.http.delete<ApiResponse<void>>(`${this.apiUrl}/empresa/${empresaId}`);
+  }
+
+  removerTodasCompetenciasVaga(vagaId: number): Observable<ApiResponse<void>> {
+    return this.http.delete<ApiResponse<void>>(`${this.apiUrl}/vaga/${vagaId}`);
+  }
 }
