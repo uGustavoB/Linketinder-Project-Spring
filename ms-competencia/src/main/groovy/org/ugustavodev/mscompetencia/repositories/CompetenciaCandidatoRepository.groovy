@@ -1,7 +1,9 @@
 package org.ugustavodev.mscompetencia.repositories
 
 import org.springframework.data.jpa.repository.JpaRepository
+import org.springframework.data.jpa.repository.Modifying
 import org.springframework.data.jpa.repository.Query
+import org.springframework.data.repository.query.Param
 import org.ugustavodev.mscompetencia.dto.response.CandidatosPorCompetenciaResponseDTO
 import org.ugustavodev.mscompetencia.model.CompetenciaCandidato
 
@@ -9,6 +11,10 @@ interface CompetenciaCandidatoRepository extends JpaRepository<CompetenciaCandid
     List<CompetenciaCandidato> findByCandidatoId(Long candidatoId)
     boolean existsByCandidatoIdAndCompetenciaId(Long candidatoId, Long competenciaId)
     Optional<CompetenciaCandidato> findByCandidatoIdAndCompetenciaId(Long candidatoId, Long competenciaId)
+
+    @Modifying
+    @Query("DELETE FROM CompetenciaCandidato cc WHERE cc.candidatoId = :candidatoId")
+    void deleteByCandidatoId(@Param("candidatoId") Long candidatoId)
 
     @Query("""
         SELECT new org.ugustavodev.mscompetencia.dto.response.CandidatosPorCompetenciaResponseDTO(
