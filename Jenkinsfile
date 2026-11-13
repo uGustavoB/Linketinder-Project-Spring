@@ -62,9 +62,15 @@ pipeline {
                 sh '''
                     curl -sS -X POST \
                     "https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage" \
-                    -d "chat_id=${TELEGRAM_CHAT_ID}" \
+                    --data-urlencode "chat_id=${TELEGRAM_CHAT_ID}" \
                     --data-urlencode "parse_mode=HTML" \
-                    --data-urlencode "text=✅ <b>PIPELINE APROVADA</b>%0A%0AProjeto: ${JOB_NAME}%0ABuild: #${BUILD_NUMBER}%0AStatus: SUCCESS%0A%0A<a href=\"${BUILD_URL}\">Visualizar execução</a>"
+                    --data-urlencode "text=✅ <b>PIPELINE APROVADA</b>
+Projeto: ${JOB_NAME}
+Build: #${BUILD_NUMBER}
+Branch: ${BRANCH_NAME}
+Status: SUCCESS
+
+<a href='${BUILD_URL}'>Visualizar execução</a>"
                 '''
             }
         }
@@ -81,9 +87,15 @@ pipeline {
                 sh '''
                     curl -sS -X POST \
                     "https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage" \
-                    -d "chat_id=${TELEGRAM_CHAT_ID}" \
+                    --data-urlencode "chat_id=${TELEGRAM_CHAT_ID}" \
                     --data-urlencode "parse_mode=HTML" \
-                    --data-urlencode "text=❌ <b>PIPELINE COM FALHA</b>%0A%0AProjeto: ${JOB_NAME}%0ABuild: #${BUILD_NUMBER}%0AStatus: FAILURE%0A%0A<a href=\"${BUILD_URL}\">Visualizar logs da execução</a>"
+                    --data-urlencode "text=❌ <b>PIPELINE COM FALHA</b>
+Projeto: ${JOB_NAME}
+Build: #${BUILD_NUMBER}
+Branch: ${BRANCH_NAME}
+Status: FAILURE
+
+<a href='${BUILD_URL}'>Visualizar logs da execução</a>"
                 '''
             }
         }
