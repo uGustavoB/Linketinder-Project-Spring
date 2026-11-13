@@ -56,7 +56,7 @@ pipeline {
             withCredentials([
                 string(credentialsId: 'telegram-bot-token',
                        variable: 'TELEGRAM_TOKEN'),
-                string(credentialsId: 'telegram-chat-linketinder-id,
+                string(credentialsId: 'telegram-chat-linketinder-id',
                        variable: 'TELEGRAM_CHAT_ID')
             ]) {
                 sh '''
