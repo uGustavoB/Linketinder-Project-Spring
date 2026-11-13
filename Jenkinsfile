@@ -1,3 +1,4 @@
+
 pipeline {
     agent any
 
@@ -48,11 +49,43 @@ pipeline {
         always {
             echo 'Pipeline de validacao do PR finalizada.'
         }
+
         success {
             echo 'Todos os builds e testes passaram com sucesso.'
+
+            withCredentials([
+                string(credentialsId: 'telegram-bot-token',
+                       variable: 'TELEGRAM_TOKEN'),
+                string(credentialsId: 'telegram-chat-linketinder-id,
+                       variable: 'TELEGRAM_CHAT_ID')
+            ]) {
+                sh '''
+                    curl -sS -X POST \
+                    "https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage" \
+                    -d "chat_id=${TELEGRAM_CHAT_ID}" \
+                    --data-urlencode "parse_mode=HTML" \
+                    --data-urlencode "text=✅ <b>PIPELINE APROVADA</b>%0A%0AProjeto: ${JOB_NAME}%0ABuild: #${BUILD_NUMBER}%0AStatus: SUCCESS%0A%0A<a href=\"${BUILD_URL}\">Visualizar execução</a>"
+                '''
+            }
         }
+
         failure {
-            echo 'Falha na compilacao ou nos testes de algum modulo. Verifique os logs.'
+            echo 'Falha na compilacao ou nos testes de algum modulo.'
+
+            withCredentials([
+                string(credentialsId: 'telegram-bot-token',
+                       variable: 'TELEGRAM_TOKEN'),
+                string(credentialsId: 'telegram-chat-linketinder-id',
+                       variable: 'TELEGRAM_CHAT_ID')
+            ]) {
+                sh '''
+                    curl -sS -X POST \
+                    "https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage" \
+                    -d "chat_id=${TELEGRAM_CHAT_ID}" \
+                    --data-urlencode "parse_mode=HTML" \
+                    --data-urlencode "text=❌ <b>PIPELINE COM FALHA</b>%0A%0AProjeto: ${JOB_NAME}%0ABuild: #${BUILD_NUMBER}%0AStatus: FAILURE%0A%0A<a href=\"${BUILD_URL}\">Visualizar logs da execução</a>"
+                '''
+            }
         }
     }
 }
